@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'wouter';
 
 const Hero = () => {
   return (
@@ -7,37 +8,57 @@ const Hero = () => {
       className="relative pt-24 md:pt-0 hero-parallax" 
       style={{
         backgroundImage: "url('https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1375&q=80')",
-        backgroundColor: "rgba(0,0,0,0.4)",
-        backgroundBlendMode: "overlay"
+        backgroundColor: "rgba(0,0,0,0.3)", // Slightly lighter overlay for more luxury feel
+        backgroundBlendMode: "overlay",
+        backgroundPosition: "center",
+        backgroundSize: "cover"
       }}
     >
-      <div className="container mx-auto min-h-screen flex items-center">
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+      <div className="container mx-auto min-h-screen flex items-center relative z-10">
         <motion.div 
           className="w-full md:w-1/2 px-4 py-16 md:py-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-white font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-shadow">
-            El aguacate <span className="text-[#C6A96C] italic">perfecto</span>
+          <motion.span 
+            className="inline-block px-4 py-1 border border-[#C6A96C] text-[#C6A96C] text-sm tracking-widest uppercase mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            Premium Collection
+          </motion.span>
+          <h2 className="text-white font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-shadow leading-tight">
+            El aguacate <span className="text-[#C6A96C]">perfecto</span> <br/>para <span className="italic">paladares exigentes</span>
           </h2>
-          <p className="text-white text-lg md:text-xl font-body mb-8 leading-relaxed text-shadow">
+          <p className="text-white/90 text-lg md:text-xl font-body mb-10 leading-relaxed max-w-lg">
             Descubre la experiencia única de nuestros aguacates cultivados con métodos tradicionales y estándares de calidad excepcionales.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-8">
             <a 
               href="#products" 
-              className="bg-[#C6A96C] text-white px-8 py-3 rounded-full font-body font-medium text-center shadow-lg hover:bg-[#2D5C34] transition-all duration-300 btn-hover"
+              className="luxury-button bg-[#C6A96C] text-white border border-[#C6A96C] inline-block font-body text-center uppercase tracking-wider text-sm"
             >
               Nuestros Productos
             </a>
-            <a 
-              href="#about" 
-              className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full font-body font-medium text-center shadow-lg hover:bg-white hover:text-[#2D5C34] transition-all duration-300 btn-hover"
+            <Link
+              href="/tienda"
+              className="luxury-button border-white text-white inline-block font-body text-center uppercase tracking-wider text-sm"
             >
-              Conoce Nuestra Historia
-            </a>
+              Tienda
+            </Link>
           </div>
+          <motion.div 
+            className="mt-16 flex items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1 }}
+          >
+            <div className="h-px w-12 bg-[#C6A96C] mr-4"></div>
+            <p className="text-white/80 text-sm uppercase tracking-widest">Calidad Excepcional</p>
+          </motion.div>
         </motion.div>
       </div>
       <div className="absolute bottom-0 w-full">

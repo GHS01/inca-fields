@@ -5,11 +5,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Switch, Route } from "wouter";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
+import Tienda from "@/pages/Tienda";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/tienda" component={Tienda} />
       <Route component={NotFound} />
     </Switch>
   );
