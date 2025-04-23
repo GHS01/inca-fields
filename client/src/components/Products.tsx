@@ -142,7 +142,7 @@ const Products = () => {
         >
           <Link
             href="/tienda"
-            className="luxury-button bg-green force-dark-text inline-flex items-center gap-2"
+            className="luxury-button inline-flex items-center gap-2"
           >
             <span>Explorar Catálogo</span>
             <ArrowRight size={16} />

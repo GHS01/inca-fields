@@ -138,11 +138,11 @@
   overflow: hidden;
   background: transparent;
   border: 1px solid #C6A96C;
-  color: #000; /* Cambiado a negro para mejor visibilidad */
+  color: #FFF;
   padding: 14px 32px;
   text-transform: uppercase;
   letter-spacing: 2px;
-  font-weight: 500;
+  font-weight: 400;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 1;
   margin: 0;
@@ -152,8 +152,7 @@
 .luxury-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-  color: #000; /* Mantener color negro en hover */
-  background-color: #FFF;
+  color: white;
 }
 
 .luxury-button::before {
@@ -187,38 +186,6 @@
 }
 
 .luxury-button:hover::after {
-  background-color: #FFF; /* Cambiado para mejor visibilidad */
-  border-color: #C6A96C;
-}
-
-/* Estilos adicionales para botones */
-.luxury-button.bg-gold {
-  background-color: #C6A96C;
-  border-color: #C6A96C;
-  color: #000;
-}
-
-.luxury-button.bg-gold:hover {
-  background-color: #FFF;
-  color: #C6A96C;
-}
-
-.luxury-button.bg-green {
-  background-color: #2D5C34;
-  border-color: #2D5C34;
-  color: #000; /* Cambiado a negro para visibilidad */
-}
-
-.luxury-button.bg-green:hover {
-  background-color: #FFF;
-  color: #2D5C34;
-}
-
-/* Forzar texto negro para todos los botones */
-.force-dark-text {
-  color: #000 !important;
-}
-
-.force-dark-text:hover {
-  color: #000 !important;
+  background-color: rgba(198, 169, 108, 0.9);
+  border-color: rgba(198, 169, 108, 0.2);
 }

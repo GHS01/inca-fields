@@ -200,7 +200,7 @@ const Newsletter = () => {
                         
                         <Button 
                           type="submit" 
-                          className="luxury-button bg-green force-dark-text inline-flex items-center gap-2"
+                          className="luxury-button bg-[#2D5C34] text-white border-[#2D5C34] inline-flex items-center gap-2"
                           disabled={mutation.isPending}
                         >
                           <span>{mutation.isPending ? "Procesando..." : "Suscribirse"}</span>
