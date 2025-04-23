@@ -140,7 +140,7 @@ const NutrientPanel = () => {
       
       <div className="relative p-8 z-10">
         {/* Selector de nutrientes */}
-        <div className="mb-10 flex flex-wrap gap-2">
+        <div className="mb-10 grid grid-cols-2 sm:grid-cols-3 gap-2">
           {Object.keys(nutrientData).map((key) => {
             const nutrient = nutrientData[key as keyof typeof nutrientData];
             const isActive = activeNutrient === key;
@@ -149,23 +149,15 @@ const NutrientPanel = () => {
               <button
                 key={key}
                 onClick={() => setActiveNutrient(key)}
-                className={`py-2 px-3 text-sm font-medium rounded-full transition-all duration-300 flex items-center gap-2 border ${
+                className={`py-2 px-3 text-sm font-medium transition-all duration-300 ${
                   isActive 
                     ? 'bg-[#C6A96C] text-white border-[#C6A96C]' 
-                    : 'bg-transparent text-white/70 border-white/10 hover:border-white/30'
+                    : 'bg-transparent text-white border border-white/30 hover:bg-white/5'
                 }`}
               >
-                <span className="text-xs w-5 h-5 flex items-center justify-center">
-                  {isActive && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                    >
-                      ✓
-                    </motion.span>
-                  )}
-                </span>
+                {isActive && (
+                  <span className="mr-1 text-xs">✓</span>
+                )}
                 <span>{nutrient.title}</span>
               </button>
             );
