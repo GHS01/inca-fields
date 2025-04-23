@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef } from 'react';
-import { Heart, Sprout, Apple, Award, ArrowRight, Activity, Brain } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Heart, Sprout, Apple, Award, ArrowRight, Activity, Brain, Info, X } from 'lucide-react';
 
 type BenefitItem = {
   id: number;
@@ -56,45 +56,251 @@ const benefits: BenefitItem[] = [
   }
 ];
 
-const BenefitCard = ({ benefit, index }: { benefit: BenefitItem; index: number }) => {
+// Componente para mostrar información nutricional interactiva
+const NutrientButton = ({ 
+  title, 
+  description, 
+  icon, 
+  color 
+}: { 
+  title: string; 
+  description: string; 
+  icon: string;
+  color: string;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
+    <div ref={ref}>
+      <motion.div
+        className="cursor-pointer"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+        whileHover={{ scale: 1.05 }}
+        onClick={() => setIsOpen(true)}
+      >
+        <div 
+          className="relative p-4 border border-white/10 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-lg transition-all duration-300 overflow-hidden group"
+          style={{ boxShadow: `0 10px 30px -10px ${color}55` }}
+        >
+          {/* Animated background accent */}
+          <div 
+            className="absolute bottom-0 left-0 w-full h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
+            style={{ backgroundColor: color }}
+          ></div>
+          
+          <div className="flex items-center mb-2">
+            <div 
+              className="w-10 h-10 rounded-full flex items-center justify-center mr-3 text-lg"
+              style={{ backgroundColor: color }}
+            >
+              {icon}
+            </div>
+            <h4 className="font-display font-bold text-white text-sm leading-tight flex-1">
+              {title}
+            </h4>
+            <div 
+              className="w-6 h-6 flex items-center justify-center rounded-full bg-white/10 group-hover:bg-white/20 transition-colors"
+              style={{ borderColor: color }}
+            >
+              <Info size={12} className="text-white/70" />
+            </div>
+          </div>
+        </div>
+      </motion.div>
+      
+      {/* Modal con la información detallada */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+          >
+            <motion.div
+              className="bg-[#1E3323] border border-white/10 p-6 rounded-lg max-w-md w-full max-h-[80vh] overflow-auto relative"
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 50, scale: 0.9 }}
+              transition={{ type: "spring", damping: 25 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <X size={18} className="text-white/70" />
+              </button>
+              
+              <div className="flex items-center mb-4">
+                <div 
+                  className="w-12 h-12 rounded-full flex items-center justify-center mr-4 text-2xl"
+                  style={{ backgroundColor: color }}
+                >
+                  {icon}
+                </div>
+                <h3 className="font-display text-xl font-bold text-white">{title}</h3>
+              </div>
+              
+              <div 
+                className="h-1 w-24 mb-4"
+                style={{ backgroundColor: color }}
+              ></div>
+              
+              <div className="text-white/90 leading-relaxed space-y-4">
+                <p>{description}</p>
+                
+                <div className="pt-2">
+                  <motion.div
+                    className="w-full h-2 rounded-full overflow-hidden bg-white/10 mt-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: color }}
+                      initial={{ width: "0%" }}
+                      animate={{ width: "85%" }}
+                      transition={{ 
+                        delay: 0.5, 
+                        duration: 1.5, 
+                        ease: "easeOut" 
+                      }}
+                    ></motion.div>
+                  </motion.div>
+                  <div className="flex justify-between text-xs text-white/60 mt-1">
+                    <span>Aguacate Inca Fields</span>
+                    <span>85% superior al promedio</span>
+                  </div>
+                </div>
+                
+                <div className="py-2 px-3 bg-white/5 rounded border-l-2" style={{ borderColor: color }}>
+                  <p className="text-sm italic text-white/80">
+                    "Los aguacates Inca Fields contienen hasta un 20% más de {title.toLowerCase()} que los aguacates convencionales, lo que los hace una opción superior para una dieta equilibrada y saludable."
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mt-6 pt-4 border-t border-white/10 flex justify-end">
+                <button 
+                  className="py-2 px-4 rounded text-sm font-medium transition-colors duration-300 flex items-center gap-2"
+                  style={{ backgroundColor: color }}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span>Entendido</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const BenefitCard = ({ benefit, index }: { benefit: BenefitItem; index: number }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
     <motion.div
       ref={ref}
-      className="relative bg-white/5 border border-white/10 backdrop-blur-sm overflow-hidden group"
+      className="relative overflow-hidden group bg-transparent"
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       whileHover={{ y: -5 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Color accent at top */}
+      {/* Card background with glass effect */}
       <div 
-        className="absolute top-0 left-0 w-full h-1 opacity-70 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500"
-        style={{ backgroundColor: benefit.color }}
+        className="absolute inset-0 rounded-xl border border-white/10 backdrop-blur-sm transition-all duration-500 group-hover:border-white/30"
+        style={{ 
+          background: `linear-gradient(145deg, ${benefit.color}33, ${benefit.color}11)`,
+          boxShadow: isHovered ? `0 10px 30px -10px ${benefit.color}55` : 'none'
+        }}
       ></div>
       
-      <div className="p-8">
-        <div 
-          className="w-16 h-16 rounded-sm flex items-center justify-center text-white mb-6 rotate-3 group-hover:rotate-0 transition-all duration-300 shadow-lg"
-          style={{ backgroundColor: benefit.color }}
-        >
-          {benefit.icon}
+      {/* Content */}
+      <div className="relative p-8 z-10">
+        {/* Animated icon container */}
+        <div className="mb-6 relative">
+          <motion.div 
+            className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-500"
+            style={{ backgroundColor: benefit.color }}
+            animate={{ 
+              scale: isHovered ? [1, 1.1, 1] : 1,
+              rotate: isHovered ? [0, -5, 5, 0] : 0
+            }}
+            transition={{ 
+              duration: 1.5, 
+              repeat: isHovered ? Infinity : 0,
+              repeatType: "loop"
+            }}
+          ></motion.div>
+          
+          <motion.div 
+            className="w-16 h-16 rounded-full flex items-center justify-center text-white"
+            style={{ backgroundColor: benefit.color }}
+            animate={{ 
+              rotate: isHovered ? 360 : 0,
+              scale: isHovered ? [1, 1.1, 1] : 1
+            }}
+            transition={{ 
+              rotate: { duration: 3, repeat: isHovered ? Infinity : 0, ease: "linear" },
+              scale: { duration: 1, repeat: isHovered ? Infinity : 0, repeatType: "reverse" }
+            }}
+          >
+            {benefit.icon}
+          </motion.div>
         </div>
         
-        <h3 className="font-display text-xl font-bold mb-4 text-white group-hover:text-[#C6A96C] transition-colors duration-300">
+        <motion.h3 
+          className="font-display text-xl font-bold mb-4 text-white relative inline-block"
+          animate={{ 
+            color: isHovered ? benefit.color : "white"
+          }}
+          transition={{ duration: 0.3 }}
+        >
           {benefit.title}
-        </h3>
+          <motion.div 
+            className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-500"
+            style={{ backgroundColor: benefit.color }}
+          ></motion.div>
+        </motion.h3>
         
         <p className="font-body text-white/80 leading-relaxed">
           {benefit.description}
         </p>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-4 right-4 w-8 h-8 opacity-20 rounded-full"
+             style={{ backgroundColor: benefit.color }}></div>
+        <div className="absolute bottom-4 left-4 w-4 h-4 opacity-10 rounded-full"
+             style={{ backgroundColor: benefit.color }}></div>
       </div>
       
-      {/* Subtle corner accent */}
-      <div className="absolute bottom-0 right-0 w-12 h-12 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
-        <div className="absolute top-0 left-0 w-full h-full border-b border-r border-white/30 transform rotate-45 origin-bottom-right"></div>
+      {/* Animated corner accent */}
+      <div className="absolute -bottom-1 -right-1 w-12 h-12 opacity-0 group-hover:opacity-20 transition-all duration-500">
+        <motion.div 
+          className="absolute top-0 left-0 w-full h-full rotate-45 origin-bottom-right"
+          style={{ borderRight: `2px solid ${benefit.color}`, borderBottom: `2px solid ${benefit.color}` }}
+          animate={{
+            scale: isHovered ? [1, 1.2, 1] : 1
+          }}
+          transition={{ 
+            duration: 2, 
+            repeat: isHovered ? Infinity : 0,
+            repeatType: "reverse"
+          }}
+        ></motion.div>
       </div>
     </motion.div>
   );
@@ -180,21 +386,56 @@ const Benefits = () => {
                 a fortalecer tu sistema inmunológico y mejorar tu salud general.
               </p>
               
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                {[
-                  "Rico en ácido fólico",
-                  "Alto contenido de potasio",
-                  "Antioxidantes naturales",
-                  "Omega-3 esenciales",
-                  "Bajo índice glucémico",
-                  "Vitaminas A, D, E y K"
-                ].map((item, index) => (
-                  <li key={index} className="flex items-center">
-                    <div className="w-2 h-2 bg-[#C6A96C] mr-3"></div>
-                    <span className="text-white/80">{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                  {[
+                    {
+                      title: "Rico en ácido fólico",
+                      description: "El ácido fólico (vitamina B9) es esencial para el desarrollo celular y la formación de ADN. En el aguacate, contribuye a la salud cardiovascular, desarrollo fetal y formación de glóbulos rojos.",
+                      icon: "🧬",
+                      color: "#E53935"
+                    },
+                    {
+                      title: "Alto contenido de potasio",
+                      description: "El potasio en los aguacates ayuda a regular la presión arterial, la función muscular y nerviosa. Un aguacate contiene más potasio que un plátano, lo que favorece al equilibrio electrolítico del cuerpo.",
+                      icon: "💪",
+                      color: "#43A047"
+                    },
+                    {
+                      title: "Antioxidantes naturales",
+                      description: "Los antioxidantes del aguacate, como la luteína y la zeaxantina, protegen contra daños celulares, reducen la inflamación y mejoran la salud ocular. Combaten el envejecimiento prematuro.",
+                      icon: "🛡️",
+                      color: "#1E88E5"
+                    },
+                    {
+                      title: "Omega-3 esenciales",
+                      description: "Los ácidos grasos Omega-3 presentes en el aguacate son fundamentales para la salud cerebral, cardiovascular y reducción de inflamación. Contribuyen a mantener equilibrados los niveles de colesterol.",
+                      icon: "🧠",
+                      color: "#F4511E"
+                    },
+                    {
+                      title: "Bajo índice glucémico",
+                      description: "Los aguacates tienen un índice glucémico muy bajo, lo que significa que no elevan significativamente el azúcar en sangre. Son ideales para personas con diabetes o en dietas de control de azúcar.",
+                      icon: "📊",
+                      color: "#6D4C41"
+                    },
+                    {
+                      title: "Vitaminas A, D, E y K",
+                      description: "Estas vitaminas liposolubles presentes en el aguacate son esenciales para la salud ósea, ocular, inmunológica y la coagulación sanguínea. Además, son poderosos antioxidantes que protegen tus células.",
+                      icon: "⚡",
+                      color: "#7B1FA2"
+                    }
+                  ].map((nutrient, index) => (
+                    <NutrientButton 
+                      key={index}
+                      title={nutrient.title}
+                      description={nutrient.description}
+                      icon={nutrient.icon}
+                      color={nutrient.color}
+                    />
+                  ))}
+                </div>
+              </div>
               
               <motion.a 
                 href="#" 
