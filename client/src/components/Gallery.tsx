@@ -295,7 +295,7 @@ const Gallery = () => {
               href="https://www.instagram.com/incafields"
               target="_blank"
               rel="noopener noreferrer"
-              className="luxury-button inline-flex items-center gap-2"
+              className="luxury-button bg-gold force-dark-text inline-flex items-center gap-2"
             >
               <span>Síguenos en Instagram</span>
               <ArrowRight size={16} />
