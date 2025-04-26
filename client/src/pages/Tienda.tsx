@@ -14,7 +14,8 @@ import {
   Minus, 
   ChevronDown,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -53,12 +54,10 @@ const products: Product[] = [
     id: 1,
     name: "Aguacate Hass Premium",
     description: "Nuestro aguacate estrella, con el balance perfecto de cremosidad y sabor.",
-    price: "$8.99/kg",
-    image: "https://images.unsplash.com/photo-1551460188-2f48af84affa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    price: "S/8.99/kg",
+    image: "/images/Aguacate Hass Premium.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1551460188-2f48af84affa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-      "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1075&q=80",
-      "https://images.unsplash.com/photo-1590311980589-3cb93d1512f5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80"
+      "/images/Aguacate Hass Premium.jpeg"
     ],
     rating: 4.9,
     reviewCount: 128,
@@ -80,12 +79,11 @@ const products: Product[] = [
     id: 2,
     name: "Aguacate Orgánico",
     description: "Cultivado sin pesticidas ni aditivos químicos, conservando todo su sabor natural.",
-    price: "$10.99/kg",
-    originalPrice: "$12.99/kg",
-    image: "https://images.unsplash.com/photo-1573566291259-fd494a326b60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    price: "S/10.99/kg",
+    originalPrice: "S/12.99/kg",
+    image: "/images/Aguacate Organico.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1573566291259-fd494a326b60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-      "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1024&q=80"
+      "/images/Aguacate Organico.jpeg"
     ],
     rating: 4.8,
     reviewCount: 93,
@@ -100,25 +98,24 @@ const products: Product[] = [
   },
   {
     id: 3,
-    name: "Caja Gourmet",
+    name: "Aguacate fuerte Premium",
     description: "Selección especial de nuestros mejores aguacates en un empaque de lujo.",
-    price: "$24.99",
-    image: "https://images.unsplash.com/photo-1622205313162-be1d5710a72b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    price: "S/24.99",
+    image: "/images/Aguacate fuerte Premium.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1622205313162-be1d5710a72b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      "https://images.unsplash.com/photo-1565591452825-67d6b7df1d47?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80"
+      "/images/Aguacate fuerte Premium.jpeg"
     ],
     rating: 5.0,
     reviewCount: 42,
     category: "aguacates",
     badge: {
-      text: "Gourmet",
+      text: "Premium",
       variant: "premium"
     },
     details: {
       origen: "Selección especial, Perú",
       peso: "Pack de 6 unidades (1.5kg aprox.)",
-      variedad: "Hass Premium",
+      variedad: "Fuerte Premium",
       uso: "Ideal para regalos y eventos especiales",
       beneficios: ["Presentación de lujo", "Aguacates seleccionados", "Maduración perfecta garantizada"]
     }
@@ -127,11 +124,10 @@ const products: Product[] = [
     id: 4,
     name: "Aceite de Aguacate Virgen",
     description: "Aceite puro de aguacate prensado en frío, ideal para ensaladas y alta cocina.",
-    price: "$15.99",
-    image: "https://images.unsplash.com/photo-1597281362711-7004802c6881?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80",
+    price: "S/15.99",
+    image: "/images/Aceite de aguacate virgen.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1597281362711-7004802c6881?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80",
-      "https://images.unsplash.com/photo-1584559582128-b8be739912e1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80"
+      "/images/Aceite de aguacate virgen.jpeg"
     ],
     rating: 4.7,
     reviewCount: 76,
@@ -153,11 +149,10 @@ const products: Product[] = [
     id: 5,
     name: "Aceite Infusionado con Ajo",
     description: "Aceite de aguacate infusionado con ajo orgánico, perfecto para marinados.",
-    price: "$17.99",
-    image: "https://images.unsplash.com/photo-1595981267035-7b04ca84a82d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    price: "S/17.99",
+    image: "/images/Aceite infusionado con Ajo.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1595981267035-7b04ca84a82d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-      "https://images.unsplash.com/photo-1543364195-bfe6e4932397?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1025&q=80"
+      "/images/Aceite infusionado con Ajo.jpeg"
     ],
     rating: 4.9,
     reviewCount: 54,
@@ -174,12 +169,11 @@ const products: Product[] = [
     id: 6,
     name: "Crema Hidratante",
     description: "Crema facial hidratante con aceite de aguacate, para una piel suave y radiante.",
-    price: "$29.99",
-    originalPrice: "$34.99",
-    image: "https://images.unsplash.com/photo-1571875257727-256c39da42af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
+    price: "S/29.99",
+    originalPrice: "S/34.99",
+    image: "/images/Crema hidratante de aguacate.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1571875257727-256c39da42af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
-      "https://images.unsplash.com/photo-1626784215021-2e914fad9749?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+      "/images/Crema hidratante de aguacate.jpeg"
     ],
     rating: 4.8,
     reviewCount: 112,
@@ -200,11 +194,10 @@ const products: Product[] = [
     id: 7,
     name: "Champú Natural",
     description: "Champú con extracto de aguacate para un cabello nutrido y brillante.",
-    price: "$22.99",
-    image: "https://images.unsplash.com/photo-1566958769312-82cef41d19ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1529&q=80",
+    price: "S/22.99",
+    image: "/images/Shampoo de aguacate natural.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1566958769312-82cef41d19ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1529&q=80",
-      "https://images.unsplash.com/photo-1594348586711-637bb8830ce7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+      "/images/Shampoo de aguacate natural.jpeg"
     ],
     rating: 4.6,
     reviewCount: 89,
@@ -221,11 +214,10 @@ const products: Product[] = [
     id: 8,
     name: "Aceite para Cabello",
     description: "Tratamiento capilar con aceite de aguacate, restaura el cabello dañado.",
-    price: "$19.99",
-    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    price: "S/19.99",
+    image: "/images/Aceite de aguacate para el cabello.jpeg",
     gallery: [
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      "https://images.unsplash.com/photo-1526758097130-bec957c521b5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+      "/images/Aceite de aguacate para el cabello.jpeg"
     ],
     rating: 4.9,
     reviewCount: 76,
@@ -298,63 +290,31 @@ const ProductModal = ({
   };
 
   return (
-    <motion.div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
+        product ? "" : "hidden"
+      }`}
     >
-      <motion.div 
-        className="relative bg-white w-full max-w-6xl max-h-[90vh] overflow-auto rounded-lg p-0"
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 50 }}
-        transition={{ duration: 0.3 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button 
-          className="absolute top-4 right-4 z-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        onClick={onClose}
+      ></div>
+      <div className="relative bg-white rounded-lg max-w-xl w-full max-h-[90vh] overflow-y-auto flex flex-col">
+        <button
           onClick={onClose}
+          className="absolute right-3 top-3 z-10 text-gray-500 hover:text-gray-700 focus:outline-none"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <X className="h-6 w-6" />
         </button>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          {/* Gallery */}
-          <div className="bg-[#F9F6F0] p-8 flex flex-col">
-            <div className="relative aspect-square overflow-hidden mb-4 border border-gray-100 rounded-lg bg-white">
-              <img 
-                src={selectedImage} 
-                alt={product.name} 
-                className="w-full h-full object-contain p-4" 
-              />
-              {product.badge && (
-                <div className="absolute top-4 left-4 z-10">
-                  <Badge className={`${getBadgeStyles(product.badge.variant)} text-white`}>
-                    {product.badge.text}
-                  </Badge>
-                </div>
-              )}
-            </div>
-            
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {product.gallery?.map((img, index) => (
-                <button 
-                  key={index}
-                  className={`aspect-square w-20 flex-shrink-0 border ${selectedImage === img ? 'border-[#C6A96C]' : 'border-gray-200'} rounded-md overflow-hidden bg-white hover:border-[#C6A96C] transition-all`}
-                  onClick={() => setSelectedImage(img)}
-                >
-                  <img src={img} alt={`${product.name} thumbnail ${index + 1}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 flex items-center justify-center bg-[#f8f8f8]">
+            <img
+              src={selectedImage}
+              alt={product.name}
+              className="max-h-64 w-auto object-contain"
+            />
           </div>
-          
-          {/* Product details */}
-          <div className="p-8 flex flex-col">
+          <div className="p-4 flex flex-col">
             <div className="mb-4">
               {product.bestseller && (
                 <div className="text-[#C6A96C] text-sm tracking-wider uppercase mb-2 flex items-center gap-1">
@@ -478,8 +438,8 @@ const ProductModal = ({
             </div>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 
@@ -520,59 +480,22 @@ const ProductCard = ({
   };
 
   return (
-    <motion.div
-      ref={ref}
-      className="product-card relative bg-white overflow-hidden group transition-all duration-300 hover:shadow-xl border border-transparent hover:border-gray-200"
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <div
+      className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-300 h-full"
       onClick={onClick}
     >
-      {/* Golden accent line */}
-      <div className="absolute top-0 left-0 w-0 h-1 bg-[#C6A96C] z-10 group-hover:w-full transition-all duration-500"></div>
-      
-      <div className="relative overflow-hidden h-64">
+      <div className="relative pt-[100%] overflow-hidden bg-[#f8f8f8]">
         <motion.img 
           src={product.image} 
           alt={product.name} 
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
           animate={{ 
             scale: isHovered ? 1.05 : 1
           }}
           transition={{ duration: 0.4 }}
         />
-
-        {/* Overlay on hover */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-          <button 
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white text-[#2D5C34] py-2 px-4 rounded-full font-medium transform translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hover:bg-[#2D5C34] hover:text-white flex items-center gap-2 shadow-lg"
-          >
-            <Search size={16} />
-            <span>Ver detalles</span>
-          </button>
-        </div>
-
-        {/* Badge */}
-        {product.badge && (
-          <div className="absolute top-4 left-4">
-            <Badge className={`${getBadgeStyles(product.badge.variant)} text-white uppercase tracking-wider text-xs font-medium shadow-md`}>
-              {product.badge.text}
-            </Badge>
-          </div>
-        )}
-
-        {/* Bestseller badge */}
-        {product.bestseller && (
-          <div className="absolute top-4 right-4 bg-white py-1 px-3 rounded-full shadow-md flex items-center gap-1">
-            <Award size={12} className="text-[#C6A96C]" />
-            <span className="text-xs font-medium text-[#2D5C34]">Bestseller</span>
-          </div>
-        )}
       </div>
-      
-      <div className="p-6">
+      <div className="p-3 md:p-4 flex flex-col flex-grow">
         <div className="flex mb-2 items-center">
           {renderStars(product.rating)}
           <span className="text-xs text-gray-500 ml-2">({product.reviewCount})</span>
@@ -593,7 +516,7 @@ const ProductCard = ({
           </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -610,16 +533,17 @@ const CategoryButton = ({
 }) => (
   <button
     onClick={() => onClick(category)}
-    className={`transition-all duration-300 py-3 px-6 text-sm uppercase tracking-wider ${
+    className={`px-3 py-2 md:px-4 md:py-2 text-sm md:text-base rounded-full border transition-colors whitespace-nowrap ${
       active 
-        ? 'bg-[#2D5C34] text-white border-b-2 border-[#C6A96C] shadow-md' 
-        : 'bg-white text-[#2D5C34] hover:bg-gray-50 border border-gray-200'
+        ? "bg-[#2D5C34] text-white border-[#2D5C34]"
+        : "border-[#2D5C34] text-[#2D5C34] hover:bg-[#2D5C34] hover:text-white"
     }`}
   >
     {label}
   </button>
 );
 
+// Sección de filtros ajustada para móvil
 const SortButton = ({ 
   label,
   active,
@@ -631,7 +555,7 @@ const SortButton = ({
 }) => (
   <button
     onClick={onClick}
-    className={`text-sm transition-all duration-200 py-1.5 px-3 rounded-full ${
+    className={`text-xs sm:text-sm whitespace-nowrap transition-all duration-200 py-1.5 px-2 sm:px-3 rounded-full ${
       active
         ? 'bg-[#2D5C34]/10 text-[#2D5C34] font-medium'
         : 'text-gray-600 hover:bg-gray-100'
@@ -645,6 +569,7 @@ const Tienda = () => {
   const [activeCategory, setActiveCategory] = useState<ProductCategory>('todos');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeSort, setActiveSort] = useState<string>('popular');
+  const [showFilters, setShowFilters] = useState(false);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -673,9 +598,9 @@ const Tienda = () => {
     <div className="flex flex-col min-h-screen">
       <Header />
       
-      <main className="flex-grow pt-24">
+      <main className="flex-grow pt-16 md:pt-24 overflow-hidden">
         {/* Hero section */}
-        <section className="relative bg-[#2D5C34] py-24 overflow-hidden" ref={ref}>
+        <section className="relative bg-[#2D5C34] py-12 md:py-24 overflow-hidden" ref={ref}>
           {/* Subtle pattern background */}
           <div className="absolute inset-0 opacity-10 bg-pattern"></div>
           
@@ -686,22 +611,22 @@ const Tienda = () => {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.5 }}
             >
-              <Link href="/" className="inline-flex items-center text-white/70 hover:text-white transition-colors duration-300 mb-8">
+              <Link href="/" className="inline-flex items-center text-white/70 hover:text-white transition-colors duration-300 mb-4 md:mb-8">
                 <ArrowLeft size={16} className="mr-2" />
                 <span>Volver a Inicio</span>
               </Link>
               
-              <div className="flex items-center justify-center mb-4">
-                <div className="h-[1px] w-10 bg-[#C6A96C] mr-3"></div>
-                <span className="text-[#C6A96C] text-sm tracking-[0.2em] uppercase font-light">Exclusividad y Calidad</span>
-                <div className="h-[1px] w-10 bg-[#C6A96C] ml-3"></div>
+              <div className="flex items-center justify-center mb-2 md:mb-4">
+                <div className="h-[1px] w-6 md:w-10 bg-[#C6A96C] mr-2 md:mr-3"></div>
+                <span className="text-[#C6A96C] text-xs md:text-sm tracking-[0.2em] uppercase font-light">Exclusividad y Calidad</span>
+                <div className="h-[1px] w-6 md:w-10 bg-[#C6A96C] ml-2 md:ml-3"></div>
               </div>
               
-              <h1 className="text-white font-display text-4xl md:text-5xl font-bold mb-6">
+              <h1 className="text-white font-display text-2xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-6">
                 Descubre Nuestra <span className="text-[#C6A96C]">Colección Premium</span>
               </h1>
               
-              <p className="text-white/80 mb-12 text-lg leading-relaxed">
+              <p className="text-white/80 mb-6 md:mb-12 text-sm md:text-lg leading-relaxed px-2">
                 Nuestra exclusiva selección de productos de aguacate, elaborados bajo los más estrictos 
                 estándares de calidad, sostenibilidad y excelencia.
               </p>
@@ -717,11 +642,11 @@ const Tienda = () => {
         </section>
 
         {/* Filter section */}
-        <section className="py-12 bg-[#F9F6F0]">
+        <section className="py-6 md:py-12 bg-[#F9F6F0]">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+            <div className="flex flex-col gap-3 md:gap-6">
               <motion.div 
-                className="flex flex-wrap gap-3"
+                className="flex flex-wrap gap-2 md:gap-3 justify-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
@@ -729,7 +654,7 @@ const Tienda = () => {
                 <CategoryButton 
                   active={activeCategory === 'todos'} 
                   category='todos' 
-                  label='Todos los Productos' 
+                  label='Todos' 
                   onClick={setActiveCategory} 
                 />
                 <CategoryButton 
@@ -753,35 +678,82 @@ const Tienda = () => {
               </motion.div>
               
               <motion.div 
-                className="flex items-center space-x-2"
+                className="flex flex-col md:flex-row items-center justify-center md:justify-end gap-2"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
               >
-                <div className="text-[#2D5C34] font-medium flex items-center gap-2">
-                  <ChevronDown size={16} />
-                  <span>Ordenar por:</span>
+                <button 
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="md:hidden flex items-center gap-1 text-[#2D5C34] font-medium text-sm py-1.5 px-3 bg-white/80 rounded-full shadow-sm w-full max-w-[160px] justify-center"
+                >
+                  <ChevronDown size={16} className={`transform transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                  <span>Ordenar por</span>
+                </button>
+
+                {/* Desktop sort buttons */}
+                <div className="hidden md:flex items-center space-x-2">
+                  <div className="text-[#2D5C34] font-medium flex items-center gap-2 text-sm">
+                    <ChevronDown size={16} />
+                    <span>Ordenar por:</span>
+                  </div>
+                  <div className="flex space-x-1">
+                    <SortButton 
+                      label="Más populares" 
+                      active={activeSort === 'popular'} 
+                      onClick={() => setActiveSort('popular')} 
+                    />
+                    <SortButton 
+                      label="Novedades" 
+                      active={activeSort === 'newest'} 
+                      onClick={() => setActiveSort('newest')} 
+                    />
+                    <SortButton 
+                      label="Precio: Menor a mayor" 
+                      active={activeSort === 'price-low'} 
+                      onClick={() => setActiveSort('price-low')} 
+                    />
+                    <SortButton 
+                      label="Precio: Mayor a menor" 
+                      active={activeSort === 'price-high'} 
+                      onClick={() => setActiveSort('price-high')} 
+                    />
+                  </div>
                 </div>
-                <div className="flex space-x-1">
+
+                {/* Mobile sort buttons dropdown */}
+                <div className={`md:hidden w-full ${showFilters ? 'flex' : 'hidden'} flex-wrap gap-1 justify-center`}>
                   <SortButton 
                     label="Más populares" 
                     active={activeSort === 'popular'} 
-                    onClick={() => setActiveSort('popular')} 
+                    onClick={() => {
+                      setActiveSort('popular');
+                      setShowFilters(false);
+                    }} 
                   />
                   <SortButton 
                     label="Novedades" 
                     active={activeSort === 'newest'} 
-                    onClick={() => setActiveSort('newest')} 
+                    onClick={() => {
+                      setActiveSort('newest');
+                      setShowFilters(false);
+                    }} 
                   />
                   <SortButton 
-                    label="Precio: Menor a mayor" 
+                    label="Precio: Menor" 
                     active={activeSort === 'price-low'} 
-                    onClick={() => setActiveSort('price-low')} 
+                    onClick={() => {
+                      setActiveSort('price-low');
+                      setShowFilters(false);
+                    }} 
                   />
                   <SortButton 
-                    label="Precio: Mayor a menor" 
+                    label="Precio: Mayor" 
                     active={activeSort === 'price-high'} 
-                    onClick={() => setActiveSort('price-high')} 
+                    onClick={() => {
+                      setActiveSort('price-high');
+                      setShowFilters(false);
+                    }} 
                   />
                 </div>
               </motion.div>
@@ -790,11 +762,11 @@ const Tienda = () => {
         </section>
 
         {/* Products grid */}
-        <section className="py-16">
+        <section className="py-6 md:py-16">
           <div className="container mx-auto px-4">
-            <div className="mb-6 flex justify-between items-center">
+            <div className="mb-4 md:mb-6 flex justify-between items-center">
               <motion.h2 
-                className="text-2xl font-display font-bold text-[#2D5C34]"
+                className="text-lg md:text-2xl font-display font-bold text-[#2D5C34]"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4 }}
@@ -805,7 +777,7 @@ const Tienda = () => {
               </motion.h2>
               
               <motion.div 
-                className="text-gray-600 text-sm"
+                className="text-gray-600 text-xs md:text-sm"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4 }}
@@ -814,7 +786,7 @@ const Tienda = () => {
               </motion.div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8">
               {sortedProducts.map((product, index) => (
                 <ProductCard 
                   key={product.id} 

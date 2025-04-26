@@ -5,6 +5,11 @@ import { insertContactSchema, insertSubscriberSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check route
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // API route for contact form submissions
   app.post("/api/contact", async (req, res) => {
     try {

@@ -19,36 +19,36 @@ type Product = {
 const products: Product[] = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1551460188-2f48af84affa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    image: "/images/Aguacate fuerte Premium.jpeg",
     badge: {
       text: "Premium",
       color: "bg-[#C6A96C]"
     },
-    name: "Hass Especial",
+    name: "Aguacate fuerte Premium",
     description: "Nuestro aguacate estrella, con el balance perfecto de cremosidad y sabor. Ideal para cualquier ocasión.",
-    price: "$8.99/kg"
+    price: "S/8.99/kg"
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1573566291259-fd494a326b60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    image: "/images/Aguacate Organico.jpeg",
     badge: {
       text: "Orgánico",
       color: "bg-green-600"
     },
-    name: "Orgánico Premium",
+    name: "Aguacate Orgánico",
     description: "Cultivado sin pesticidas ni aditivos químicos, conservando todo su sabor y propiedades naturales.",
-    price: "$10.99/kg"
+    price: "S/10.99/kg"
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1622205313162-be1d5710a72b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    image: "/images/Aguacate Hass Premium.jpeg",
     badge: {
-      text: "Gourmet",
-      color: "bg-[#BB4D00]"
+      text: "Premium",
+      color: "bg-[#C6A96C]"
     },
-    name: "Pack Gourmet",
+    name: "Aguacate Hass Premium",
     description: "Selección especial de nuestros mejores aguacates en un empaque de lujo, perfecto para regalo.",
-    price: "$24.99"
+    price: "S/24.99"
   }
 ];
 
@@ -142,10 +142,10 @@ const Products = () => {
         >
           <Link
             href="/tienda"
-            className="luxury-button inline-flex items-center gap-2"
+            className="luxury-button-gold inline-flex items-center gap-2 text-xs sm:text-sm md:text-base px-4 py-2 sm:px-6 sm:py-3 max-w-full"
           >
             <span>Explorar Catálogo</span>
-            <ArrowRight size={16} />
+            <ArrowRight size={14} className="sm:w-4 sm:h-4 w-3 h-3" />
           </Link>
         </motion.div>
       </div>

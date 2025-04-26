@@ -89,7 +89,7 @@ const About = () => {
                 crean las condiciones perfectas para cultivar aguacates de clase mundial con un sabor y textura incomparables.
               </motion.p>
               
-              <div className="mb-10">
+              <div className="mt-14 space-y-10 md:space-y-14 px-3 sm:px-6 md:px-8 lg:px-10">
                 <FeatureItem 
                   icon={<Leaf size={18} />}
                   title="Compromiso con la Sostenibilidad"
@@ -114,13 +114,13 @@ const About = () => {
               
               <motion.a 
                 href="#" 
-                className="inline-flex items-center gap-2 luxury-button"
+                className="inline-flex items-center gap-2 luxury-button-gold text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2.5"
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
               >
                 <span>Descubrir Nuestra Filosofía</span>
-                <ArrowRight size={16} />
+                <ArrowRight size={14} className="sm:w-4 sm:h-4 w-3 h-3" />
               </motion.a>
             </motion.div>
             
@@ -133,7 +133,7 @@ const About = () => {
               >
                 <div className="w-full h-full overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1591870101211-e91d1e7b9a69?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" 
+                    src="/images/Campos de aguacate 2.jpg" 
                     alt="Campos de aguacate" 
                     className="w-full h-full object-cover"
                   />
@@ -149,7 +149,7 @@ const About = () => {
               >
                 <div className="w-full h-full overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1546634829-a022853399c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" 
+                    src="/images/Agricultor en campos.jpg" 
                     alt="Agricultor en campos" 
                     className="w-full h-full object-cover"
                   />

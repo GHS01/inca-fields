@@ -198,13 +198,14 @@ const Newsletter = () => {
                           * Puedes darte de baja en cualquier momento
                         </p>
                         
-                        <Button 
-                          type="submit" 
-                          className="luxury-button bg-[#2D5C34] text-white border-[#2D5C34] inline-flex items-center gap-2"
+                        <Button
+                          type="submit"
+                          className={`mt-4 sm:mt-0 luxury-button-gold w-full sm:w-auto text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2.5 ${
+                            mutation.isPending ? "opacity-70 cursor-not-allowed" : ""
+                          }`}
                           disabled={mutation.isPending}
                         >
-                          <span>{mutation.isPending ? "Procesando..." : "Suscribirse"}</span>
-                          {!mutation.isPending && <Send size={14} />}
+                          {mutation.isPending ? "Enviando..." : "SUSCRIBIRSE"}
                         </Button>
                       </div>
                     </form>

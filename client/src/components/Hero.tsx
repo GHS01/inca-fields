@@ -1,24 +1,65 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'wouter';
+import { useState, useEffect } from 'react';
 
 const Hero = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const heroImages = [
+    '/images/image-hero-1.jpeg',
+    '/images/image-hero-2.jpeg',
+    '/images/image-hero-3.jpeg',
+    '/images/image-hero-4.jpg',
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 5000); // Cambiar imagen cada 5 segundos
+
+    return () => clearInterval(interval); // Limpiar intervalo al desmontar
+  }, []);
+
   return (
     <section 
       id="home" 
-      className="relative pt-24 md:pt-0 hero-parallax" 
-      style={{
-        backgroundImage: "url('https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1375&q=80')",
-        backgroundColor: "rgba(0,0,0,0.2)",
-        backgroundBlendMode: "overlay",
-        backgroundPosition: "center",
-        backgroundSize: "cover"
-      }}
+      className="relative pt-24 md:pt-0 hero-parallax overflow-hidden" 
     >
+      {/* Carrusel de imágenes */}
+      <div className="absolute inset-0 w-full h-full">
+        <AnimatePresence mode="wait">
+          {heroImages.map((image, index) => (
+            index === currentImageIndex && (
+              <motion.div
+                key={image}
+                className="absolute inset-0 w-full h-full"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.5 }}
+              >
+                <div 
+                  className="absolute inset-0 w-full h-full bg-cover bg-center"
+                  style={{
+                    backgroundImage: `url('${image}')`,
+                    backgroundColor: "rgba(0,0,0,0.1)",
+                    backgroundBlendMode: "overlay",
+                    backgroundPosition: "center",
+                    backgroundSize: "cover"
+                  }}
+                />
+              </motion.div>
+            )
+          ))}
+        </AnimatePresence>
+      </div>
+
       {/* Golden accent line at top */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C6A96C] via-[#F0D898] to-[#C6A96C] z-20"></div>
       
       {/* Elegant overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent z-10"></div>
       
       <div className="container mx-auto min-h-screen flex items-center relative z-10">
         <motion.div 
@@ -35,11 +76,11 @@ const Hero = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <div className="w-10 h-[1px] bg-[#C6A96C] mr-4"></div>
-            <span className="text-[#C6A96C] text-sm tracking-[0.3em] uppercase font-light">Premium Collection</span>
+            <span className="text-[#C6A96C] text-sm tracking-[0.3em] uppercase font-light text-shadow">Premium Collection</span>
           </motion.div>
           
           {/* Main headline */}
-          <h2 className="text-white font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <h2 className="text-white font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-shadow-lg">
             El aguacate <span className="text-[#C6A96C]">perfecto</span> <br/>
             <span className="text-3xl md:text-4xl lg:text-5xl font-normal">para <span className="italic">paladares exigentes</span></span>
           </h2>
@@ -51,7 +92,7 @@ const Hero = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <p className="text-white/90 text-lg md:text-xl font-body leading-relaxed max-w-lg">
+            <p className="text-white/90 text-lg md:text-xl font-body leading-relaxed max-w-lg text-shadow">
               Descubre la experiencia única de nuestros aguacates cultivados con métodos tradicionales y estándares de calidad excepcionales.
             </p>
           </motion.div>
@@ -103,6 +144,22 @@ const Hero = () => {
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
           <path fill="#F9F6F0" fillOpacity="1" d="M0,96L80,112C160,128,320,160,480,160C640,160,800,128,960,122.7C1120,117,1280,139,1360,149.3L1440,160L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
         </svg>
+      </div>
+      
+      {/* Indicadores de diapositivas */}
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-30 hidden lg:flex space-x-3">
+        {heroImages.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentImageIndex(index)}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              currentImageIndex === index 
+                ? 'bg-[#C6A96C] w-6' 
+                : 'bg-white/50 hover:bg-white/80'
+            }`}
+            aria-label={`Ir a diapositiva ${index + 1}`}
+          />
+        ))}
       </div>
     </section>
   );

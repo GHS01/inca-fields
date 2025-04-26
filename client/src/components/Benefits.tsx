@@ -417,11 +417,11 @@ const Benefits = () => {
               
               <motion.a 
                 href="#" 
-                className="inline-flex items-center gap-2 luxury-button bg-[#C6A96C] text-white mb-12"
+                className="inline-flex items-center gap-2 luxury-button bg-[#C6A96C] text-white mb-12 text-xs sm:text-sm md:text-base px-4 py-2 sm:px-6 sm:py-3 max-w-full"
                 whileHover={{ x: 5 }}
               >
                 <span>Descarga Nuestra Guía Nutricional</span>
-                <ArrowRight size={16} />
+                <ArrowRight size={14} className="sm:w-4 sm:h-4 w-3 h-3" />
               </motion.a>
             </div>
             

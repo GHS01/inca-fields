@@ -1,75 +1,243 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useState, useRef } from 'react';
-import { ArrowRight, ChevronRight, ChevronLeft, ZoomIn, X } from 'lucide-react';
+import { ArrowRight, ChevronRight, ChevronLeft, ZoomIn, X, Clock, Users, ChefHat, UtensilsCrossed } from 'lucide-react';
+import React from 'react';
+
+type RecipeInfo = {
+  tiempo: string;
+  porciones: string;
+  dificultad: string;
+  ingredientes: string[];
+  pasos: string[];
+};
 
 type GalleryItem = {
   id: number;
   image: string;
   alt: string;
   category: 'platos' | 'ingredientes' | 'cultivo';
+  description: string;
+  receta?: RecipeInfo;
 };
 
 const galleryItems: GalleryItem[] = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1601039641847-7857b994d704?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    image: "/images/Tostada de aguacate con huevo pochado y semillas de chía.jpg",
     alt: "Tostada de aguacate con huevo pochado y semillas de chía",
-    category: 'platos'
+    category: 'platos',
+    description: "Una exquisita combinación de aguacate cremoso con huevo pochado y el toque crujiente de las semillas de chía. Este plato es tan saludable como delicioso, ideal para un desayuno energético o brunch elegante.",
+    receta: {
+      tiempo: "20 minutos",
+      porciones: "2 personas",
+      dificultad: "Media",
+      ingredientes: [
+        "2 rebanadas de pan integral de masa madre",
+        "1 aguacate Hass Premium",
+        "2 huevos frescos",
+        "2 cucharaditas de semillas de chía",
+        "Jugo de medio limón",
+        "Sal marina y pimienta recién molida",
+        "Brotes frescos para decorar (opcional)",
+        "Aceite de oliva extra virgen"
+      ],
+      pasos: [
+        "Tostar el pan hasta que esté dorado y crujiente.",
+        "Preparar el aguacate: pelar y quitar el hueso. Machacar la pulpa con un tenedor, añadir jugo de limón, sal y pimienta al gusto.",
+        "Extender la mezcla de aguacate sobre las tostadas.",
+        "Para el huevo pochado: hervir agua con un chorrito de vinagre, reducir el fuego, crear un remolino con una cuchara y deslizar el huevo suavemente. Cocinar por 3 minutos.",
+        "Retirar el huevo con una espumadera y colocarlo sobre la tostada de aguacate.",
+        "Espolvorear con semillas de chía, un poco de sal y pimienta.",
+        "Finalizar con un chorrito de aceite de oliva y decorar con brotes frescos si se desea."
+      ]
+    }
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-    alt: "Ensalada con aguacate, espinacas y frutos rojos",
-    category: 'platos'
+    image: "/images/Sushi con aguacate y salmón premium.jpg",
+    alt: "Sushi con aguacate y salmón premium",
+    category: 'platos',
+    description: "Una fusión perfecta entre la tradición japonesa y nuestro aguacate premium. Cada rollo es una obra maestra donde el aguacate aporta cremosidad y el salmón un sabor excepcional, creando una experiencia gastronómica de alta cocina.",
+    receta: {
+      tiempo: "45 minutos",
+      porciones: "4 personas (16 piezas)",
+      dificultad: "Alta",
+      ingredientes: [
+        "2 tazas de arroz para sushi",
+        "4 láminas de alga nori",
+        "1 aguacate Hass Premium",
+        "200g de salmón premium fresco",
+        "3 cucharadas de vinagre de arroz",
+        "1 cucharada de azúcar",
+        "1/2 cucharadita de sal",
+        "Salsa de soja",
+        "Wasabi",
+        "Jengibre encurtido"
+      ],
+      pasos: [
+        "Lavar el arroz hasta que el agua salga clara. Cocinarlo según las instrucciones del paquete.",
+        "Mezclar el vinagre, azúcar y sal. Incorporar al arroz caliente y mezclar suavemente.",
+        "Dejar enfriar el arroz hasta temperatura ambiente.",
+        "Cortar el aguacate en tiras finas. Cortar el salmón en tiras de aproximadamente 1 cm de grosor.",
+        "Colocar una lámina de alga nori sobre una esterilla de bambú con la parte brillante hacia abajo.",
+        "Extender una capa fina y uniforme de arroz sobre el alga, dejando 2 cm libres en la parte superior.",
+        "Colocar las tiras de aguacate y salmón en el centro del arroz.",
+        "Enrollar firmemente usando la esterilla, presionando suavemente.",
+        "Con un cuchillo afilado y humedecido, cortar el rollo en 4 piezas iguales.",
+        "Servir con salsa de soja, wasabi y jengibre encurtido."
+      ]
+    }
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1475090169767-40ed8d18f67d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80",
+    image: "/images/Guacamole fresco con lima y cilantro.jpg",
     alt: "Guacamole fresco con lima y cilantro",
-    category: 'platos'
+    category: 'platos',
+    description: "Nuestro guacamole artesanal combina la cremosidad de los aguacates Hass Premium con el toque cítrico de la lima y la frescura del cilantro. Una receta tradicional elevada a la perfección con ingredientes de la más alta calidad.",
+    receta: {
+      tiempo: "15 minutos",
+      porciones: "4 personas",
+      dificultad: "Baja",
+      ingredientes: [
+        "3 aguacates Hass Premium maduros",
+        "1 tomate mediano, sin semillas y picado fino",
+        "1/2 cebolla roja picada finamente",
+        "1 chile jalapeño sin semillas (opcional)",
+        "2 cucharadas de cilantro fresco picado",
+        "Jugo de 2 limas",
+        "Sal marina al gusto",
+        "1/4 cucharadita de comino molido"
+      ],
+      pasos: [
+        "Cortar los aguacates por la mitad, retirar el hueso y extraer la pulpa en un recipiente.",
+        "Machacar los aguacates con un tenedor hasta obtener la consistencia deseada (puede ser más o menos rústica según preferencia).",
+        "Incorporar inmediatamente el jugo de lima para evitar que el aguacate se oxide.",
+        "Añadir el tomate, la cebolla y el jalapeño picados finamente.",
+        "Incorporar el cilantro picado, la sal y el comino.",
+        "Mezclar suavemente todos los ingredientes hasta integrarlos.",
+        "Probar y ajustar el sabor con más sal o jugo de lima si es necesario.",
+        "Servir inmediatamente con totopos o como acompañamiento."
+      ]
+    }
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1622205313162-be1d5710a72b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    image: "/images/Aguacates frescos recien cocechados.jpg",
     alt: "Aguacates frescos recién cosechados",
-    category: 'ingredientes'
+    category: 'ingredientes',
+    description: "Nuestros aguacates son cosechados a mano en el punto perfecto de maduración para garantizar su máximo sabor y textura. Cada pieza es seleccionada cuidadosamente por expertos agricultores que valoran la calidad sobre la cantidad, asegurando que solo los mejores ejemplares lleguen a su mesa. Cultivados en las fértiles tierras de los valles andinos, nuestros aguacates son 100% naturales, sin aditivos ni conservantes, preservando todas sus propiedades nutricionales y su incomparable sabor cremoso."
   },
   {
     id: 5,
-    image: "https://images.unsplash.com/photo-1604909052743-94e838986d24?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80",
-    alt: "Sushi con aguacate y salmón premium",
-    category: 'platos'
+    image: "/images/Plato gourmet con aguacate y langostinos.jpg",
+    alt: "Plato gourmet con aguacate y langostinos",
+    category: 'platos',
+    description: "Una sofisticada creación donde el aguacate y los langostinos crean una sinfonía de sabores y texturas. Este plato de alta cocina realza la suavidad del aguacate con el sabor marino de los langostinos, todo armonizado con hierbas frescas y acentos cítricos.",
+    receta: {
+      tiempo: "30 minutos",
+      porciones: "2 personas",
+      dificultad: "Media",
+      ingredientes: [
+        "12 langostinos grandes, pelados y desvenados",
+        "2 aguacates Hass Premium",
+        "2 cucharadas de aceite de oliva",
+        "1 diente de ajo picado",
+        "1 limón (jugo y ralladura)",
+        "2 cucharadas de eneldo fresco picado",
+        "1/4 taza de yogur griego",
+        "Sal marina y pimienta negra recién molida",
+        "Microgreens para decorar"
+      ],
+      pasos: [
+        "Sazonar los langostinos con sal, pimienta y un poco de ralladura de limón.",
+        "Calentar el aceite de oliva en una sartén y saltear los langostinos con el ajo por 2 minutos por cada lado hasta que estén rosados y cocidos. Reservar.",
+        "Cortar los aguacates en mitades, quitar el hueso y hacer cortes en la pulpa sin perforar la piel.",
+        "En un bol pequeño, mezclar el yogur con el eneldo, jugo de limón, sal y pimienta.",
+        "Para servir, colocar medio aguacate en cada plato, acomodar los langostinos alrededor y sobre el aguacate.",
+        "Rociar con la salsa de yogur y decorar con más eneldo y microgreens.",
+        "Terminar con un chorrito de aceite de oliva y servir inmediatamente."
+      ]
+    }
   },
   {
     id: 6,
-    image: "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
-    alt: "Smoothie de aguacate, espinacas y plátano",
-    category: 'platos'
+    image: "/images/Smoothie de aguacate, arandanos, brambuesa y platano.jpg",
+    alt: "Smoothie de aguacate, arándanos, frambuesa y plátano",
+    category: 'platos',
+    description: "Una bebida nutritiva y refrescante que combina la cremosidad del aguacate con la dulzura del plátano y el toque ácido de los frutos rojos. Esta deliciosa mezcla no solo es un placer para el paladar sino también una fuente de antioxidantes y energía natural.",
+    receta: {
+      tiempo: "10 minutos",
+      porciones: "2 personas",
+      dificultad: "Baja",
+      ingredientes: [
+        "1 aguacate Hass Premium",
+        "1 plátano maduro",
+        "1/2 taza de arándanos frescos",
+        "1/2 taza de frambuesas",
+        "1 taza de leche de almendras",
+        "1 cucharada de miel de abeja o jarabe de agave",
+        "1/2 taza de hielo",
+        "1 cucharada de semillas de chía (opcional)"
+      ],
+      pasos: [
+        "Pelar y quitar el hueso del aguacate.",
+        "Pelar el plátano y cortarlo en trozos.",
+        "Lavar los arándanos y las frambuesas.",
+        "Colocar todos los ingredientes en la licuadora, comenzando con la leche de almendras.",
+        "Licuar a velocidad alta hasta obtener una mezcla suave y cremosa.",
+        "Probar y ajustar la dulzura añadiendo más miel si es necesario.",
+        "Si deseas una textura más líquida, puedes añadir más leche de almendras.",
+        "Servir inmediatamente en vasos altos, decorar con algunas frutas y semillas de chía por encima."
+      ]
+    }
   },
   {
     id: 7,
-    image: "https://images.unsplash.com/photo-1591870101211-e91d1e7b9a69?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    image: "/images/Campos de aguacate.jpg",
     alt: "Campos de aguacate en el valle andino",
-    category: 'cultivo'
+    category: 'cultivo',
+    description: "Nuestros extensos campos de aguacate se encuentran estratégicamente ubicados en los privilegiados valles andinos, donde la combinación perfecta de altitud, clima y suelo mineral crea condiciones ideales para el cultivo. A más de 1,500 metros sobre el nivel del mar, nuestras plantaciones reciben la cantidad óptima de luz solar y humedad, permitiendo un desarrollo lento y natural de cada fruto. Implementamos técnicas de agricultura sostenible que respetan el equilibrio natural del ecosistema, empleando sistemas de riego por goteo que maximizan la eficiencia del agua y utilizando abonos orgánicos que mantienen la salud del suelo. Cada hectárea de nuestros campos es un testimonio de nuestro compromiso con la calidad y la preservación del medio ambiente para las generaciones futuras."
   },
   {
     id: 8,
-    image: "https://images.unsplash.com/photo-1528505086635-4c69d5f10908?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80",
-    alt: "Plato gourmet con aguacate y langostinos",
-    category: 'platos'
+    image: "/images/Postre de mousse de chocolate con aguacate.jpg",
+    alt: "Postre de mousse de chocolate con aguacate",
+    category: 'platos',
+    description: "Un postre sofisticado que redefine el lujo culinario al combinar el intenso sabor del chocolate con la suavidad del aguacate. Esta mousse sedosa sorprende por su textura perfecta y profundidad de sabor, sin revelar su saludable secreto.",
+    receta: {
+      tiempo: "20 minutos + 2 horas de refrigeración",
+      porciones: "4 personas",
+      dificultad: "Media",
+      ingredientes: [
+        "2 aguacates Hass Premium maduros",
+        "200g de chocolate negro (70% cacao)",
+        "3 cucharadas de cacao en polvo sin azúcar",
+        "1/4 taza de miel de abeja o jarabe de arce",
+        "1 cucharadita de extracto de vainilla",
+        "2 cucharadas de leche de coco",
+        "Una pizca de sal marina",
+        "Frambuesas frescas y hojas de menta para decorar",
+        "Virutas de chocolate para servir"
+      ],
+      pasos: [
+        "Derretir el chocolate negro a baño maría o en el microondas a intervalos de 30 segundos, removiendo entre cada intervalo. Dejar enfriar ligeramente.",
+        "Pelar y quitar el hueso de los aguacates. Colocar la pulpa en un procesador de alimentos.",
+        "Añadir el chocolate derretido, el cacao en polvo, la miel, el extracto de vainilla, la leche de coco y la sal.",
+        "Procesar hasta obtener una mezcla suave y homogénea, raspando los bordes si es necesario.",
+        "Probar y ajustar la dulzura según preferencia.",
+        "Dividir la mousse en 4 copas o vasos elegantes.",
+        "Refrigerar por al menos 2 horas para que se afirme.",
+        "Antes de servir, decorar con frambuesas frescas, una hoja de menta y virutas de chocolate."
+      ]
+    }
   },
   {
     id: 9,
-    image: "https://images.unsplash.com/photo-1615937657715-bc7b4b7962c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-    alt: "Postre de mousse de chocolate con aguacate",
-    category: 'platos'
-  },
-  {
-    id: 10,
-    image: "https://images.unsplash.com/photo-1546634829-a022853399c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+    image: "/images/Trabajador seleccionando los mejores aguacates.jpg",
     alt: "Trabajador seleccionando los mejores aguacates",
-    category: 'cultivo'
+    category: 'cultivo',
+    description: "En Inca Fields, la selección de cada aguacate es un arte que requiere años de experiencia y un ojo entrenado. Nuestros maestros seleccionadores evalúan meticulosamente cada fruto, considerando su peso, firmeza, color y textura para garantizar que solo los ejemplares perfectos reciban nuestra etiqueta Premium. Este proceso artesanal, transmitido de generación en generación, es parte fundamental de nuestro compromiso con la excelencia. Trabajamos bajo principios de comercio justo, proporcionando condiciones laborales dignas y remuneración justa a nuestros colaboradores, muchos de los cuales provienen de familias con tradición agrícola que han trabajado con nosotros por décadas. Este conocimiento ancestral, combinado con técnicas modernas de control de calidad, asegura que cada aguacate que llega a su mesa representa lo mejor de nuestra cosecha."
   }
 ];
 
@@ -88,13 +256,13 @@ const GalleryImage = ({
   return (
     <motion.div
       ref={ref}
-      className="relative overflow-hidden group cursor-pointer"
+      className="relative overflow-hidden group cursor-pointer rounded-xl"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       onClick={onClick}
     >
-      <div className="relative h-80 overflow-hidden">
+      <div className="relative h-80 overflow-hidden rounded-xl">
         <img 
           src={item.image} 
           alt={item.alt} 
@@ -107,10 +275,15 @@ const GalleryImage = ({
             <ZoomIn className="text-white" size={32} strokeWidth={1.5} />
           </div>
         </div>
+
+        {/* Title overlay at bottom */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+          <p className="text-white font-display text-lg">{item.alt}</p>
+        </div>
       </div>
       
       {/* Category badge */}
-      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 text-xs tracking-wider text-[#2D5C34] uppercase">
+      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 text-xs tracking-wider text-[#2D5C34] uppercase rounded-md">
         {item.category}
       </div>
     </motion.div>
@@ -130,25 +303,68 @@ const GalleryModal = ({
   onNext: () => void;
 }) => {
   if (!item) return null;
+  
+  const hasRecipe = item.category === 'platos' && item.receta;
+
+  // Efecto para ocultar el header cuando se abre el modal
+  React.useEffect(() => {
+    // Obtener el header y aplicar estilo para ocultarlo
+    const header = document.querySelector('header');
+    if (header) {
+      header.style.display = 'none';
+    }
+    
+    // También añadimos una clase al body para evitar el scroll en la página de fondo
+    document.body.style.overflow = 'hidden';
+    
+    // Limpiar el efecto cuando se cierra el modal
+    return () => {
+      if (header) {
+        header.style.display = '';
+      }
+      document.body.style.overflow = '';
+    };
+  }, []);
+
+  // Función para obtener la nota del chef según la receta
+  const getChefNote = (id: number) => {
+    switch (id) {
+      case 1: // Tostada de aguacate
+        return "Para una experiencia óptima, asegúrese de que el huevo esté pochado perfectamente: la clara firme y la yema líquida. Los aguacates Inca Fields son ideales por su cremosidad y sabor equilibrado que complementa perfectamente el huevo.";
+      case 2: // Sushi
+        return "La clave para un sushi perfecto está en la temperatura del arroz y la frescura del aguacate. Corte el aguacate justo antes de preparar el rollo para evitar la oxidación y mantener su hermoso color verde.";
+      case 3: // Guacamole
+        return "El secreto de un guacamole perfecto es usar aguacates en su punto justo de maduración. Presione suavemente: si cede ligeramente, está perfecto. Añada el limón inmediatamente para preservar su color vibrante.";
+      case 5: // Plato gourmet con langostinos
+        return "La combinación de aguacate y langostinos crea un equilibrio perfecto entre cremosidad y frescura marina. Para un resultado más elegante, utilice un cortador circular para montar los langostinos sobre el aguacate.";
+      case 6: // Smoothie
+        return "Para lograr la perfecta cremosidad, asegúrese de que el aguacate esté bien maduro. Si desea un smoothie más espeso, añada menos líquido o más hielo; para uno más ligero, incremente la cantidad de leche de almendras.";
+      case 8: // Mousse de chocolate
+        return "El secreto de esta mousse es la perfecta combinación entre el chocolate de alta calidad y la cremosidad del aguacate. Nadie notará la presencia del aguacate, pero aportará una textura inigualable y beneficios nutricionales.";
+      default:
+        return "Los aguacates Inca Fields son perfectos para esta receta gracias a su textura cremosa y sabor excepcional. Para mejores resultados, utilice aguacates en su punto óptimo de maduración.";
+    }
+  };
 
   return (
     <motion.div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4 md:p-10"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 py-6 px-4 md:py-10 md:px-10 overflow-y-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      {/* Botones de navegación y cierre ahora están fuera del contenedor principal */}
       <button 
         onClick={onClose} 
-        className="absolute top-4 right-4 text-white hover:text-[#C6A96C] z-20 transition-colors duration-300"
+        className="fixed top-6 right-6 text-white hover:text-[#C6A96C] z-[60] transition-colors duration-300 bg-black/40 p-2 rounded-full"
         aria-label="Close modal"
       >
-        <X size={32} />
+        <X size={28} />
       </button>
       
       <button 
         onClick={onPrev} 
-        className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-[#C6A96C] z-20 transition-colors duration-300 bg-black/20 p-2 rounded-full"
+        className="fixed left-6 top-1/2 -translate-y-1/2 text-white hover:text-[#C6A96C] z-[60] transition-colors duration-300 bg-black/40 p-3 rounded-full"
         aria-label="Previous image"
       >
         <ChevronLeft size={32} />
@@ -156,31 +372,136 @@ const GalleryModal = ({
       
       <button 
         onClick={onNext} 
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-[#C6A96C] z-20 transition-colors duration-300 bg-black/20 p-2 rounded-full"
+        className="fixed right-6 top-1/2 -translate-y-1/2 text-white hover:text-[#C6A96C] z-[60] transition-colors duration-300 bg-black/40 p-3 rounded-full"
         aria-label="Next image"
       >
         <ChevronRight size={32} />
       </button>
       
-      <div className="relative max-w-5xl w-full max-h-[80vh] overflow-hidden">
-        <motion.img 
-          src={item.image} 
-          alt={item.alt} 
-          className="w-full h-full object-contain"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-        />
+      <motion.div
+        className="bg-white w-full max-w-6xl mx-auto rounded-xl overflow-hidden shadow-2xl relative"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          {/* Image Section */}
+          <div className="relative h-[350px] md:h-auto">
+            <div className="absolute inset-0">
+              <img 
+                src={item.image} 
+                alt={item.alt} 
+                className="w-full h-full object-cover"
+              />
+            </div>
         
-        <div className="absolute left-0 bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-6">
-          <div className="text-xs uppercase tracking-wider text-[#C6A96C] mb-2">
-            {item.category}
+            <div className="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/60 to-transparent pt-20">
+              <div className="inline-block px-3 py-1 bg-[#C6A96C] text-white text-xs uppercase tracking-wider mb-2 rounded-sm">
+                {item.category}
+              </div>
+              <h3 className="text-white font-display text-2xl md:text-3xl font-bold text-shadow">
+                {item.alt}
+              </h3>
+            </div>
           </div>
-          <h3 className="text-white font-display text-xl md:text-2xl">
-            {item.alt}
-          </h3>
+          
+          {/* Content Section */}
+          <div className="p-8 max-h-[90vh] md:max-h-[85vh] overflow-y-auto">
+            {hasRecipe ? (
+              <div>
+                <div className="flex flex-col gap-4">
+                  {/* Recipe Title - Matched with image style */}
+                  <h2 className="text-[#2D5C34] font-display text-3xl font-bold mb-4 border-b border-[#C6A96C]/30 pb-5">
+                    {item.alt}
+                  </h2>
+                  
+                  {/* Recipe Info in horizontal format - Updated to match new design */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-4 border-b border-[#C6A96C]/20 pb-6 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#F9F6F0] flex items-center justify-center">
+                        <Clock size={18} className="text-[#2D5C34]" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[#C6A96C] uppercase text-xs tracking-wider font-medium">TIEMPO TOTAL</span>
+                        <span className="text-[#2D5C34] text-sm font-medium">{item.receta?.tiempo}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#F9F6F0] flex items-center justify-center">
+                        <ChefHat size={18} className="text-[#2D5C34]" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[#C6A96C] uppercase text-xs tracking-wider font-medium">DIFICULTAD</span>
+                        <span className="text-[#2D5C34] text-sm font-medium">{item.receta?.dificultad}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#F9F6F0] flex items-center justify-center">
+                        <Users size={18} className="text-[#2D5C34]" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[#C6A96C] uppercase text-xs tracking-wider font-medium">PORCIONES</span>
+                        <span className="text-[#2D5C34] text-sm font-medium">{item.receta?.porciones}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-3">
+                    <div className="flex items-center mb-2">
+                      <div className="h-[1px] w-8 bg-[#C6A96C] mr-3"></div>
+                      <h4 className="text-[#2D5C34] font-display text-xl font-bold">Ingredientes</h4>
+                    </div>
+                    <ul className="list-disc pl-5 text-gray-700 space-y-1">
+                      {item.receta?.ingredientes.map((ingrediente, index) => (
+                        <li key={index} className="leading-relaxed">{ingrediente}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* Preparation */}
+                  <div className="mt-3">
+                    <div className="flex items-center mb-2">
+                      <div className="h-[1px] w-8 bg-[#C6A96C] mr-3"></div>
+                      <h4 className="text-[#2D5C34] font-display text-xl font-bold">Preparación</h4>
+                    </div>
+                    <ol className="list-none pl-0 text-gray-700 space-y-4">
+                      {item.receta?.pasos.map((paso, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#C6A96C] flex items-center justify-center text-white text-sm">
+                            {index + 1}
+                          </div>
+                          <span className="leading-relaxed flex-1">{paso}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  {/* Nota del Chef */}
+                  <div className="mt-6 bg-[#F9F6F0] border-l-2 border-[#C6A96C] p-4 rounded-r-md">
+                    <div className="flex items-center mb-2">
+                      <ChefHat size={18} className="text-[#C6A96C] mr-2" />
+                      <h4 className="text-[#2D5C34] font-display text-lg font-bold">Nota del Chef</h4>
+                    </div>
+                    <p className="text-gray-700 italic text-sm leading-relaxed">
+                      {getChefNote(item.id)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="flex items-center mb-6">
+                  <div className="h-[1px] w-8 bg-[#C6A96C] mr-3"></div>
+                  <h4 className="text-[#2D5C34] font-display text-xl font-bold">Acerca de esta imagen</h4>
+                </div>
+                <p className="text-gray-700 leading-relaxed">{item.description}</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
@@ -295,10 +616,10 @@ const Gallery = () => {
               href="https://www.instagram.com/incafields"
               target="_blank"
               rel="noopener noreferrer"
-              className="luxury-button inline-flex items-center gap-2"
+              className="luxury-button-gold inline-flex items-center gap-2 text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2.5 max-w-full"
             >
               <span>Síguenos en Instagram</span>
-              <ArrowRight size={16} />
+              <ArrowRight size={14} className="sm:w-4 sm:h-4 w-3 h-3" />
             </a>
           </motion.div>
         </div>

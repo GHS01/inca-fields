@@ -2,12 +2,47 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Inca Fields | Premium Avocados</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#2D5C34" />
+    <meta name="description" content="Inca Fields Premium | Aguacates de alta calidad directos del campo a tu mesa" />
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Inca Fields Premium | Aguacates de Alta Calidad</title>
+
+    <!-- Preload fonts -->
+    <link rel="preload" href="/fonts/Cormorant-Bold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Montserrat-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/BonVivant-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      html, body {
+        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
+        -webkit-text-size-adjust: 100%;
+        position: relative;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+      * {
+        -webkit-overflow-scrolling: touch;
+        box-sizing: border-box;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        overflow-x: hidden;
+      }
+    </style>
   </head>
-  <body>
+  <body class="font-body text-zinc-900 bg-[#F9F6F0]">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->

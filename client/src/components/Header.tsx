@@ -28,17 +28,17 @@ const Header = () => {
     <header className={cn(
       "fixed w-full z-50 transition-all duration-500",
       scrolled 
-        ? "py-3 bg-[#F9F6F0] bg-opacity-95 shadow-lg" 
-        : "py-6 bg-transparent"
+        ? "py-2 md:py-3 bg-[#F9F6F0] bg-opacity-95 shadow-lg" 
+        : "py-4 md:py-6 bg-transparent"
     )}>
       {/* Top golden line */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#C6A96C] to-transparent"></div>
       
-      <div className="container mx-auto px-6 flex justify-between items-center">
+      <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
           <h1 className={cn(
-            "font-display font-bold tracking-tight transition-all duration-500",
-            scrolled ? "text-[#2D5C34] text-2xl" : "text-white text-2xl md:text-3xl"
+            "font-display font-bold tracking-tight transition-all duration-500 whitespace-nowrap",
+            scrolled ? "text-[#2D5C34] text-xl md:text-2xl" : "text-white text-xl md:text-2xl lg:text-3xl"
           )}>
             Inca Fields
             <span className="text-[#C6A96C] italic ml-1 text-sm md:text-base">Premium</span>
@@ -50,15 +50,15 @@ const Header = () => {
           <button 
             onClick={toggleMobileMenu} 
             className={cn(
-              "focus:outline-none transition-colors duration-300",
+              "focus:outline-none transition-colors duration-300 p-1",
               scrolled ? "text-[#2D5C34]" : "text-white"
             )}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? (
-              <X size={24} className="transition-all duration-300" />
+              <X size={22} className="transition-all duration-300" />
             ) : (
-              <Menu size={24} className="transition-all duration-300" />
+              <Menu size={22} className="transition-all duration-300" />
             )}
           </button>
         </div>
@@ -148,16 +148,17 @@ const Header = () => {
       {/* Mobile Navigation */}
       <div 
         className={cn(
-          "lg:hidden transition-all duration-500 overflow-hidden",
+          "lg:hidden transition-all duration-500 overflow-hidden fixed left-0 right-0 z-50",
           mobileMenuOpen 
             ? "max-h-[500px] opacity-100 border-t border-[#C6A96C]/20" 
             : "max-h-0 opacity-0"
         )}
         style={{
-          backgroundColor: scrolled ? "#F9F6F0" : "rgba(0,0,0,0.9)"
+          backgroundColor: scrolled ? "#F9F6F0" : "rgba(0,0,0,0.9)",
+          top: scrolled ? "47px" : "63px"
         }}
       >
-        <div className="container mx-auto px-6 py-6 space-y-6">
+        <div className="container mx-auto px-4 py-4 space-y-3">
           <a 
             href="#home" 
             onClick={closeMobileMenu} 
