@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 
 const Hero = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [imagesLoaded, setImagesLoaded] = useState<boolean[]>([false, false, false, false]);
-  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
   // Actualizado a formato WebP
   const heroImages = [
@@ -15,36 +13,8 @@ const Hero = () => {
     '/images/image-hero-4.webp',
   ];
 
-  // Precarga de imágenes
+  // Carrusel simple con cambio automático
   useEffect(() => {
-    const preloadImages = () => {
-      heroImages.forEach((src, index) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = () => {
-          setImagesLoaded(prev => {
-            const newState = [...prev];
-            newState[index] = true;
-            return newState;
-          });
-        };
-      });
-    };
-
-    preloadImages();
-  }, []);
-
-  // Verificar si todas las imágenes están cargadas
-  useEffect(() => {
-    if (imagesLoaded.every(loaded => loaded)) {
-      setAllImagesLoaded(true);
-    }
-  }, [imagesLoaded]);
-
-  // Iniciar el carrusel solo cuando todas las imágenes estén cargadas
-  useEffect(() => {
-    if (!allImagesLoaded) return;
-
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) =>
         prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
@@ -52,23 +22,13 @@ const Hero = () => {
     }, 5000); // Cambiar imagen cada 5 segundos
 
     return () => clearInterval(interval); // Limpiar intervalo al desmontar
-  }, [allImagesLoaded]);
+  }, []);
 
   return (
     <section
       id="home"
       className="relative pt-24 md:pt-0 hero-parallax overflow-hidden"
     >
-      {/* Indicador de carga mientras las imágenes se precargan */}
-      {!allImagesLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[#2D5C34]/90 z-50">
-          <div className="flex flex-col items-center">
-            <div className="w-16 h-16 border-4 border-[#C6A96C] border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-white text-lg">Cargando imágenes...</p>
-          </div>
-        </div>
-      )}
-
       {/* Carrusel de imágenes */}
       <div className="absolute inset-0 w-full h-full">
         <AnimatePresence mode="wait">
