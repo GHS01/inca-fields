@@ -28,8 +28,5 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  },
-  "buildEnv": {
-    "GEMINI_API_KEY": "@gemini_api_key"
   }
 }
