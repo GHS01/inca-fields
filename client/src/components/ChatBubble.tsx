@@ -57,6 +57,8 @@ const ChatBubble = () => {
     setIsLoading(true);
 
     try {
+      console.log('Enviando mensaje al servidor:', newMessage);
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -71,8 +73,12 @@ const ChatBubble = () => {
         }),
       });
 
+      console.log('Respuesta recibida:', response.status, response.statusText);
+
+      // Verificar que la respuesta sea JSON
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
+        console.error(`Error de tipo de contenido: ${contentType}`);
         throw new Error(`Respuesta no es JSON: ${contentType}`);
       }
 
@@ -82,20 +88,22 @@ const ChatBubble = () => {
       }
 
       const data = await response.json();
-      
+      console.log('Datos recibidos:', data);
+
       if (data && data.response) {
         setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
       } else {
+        console.error('Formato de respuesta inválido:', data);
         throw new Error('Formato de respuesta inválido');
       }
     } catch (error) {
       console.error('Error al enviar mensaje:', error);
-      
+
       setMessages(prev => [
         ...prev,
-        { 
-          role: 'assistant', 
-          content: 'Lo siento, parece que tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo o contacta directamente con un especialista.' 
+        {
+          role: 'assistant',
+          content: 'Lo siento, parece que tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo o contacta directamente con un especialista.'
         }
       ]);
     } finally {
@@ -118,14 +126,14 @@ const ChatBubble = () => {
     <>
       {/* Inyectar los keyframes de la animación en el DOM */}
       <style>{pulsateAnimation}</style>
-      
+
       <div className="fixed bottom-5 right-5 z-50">
         {/* Botón flotante estilo WhatsApp - Solo visible cuando el chat está cerrado */}
         {!isOpen && (
           <div className="flex flex-col items-end">
-            <div 
-              className="mb-2 bg-white px-4 py-2 rounded-lg shadow-md" 
-              style={{ 
+            <div
+              className="mb-2 bg-white px-4 py-2 rounded-lg shadow-md"
+              style={{
                 animation: 'gentle-pulsate 2s ease-in-out infinite',
                 transformOrigin: 'center'
               }}
@@ -156,8 +164,8 @@ const ChatBubble = () => {
                     <p className="text-xs font-light opacity-85 tracking-wide">Siempre disponible para ayudarte</p>
                   </div>
                 </div>
-                <button 
-                  onClick={toggleChat} 
+                <button
+                  onClick={toggleChat}
                   className="h-7 w-7 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors"
                 >
                   <X size={14} className="text-white" />
@@ -166,8 +174,8 @@ const ChatBubble = () => {
             </div>
 
             {/* Cuerpo del chat con patrón sutil */}
-            <div 
-              ref={messageContainerRef} 
+            <div
+              ref={messageContainerRef}
               className="flex-1 overflow-y-auto h-[320px] max-h-[320px] bg-gradient-to-b from-gray-50 to-white bg-opacity-90 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48cGF0aCBkPSJNMzAgNTJBMjIgMjIgMCAxIDEgNTIgMzAgMjIgMjIgMCAwIDEgMzAgNTJabTAtNDBhMTggMTggMCAxIDAgMTggMThBMTggMTggMCAwIDAgMzAgMTJaIiBmaWxsPSIjZjJmMmYyIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48L3N2Zz4=')]"
             >
               <div className="p-3 space-y-4">
@@ -189,7 +197,7 @@ const ChatBubble = () => {
                         className={cn(
                           "px-3 py-2 rounded-2xl shadow-sm text-sm",
                           message.role === 'user'
-                            ? "bg-gradient-to-br from-[#2D5C34] to-[#1F4425] text-white rounded-tr-none" 
+                            ? "bg-gradient-to-br from-[#2D5C34] to-[#1F4425] text-white rounded-tr-none"
                             : "bg-white text-gray-800 border border-gray-100 rounded-tl-none"
                         )}
                       >
@@ -258,4 +266,4 @@ const ChatBubble = () => {
   );
 };
 
-export default ChatBubble; 
+export default ChatBubble;

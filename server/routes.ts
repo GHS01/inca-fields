@@ -46,7 +46,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // API route for chatbot
-  app.post("/api/chat", handleChatRequest);
+  app.post("/api/chat", (req, res) => {
+    console.log("Recibida solicitud de chat:", req.body.message);
+    return handleChatRequest(req, res);
+  });
 
   const httpServer = createServer(app);
   return httpServer;
