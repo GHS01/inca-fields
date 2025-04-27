@@ -1,6 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import dotenv from 'dotenv';
+
+// Cargar variables de entorno desde el archivo .env
+dotenv.config();
 
 const app = express();
 app.use(express.json());
@@ -9,9 +13,9 @@ app.use(express.urlencoded({ extended: false }));
 // Middleware para gestionar errores de parsing JSON
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof SyntaxError && 'body' in err) {
-    return res.status(400).json({ 
-      error: 'JSON inválido', 
-      response: "Lo siento, hubo un problema con tu solicitud. Por favor, intenta de nuevo." 
+    return res.status(400).json({
+      error: 'JSON inválido',
+      response: "Lo siento, hubo un problema con tu solicitud. Por favor, intenta de nuevo."
     });
   }
   next();
@@ -39,7 +43,7 @@ app.use((req, res, next) => {
         if (safeResponse.response && typeof safeResponse.response === 'string' && safeResponse.response.length > 50) {
           safeResponse.response = safeResponse.response.substring(0, 50) + '...';
         }
-        
+
         logLine += ` :: ${JSON.stringify(safeResponse)}`;
       }
 
@@ -65,18 +69,18 @@ app.use((req, res, next) => {
 
     // Siempre devolvemos JSON para las rutas API
     if (_req.path.startsWith('/api')) {
-      return res.status(status).json({ 
+      return res.status(status).json({
         error: message,
         response: "Lo siento, hubo un problema técnico. Por favor, intenta de nuevo más tarde."
       });
     }
-    
+
     res.status(status).json({ message });
   });
 
   // Middleware para manejar rutas no encontradas para API
   app.use('/api/*', (req, res) => {
-    res.status(404).json({ 
+    res.status(404).json({
       error: 'Ruta no encontrada',
       response: "Lo siento, esta funcionalidad no está disponible."
     });

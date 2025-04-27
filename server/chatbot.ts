@@ -2,8 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import { Request, Response } from 'express';
 
-// Variable para almacenar la API key (se usará desde un entorno seguro)
-const GEMINI_API_KEY = 'AIzaSyCFR2kApUeCGSWOf_tkcLe1XH4qgKjDVJ0';
+// Variable para almacenar la API key desde variables de entorno
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || '';
+
+// Verificar si la API key está configurada
+if (!GEMINI_API_KEY) {
+  console.warn('⚠️ ADVERTENCIA: La variable de entorno GEMINI_API_KEY no está configurada. El chatbot usará respuestas predefinidas.');
+}
 
 // Cargar la base de conocimientos
 const knowledgeBasePath = path.join(process.cwd(), 'memory', 'conocimientos.markdown');
@@ -46,7 +51,7 @@ Instrucciones importantes:
 
 Sobre la derivación a especialistas:
 - No menciones al especialista inmediatamente.
-- Solo después de 5 interacciones, puedes sugerir amablemente "Si deseas información más detallada, 
+- Solo después de 5 interacciones, puedes sugerir amablemente "Si deseas información más detallada,
   puedes hablar con uno de nuestros especialistas usando el botón que aparece abajo".
 - Haz esta sugerencia de forma natural, como parte de tu respuesta a una pregunta.
 `;
@@ -65,30 +70,30 @@ const predefinedResponses: { [key: string]: string } = {
 // Función para detectar intención de compra al por mayor o menor
 function detectarTipoCompra(mensaje: string): 'mayor' | 'menor' | null {
   const mensajeLower = mensaje.toLowerCase();
-  
+
   // Detectar compra al por mayor
-  if (mensajeLower.includes('mayor') || 
-      mensajeLower.includes('mayoreo') || 
-      mensajeLower.includes('tonelada') || 
-      mensajeLower.includes('toneladas') || 
+  if (mensajeLower.includes('mayor') ||
+      mensajeLower.includes('mayoreo') ||
+      mensajeLower.includes('tonelada') ||
+      mensajeLower.includes('toneladas') ||
       mensajeLower.includes('grandes cantidades') ||
       mensajeLower.includes('distribuidor') ||
       mensajeLower.includes('wholesale')) {
     return 'mayor';
   }
-  
+
   // Detectar compra al por menor
-  if (mensajeLower.includes('menor') || 
-      mensajeLower.includes('minorista') || 
-      mensajeLower.includes('unidad') || 
-      mensajeLower.includes('unidades') || 
-      mensajeLower.includes('kilo') || 
+  if (mensajeLower.includes('menor') ||
+      mensajeLower.includes('minorista') ||
+      mensajeLower.includes('unidad') ||
+      mensajeLower.includes('unidades') ||
+      mensajeLower.includes('kilo') ||
       mensajeLower.includes('kilos') ||
       mensajeLower.includes('retail') ||
       mensajeLower.includes('individual')) {
     return 'menor';
   }
-  
+
   return null;
 }
 
@@ -115,7 +120,7 @@ function extraerCantidad(mensaje: string): number | null {
 // Función para obtener una respuesta predefinida basada en palabras clave y contexto
 function getPredefinedResponse(message: string, messageCount: number, chatHistory: {role: string, content: string}[]): string {
   message = message.toLowerCase();
-  
+
   // Si es el primer mensaje o hay una pregunta de saludo, dar respuesta de bienvenida
   if (messageCount <= 1 || (message.includes("hola") || message.includes("buenos") || message.includes("saludos"))) {
     return predefinedResponses.default;
@@ -123,22 +128,22 @@ function getPredefinedResponse(message: string, messageCount: number, chatHistor
 
   // Consultar base de conocimientos antes de responder
   // En una implementación real, esto consultaría la base de conocimientos mediante embeddings o búsqueda semántica
-  
+
   // Verificar si es respuesta a pregunta anterior sobre tipo de compra
   if (messageCount > 1) {
     const ultimaPregunta = chatHistory.filter(msg => msg.role === 'assistant').pop()?.content || '';
-    
+
     // Si la última pregunta fue sobre interés en compra al por mayor o menor
     if (ultimaPregunta.includes('¿Estás interesado en comprar') || ultimaPregunta.includes('por mayor o menor')) {
       const tipoCompra = detectarTipoCompra(message);
-      
+
       if (tipoCompra === 'mayor') {
         return "Excelente, nuestras ventas al por mayor comienzan desde 1 tonelada de aguacates. ¿Cuántas toneladas te interesaría adquirir? 🥑";
       } else if (tipoCompra === 'menor') {
         return "¡Perfecto! Para ventas al por menor, ¿cuántos kilos de aguacate estarías interesado en comprar? Recuerda que cada aguacate pesa aproximadamente 250 gramos.";
       }
     }
-    
+
     // Si la pregunta anterior fue sobre cantidad de toneladas o kilos
     if (ultimaPregunta.includes('¿Cuántas toneladas') || ultimaPregunta.includes('tonelada')) {
       const cantidad = extraerCantidad(message);
@@ -146,7 +151,7 @@ function getPredefinedResponse(message: string, messageCount: number, chatHistor
         return calcularPrecio(cantidad, 'mayor');
       }
     }
-    
+
     if (ultimaPregunta.includes('¿cuántos kilos') || ultimaPregunta.includes('kilos de aguacate')) {
       const cantidad = extraerCantidad(message);
       if (cantidad !== null) {
@@ -154,7 +159,7 @@ function getPredefinedResponse(message: string, messageCount: number, chatHistor
       }
     }
   }
-  
+
   // Respuestas basadas en palabras clave
   if (message.includes("precio") || message.includes("costo") || message.includes("valor")) {
     return predefinedResponses.precio;
@@ -167,27 +172,27 @@ function getPredefinedResponse(message: string, messageCount: number, chatHistor
   } else if (message.includes("variedad") || message.includes("tipo") || message.includes("clase")) {
     return predefinedResponses.variedad;
   }
-  
+
   // Sugerir especialista solo después de 5 interacciones
   const sugerirEspecialista = messageCount >= 5;
-  const preguntaSobreEspecialista = message.includes("contacto") || 
-                                   message.includes("especialista") || 
-                                   message.includes("hablar") || 
-                                   message.includes("persona") || 
+  const preguntaSobreEspecialista = message.includes("contacto") ||
+                                   message.includes("especialista") ||
+                                   message.includes("hablar") ||
+                                   message.includes("persona") ||
                                    message.includes("más información");
-  
+
   if (preguntaSobreEspecialista) {
     return predefinedResponses.especialista;
   }
-  
+
   // Respuesta genérica que varía según el número de interacciones
   let respuestaGenerica = "Nuestros aguacates son cultivados con los más altos estándares de calidad. ¿Hay algo específico sobre nuestros productos que te gustaría conocer? 🥑";
-  
+
   // Añadir sugerencia de especialista después de la 5ª pregunta
   if (sugerirEspecialista) {
     respuestaGenerica += " Si gustarias conversar con un especialista para información más detallada, puedes hacerlo usando el botón en la parte inferior del chat.";
   }
-  
+
   return respuestaGenerica;
 }
 
@@ -202,22 +207,22 @@ export async function handleChatRequest(req: Request, res: Response) {
 
     // Contar cuántos mensajes ha enviado el usuario
     const messageCount = chatHistory.filter((entry: { role: string }) => entry.role === 'user').length + 1;
-    
+
     // En lugar de usar Gemini (que está dando problemas), usamos respuestas predefinidas
     // Pasamos la historia del chat para poder tener contexto de conversación
     const responseText = getPredefinedResponse(message, messageCount, chatHistory);
-    
+
     // Simulamos un pequeño retraso para que parezca que está procesando
     setTimeout(() => {
       return res.json({ response: responseText });
     }, 500);
-    
+
   } catch (error) {
     console.error('Error al procesar la solicitud del chatbot:', error);
     // Asegurarnos de que siempre devolvemos un objeto JSON, incluso en caso de error
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Error al procesar la solicitud',
       response: "Lo siento, hubo un problema técnico. Por favor, intenta de nuevo o contacta directamente con un especialista usando el botón abajo."
     });
   }
-} 
+}
