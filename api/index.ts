@@ -13,6 +13,12 @@ app.use((req, res, next) => {
   const path = req.path;
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
+  // Registrar el cuerpo de la solicitud para rutas API
+  if (path.startsWith("/api")) {
+    console.log(`Solicitud recibida: ${req.method} ${path}`);
+    console.log(`Cuerpo de la solicitud:`, req.body);
+  }
+
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
     capturedJsonResponse = bodyJson;
@@ -31,7 +37,7 @@ app.use((req, res, next) => {
         logLine = logLine.slice(0, 79) + "…";
       }
 
-      console.log(logLine);
+      console.log(`Respuesta enviada: ${logLine}`);
     }
   });
 
