@@ -216,15 +216,12 @@ async function callGeminiAPI(message: string, chatHistory: {role: string, conten
       parts: [{ text: message }]
     });
 
-    // Preparar el prompt del sistema
+    // Preparar el payload para Gemini
     const geminiPayload = {
-      contents: [
-        {
-          role: 'system',
-          parts: [{ text: systemPrompt }]
-        },
-        ...formattedHistory
-      ],
+      system_instruction: {
+        parts: [{ text: systemPrompt }]
+      },
+      contents: formattedHistory,
       generationConfig: {
         temperature: 0.7,
         topP: 0.8,
