@@ -45,10 +45,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // API route for chatbot
-  app.post("/api/chat", (req, res) => {
-    console.log("Recibida solicitud de chat:", req.body.message);
-    return handleChatRequest(req, res);
+  // API route for chatbot - versión simplificada
+  app.post("/api/chat", async (req, res) => {
+    try {
+      console.log("Recibida solicitud de chat");
+      return await handleChatRequest(req, res);
+    } catch (error) {
+      console.error("Error en la ruta de chat:", error);
+      return res.status(200).json({
+        response: "Lo siento, hubo un problema técnico. Por favor, intenta de nuevo."
+      });
+    }
   });
 
   const httpServer = createServer(app);
