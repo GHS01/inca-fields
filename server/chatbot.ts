@@ -196,6 +196,73 @@ function getPredefinedResponse(message: string, messageCount: number, chatHistor
   return respuestaGenerica;
 }
 
+// Función para realizar la llamada a la API de Gemini
+async function callGeminiAPI(message: string, chatHistory: {role: string, content: string}[]) {
+  try {
+    if (!GEMINI_API_KEY) {
+      console.warn('API key de Gemini no configurada, usando respuestas predefinidas');
+      return null;
+    }
+
+    // Preparar el historial de chat para Gemini
+    const formattedHistory = chatHistory.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }]
+    }));
+
+    // Añadir el mensaje actual
+    formattedHistory.push({
+      role: 'user',
+      parts: [{ text: message }]
+    });
+
+    // Preparar el prompt del sistema
+    const geminiPayload = {
+      contents: [
+        {
+          role: 'system',
+          parts: [{ text: systemPrompt }]
+        },
+        ...formattedHistory
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.8,
+        topK: 40,
+        maxOutputTokens: 1024,
+      }
+    };
+
+    // Realizar la llamada a la API de Gemini
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(geminiPayload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error en la respuesta de Gemini:', errorText);
+      throw new Error(`Error en la API de Gemini: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    // Extraer la respuesta del modelo
+    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+      return data.candidates[0].content.parts[0].text;
+    } else {
+      console.warn('Respuesta de Gemini con formato inesperado:', data);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error al llamar a la API de Gemini:', error);
+    return null;
+  }
+}
+
 // Función para manejar las solicitudes del chatbot
 export async function handleChatRequest(req: Request, res: Response) {
   try {
@@ -208,14 +275,14 @@ export async function handleChatRequest(req: Request, res: Response) {
     // Contar cuántos mensajes ha enviado el usuario
     const messageCount = chatHistory.filter((entry: { role: string }) => entry.role === 'user').length + 1;
 
-    // En lugar de usar Gemini (que está dando problemas), usamos respuestas predefinidas
-    // Pasamos la historia del chat para poder tener contexto de conversación
-    const responseText = getPredefinedResponse(message, messageCount, chatHistory);
+    // Intentar obtener una respuesta de Gemini
+    const geminiResponse = await callGeminiAPI(message, chatHistory);
 
-    // Simulamos un pequeño retraso para que parezca que está procesando
-    setTimeout(() => {
-      return res.json({ response: responseText });
-    }, 500);
+    // Si tenemos una respuesta de Gemini, la usamos
+    // Si no, usamos las respuestas predefinidas como fallback
+    const responseText = geminiResponse || getPredefinedResponse(message, messageCount, chatHistory);
+
+    return res.json({ response: responseText });
 
   } catch (error) {
     console.error('Error al procesar la solicitud del chatbot:', error);
