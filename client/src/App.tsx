@@ -6,7 +6,7 @@ import { Switch, Route } from "wouter";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Tienda from "@/pages/Tienda";
-import ChatBubble from "@/components/ChatBubble";
+import StaticChatBubble from "@/components/StaticChatBubble";
 
 function Router() {
   return (
@@ -29,7 +29,7 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <Router />
-        <ChatBubble />
+        <StaticChatBubble />
       </TooltipProvider>
     </QueryClientProvider>
   );
