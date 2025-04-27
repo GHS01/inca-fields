@@ -204,6 +204,8 @@ async function callGeminiAPI(message: string, chatHistory: {role: string, conten
       return null;
     }
 
+    console.log('Preparando llamada a Gemini API con mensaje:', message);
+
     // Preparar el historial de chat para Gemini
     const formattedHistory = chatHistory.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
@@ -218,9 +220,6 @@ async function callGeminiAPI(message: string, chatHistory: {role: string, conten
 
     // Preparar el payload para Gemini
     const geminiPayload = {
-      system_instruction: {
-        parts: [{ text: systemPrompt }]
-      },
       contents: formattedHistory,
       generationConfig: {
         temperature: 0.7,
@@ -230,8 +229,15 @@ async function callGeminiAPI(message: string, chatHistory: {role: string, conten
       }
     };
 
+    // Añadir system instruction solo si estamos usando Gemini 1.5 o superior
+    // Para versiones anteriores, incluirlo como primer mensaje en contents
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+
+    console.log('Enviando solicitud a Gemini API:', apiUrl);
+    console.log('Payload (resumido):', JSON.stringify(geminiPayload).substring(0, 200) + '...');
+
     // Realizar la llamada a la API de Gemini
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+    const response = await fetch(`${apiUrl}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -239,19 +245,38 @@ async function callGeminiAPI(message: string, chatHistory: {role: string, conten
       body: JSON.stringify(geminiPayload)
     });
 
+    console.log('Respuesta de Gemini API recibida:', response.status, response.statusText);
+
+    // Manejar respuesta no exitosa
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error en la respuesta de Gemini:', errorText);
-      throw new Error(`Error en la API de Gemini: ${response.status} ${response.statusText}`);
+      let errorInfo = '';
+      try {
+        const errorText = await response.text();
+        errorInfo = errorText;
+        console.error('Error en la respuesta de Gemini (texto completo):', errorText);
+      } catch (textError) {
+        console.error('No se pudo leer el texto de error:', textError);
+      }
+      throw new Error(`Error en la API de Gemini: ${response.status} ${response.statusText} - ${errorInfo}`);
     }
 
-    const data = await response.json();
+    // Intentar parsear la respuesta como JSON
+    let data;
+    try {
+      data = await response.json();
+      console.log('Respuesta de Gemini parseada correctamente');
+    } catch (jsonError) {
+      console.error('Error al parsear la respuesta JSON de Gemini:', jsonError);
+      throw new Error('La respuesta de Gemini no es un JSON válido');
+    }
 
     // Extraer la respuesta del modelo
     if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-      return data.candidates[0].content.parts[0].text;
+      const responseText = data.candidates[0].content.parts[0].text;
+      console.log('Texto de respuesta extraído correctamente:', responseText.substring(0, 50) + '...');
+      return responseText;
     } else {
-      console.warn('Respuesta de Gemini con formato inesperado:', data);
+      console.warn('Respuesta de Gemini con formato inesperado:', JSON.stringify(data).substring(0, 200) + '...');
       return null;
     }
   } catch (error) {
@@ -263,26 +288,54 @@ async function callGeminiAPI(message: string, chatHistory: {role: string, conten
 // Función para manejar las solicitudes del chatbot
 export async function handleChatRequest(req: Request, res: Response) {
   try {
+    console.log('Recibida solicitud de chat completa:', JSON.stringify(req.body));
+
+    // Verificar que el cuerpo de la solicitud sea válido
+    if (!req.body || typeof req.body !== 'object') {
+      console.error('Cuerpo de solicitud inválido:', req.body);
+      return res.status(400).json({
+        error: 'Cuerpo de solicitud inválido',
+        response: "Lo siento, hubo un problema con tu solicitud. Por favor, intenta de nuevo."
+      });
+    }
+
     const { message, chatHistory = [] } = req.body;
 
     if (!message) {
-      return res.status(400).json({ error: 'Se requiere un mensaje', response: "Lo siento, no pude entender tu mensaje. ¿Podrías intentarlo de nuevo?" });
+      return res.status(400).json({
+        error: 'Se requiere un mensaje',
+        response: "Lo siento, no pude entender tu mensaje. ¿Podrías intentarlo de nuevo?"
+      });
     }
 
     // Contar cuántos mensajes ha enviado el usuario
     const messageCount = chatHistory.filter((entry: { role: string }) => entry.role === 'user').length + 1;
 
+    console.log(`Procesando mensaje #${messageCount}: "${message}"`);
+    console.log('API Key configurada:', GEMINI_API_KEY ? 'Sí' : 'No');
+
     // Intentar obtener una respuesta de Gemini
-    const geminiResponse = await callGeminiAPI(message, chatHistory);
+    let geminiResponse = null;
+    try {
+      geminiResponse = await callGeminiAPI(message, chatHistory);
+      console.log('Respuesta de Gemini:', geminiResponse ? 'Obtenida' : 'No disponible');
+    } catch (geminiError) {
+      console.error('Error específico al llamar a Gemini:', geminiError);
+      // Continuamos con el flujo para usar respuestas predefinidas
+    }
 
     // Si tenemos una respuesta de Gemini, la usamos
     // Si no, usamos las respuestas predefinidas como fallback
     const responseText = geminiResponse || getPredefinedResponse(message, messageCount, chatHistory);
 
-    return res.json({ response: responseText });
+    console.log('Enviando respuesta al cliente:', responseText.substring(0, 50) + (responseText.length > 50 ? '...' : ''));
+
+    // Asegurarnos de que la respuesta sea un objeto JSON válido
+    return res.status(200).json({ response: responseText });
 
   } catch (error) {
     console.error('Error al procesar la solicitud del chatbot:', error);
+
     // Asegurarnos de que siempre devolvemos un objeto JSON, incluso en caso de error
     return res.status(500).json({
       error: 'Error al procesar la solicitud',

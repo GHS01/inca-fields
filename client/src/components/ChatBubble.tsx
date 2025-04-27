@@ -59,53 +59,112 @@ const ChatBubble = () => {
     try {
       console.log('Enviando mensaje al servidor:', newMessage);
 
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: newMessage,
-          chatHistory: messages.map(msg => ({
-            role: msg.role,
-            content: msg.content
-          }))
-        }),
-      });
+      // Crear un timeout para la solicitud
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos de timeout
 
-      console.log('Respuesta recibida:', response.status, response.statusText);
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: newMessage,
+            chatHistory: messages.map(msg => ({
+              role: msg.role,
+              content: msg.content
+            }))
+          }),
+          signal: controller.signal
+        });
 
-      // Verificar que la respuesta sea JSON
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        console.error(`Error de tipo de contenido: ${contentType}`);
-        throw new Error(`Respuesta no es JSON: ${contentType}`);
-      }
+        // Limpiar el timeout
+        clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Error en la respuesta del servidor');
-      }
+        console.log('Respuesta recibida:', response.status, response.statusText);
 
-      const data = await response.json();
-      console.log('Datos recibidos:', data);
+        // Verificar que la respuesta sea JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error(`Error de tipo de contenido: ${contentType}`);
 
-      if (data && data.response) {
-        setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-      } else {
-        console.error('Formato de respuesta inválido:', data);
-        throw new Error('Formato de respuesta inválido');
+          // Intentar leer el cuerpo de la respuesta para depuración
+          const responseText = await response.text();
+          console.error('Cuerpo de la respuesta no-JSON:', responseText);
+
+          throw new Error(`Respuesta no es JSON: ${contentType}`);
+        }
+
+        if (!response.ok) {
+          let errorMessage = 'Error en la respuesta del servidor';
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+            console.error('Datos de error:', errorData);
+          } catch (jsonError) {
+            console.error('No se pudo parsear el error como JSON');
+          }
+          throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        console.log('Datos recibidos:', data);
+
+        if (data && data.response) {
+          setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+        } else {
+          console.error('Formato de respuesta inválido:', data);
+          throw new Error('Formato de respuesta inválido');
+        }
+      } catch (fetchError) {
+        // Limpiar el timeout si hay un error
+        clearTimeout(timeoutId);
+
+        if (fetchError.name === 'AbortError') {
+          console.error('La solicitud excedió el tiempo de espera');
+          throw new Error('La solicitud al servidor tardó demasiado. Por favor, intenta de nuevo.');
+        }
+
+        throw fetchError;
       }
     } catch (error) {
       console.error('Error al enviar mensaje:', error);
+
+      // Mensaje de error personalizado según el tipo de error
+      let errorMessage = 'Lo siento, parece que tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo o contacta directamente con un especialista.';
+
+      if (error instanceof Error) {
+        if (error.message.includes('tiempo de espera')) {
+          errorMessage = 'Lo siento, el servidor está tardando en responder. Por favor, intenta de nuevo en unos momentos.';
+        } else if (error.message.includes('JSON')) {
+          errorMessage = 'Lo siento, hubo un problema técnico con el servidor. Estamos trabajando para solucionarlo.';
+        }
+
+        console.error('Mensaje de error detallado:', error.message);
+      }
 
       setMessages(prev => [
         ...prev,
         {
           role: 'assistant',
-          content: 'Lo siento, parece que tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo o contacta directamente con un especialista.'
+          content: errorMessage
         }
       ]);
+
+      // Intentar usar respuestas predefinidas como fallback
+      try {
+        // Simular una respuesta predefinida básica
+        setTimeout(() => {
+          const fallbackMessage = "Mientras tanto, puedo decirte que nuestros aguacates son cultivados con los más altos estándares de calidad. ¿Hay algo específico sobre nuestros productos que te gustaría conocer? 🥑";
+          setMessages(prev => [
+            ...prev,
+            { role: 'assistant', content: fallbackMessage }
+          ]);
+        }, 1500);
+      } catch (fallbackError) {
+        console.error('Error al generar respuesta de fallback:', fallbackError);
+      }
     } finally {
       setIsLoading(false);
     }

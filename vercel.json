@@ -19,6 +19,21 @@
       "dest": "/server/index.ts"
     },
     {
+      "src": "/fonts/(.*)",
+      "dest": "/dist/public/fonts/$1",
+      "continue": true
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "/dist/public/images/$1",
+      "continue": true
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/dist/public/assets/$1",
+      "continue": true
+    },
+    {
       "handle": "filesystem"
     },
     {
