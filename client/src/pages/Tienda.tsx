@@ -291,97 +291,122 @@ const ProductModal = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
+      className={`fixed inset-0 z-50 flex items-center justify-center p-6 ${
         product ? "" : "hidden"
       }`}
     >
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity backdrop-blur-sm"
         onClick={onClose}
       ></div>
-      <div className="relative bg-white rounded-lg max-w-xl w-full max-h-[90vh] overflow-y-auto flex flex-col">
+      
+      {/* Modal container - Rediseñado para imitar exactamente el modal de Galería Gourmet */}
+      <div className="relative bg-white rounded-lg w-full max-w-6xl shadow-lg flex flex-col md:flex-row h-[85vh]">
+        {/* Botón de cierre */}
         <button
           onClick={onClose}
-          className="absolute right-3 top-3 z-10 text-gray-500 hover:text-gray-700 focus:outline-none"
+          className="absolute right-4 top-4 z-10 text-gray-500 hover:text-gray-800 transition-colors"
+          aria-label="Cerrar"
         >
-          <X className="h-6 w-6" />
+          <X className="h-5 w-5" />
         </button>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 flex items-center justify-center bg-[#f8f8f8]">
-            <img
-              src={selectedImage}
-              alt={product.name}
-              className="max-h-64 w-auto object-contain"
-            />
-          </div>
-          <div className="p-4 flex flex-col">
-            <div className="mb-4">
+        
+        {/* Columna de imagen - Estática, sin scroll, ocupando toda la altura */}
+        <div className="md:w-1/2 h-full relative">
+          <img
+            src={selectedImage}
+            alt={product.name}
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+        
+        {/* Columna de información - Con scroll independiente */}
+        <div className="md:w-1/2 h-full overflow-y-auto">
+          <div className="p-8">
+            {/* Insignias y bestseller en una sola línea */}
+            <div className="flex flex-wrap gap-2 mb-4">
               {product.bestseller && (
-                <div className="text-[#C6A96C] text-sm tracking-wider uppercase mb-2 flex items-center gap-1">
-                  <Award size={14} />
-                  <span>Bestseller</span>
+                <div className="bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-xs font-medium tracking-wider flex items-center gap-1">
+                  <Award size={12} />
+                  <span>BESTSELLER</span>
                 </div>
               )}
-              
-              <h2 className="text-3xl font-display font-bold text-[#333333] mb-2">{product.name}</h2>
-              
-              <div className="flex items-center gap-2 mb-4">
-                <div className="flex">
-                  {renderStars(product.rating)}
+              {product.badge && (
+                <div className={`px-3 py-1 rounded-full text-xs font-medium text-white tracking-wider ${getBadgeStyles(product.badge.variant)}`}>
+                  {product.badge.text.toUpperCase()}
                 </div>
-                <span className="text-sm text-gray-600">
-                  {product.rating} ({product.reviewCount} reseñas)
-                </span>
-              </div>
-              
-              <div className="mb-6">
-                <p className="text-gray-700 mb-4">{product.description}</p>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-2xl font-bold text-[#2D5C34]">{product.price}</span>
-                  {product.originalPrice && (
-                    <span className="text-gray-500 line-through">{product.originalPrice}</span>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
             
-            {/* Product details */}
+            {/* Nombre del producto */}
+            <h2 className="text-3xl font-display font-bold text-gray-800 mb-3">{product.name}</h2>
+            
+            {/* Calificación en formato simplificado */}
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex">
+                {renderStars(product.rating)}
+              </div>
+              <span className="text-sm text-gray-600">
+                {product.rating} ({product.reviewCount} reseñas)
+              </span>
+            </div>
+            
+            {/* Descripción */}
+            <p className="text-gray-700 mb-6 text-base leading-relaxed">{product.description}</p>
+            
+            {/* Precio con formato grande */}
+            <div className="flex items-baseline gap-3 mb-8">
+              <span className="text-3xl font-bold text-[#2D5C34]">{product.price}</span>
+              {product.originalPrice && (
+                <span className="text-gray-500 line-through text-base">{product.originalPrice}</span>
+              )}
+            </div>
+            
+            {/* Divisor visual */}
+            <div className="w-full h-px bg-gray-200 my-6"></div>
+            
+            {/* Detalles del producto - Diseño simplificado */}
             {product.details && (
-              <div className="border-t border-gray-200 py-6 mb-6">
-                <h3 className="font-display text-lg font-bold text-[#333333] mb-4">Detalles del producto</h3>
-                <div className="space-y-3">
+              <div className="mb-8">
+                <h3 className="font-display text-xl font-bold text-gray-800 mb-4">Detalles del producto</h3>
+                
+                <div className="grid grid-cols-2 gap-y-4 gap-x-8">
                   {product.details.origen && (
-                    <div className="flex">
-                      <span className="text-sm font-medium text-gray-600 w-28">Origen:</span>
-                      <span className="text-sm text-gray-800">{product.details.origen}</span>
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Origen:</span>
+                      <div className="text-gray-800">{product.details.origen}</div>
                     </div>
                   )}
                   {product.details.peso && (
-                    <div className="flex">
-                      <span className="text-sm font-medium text-gray-600 w-28">Peso:</span>
-                      <span className="text-sm text-gray-800">{product.details.peso}</span>
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Peso:</span>
+                      <div className="text-gray-800">{product.details.peso}</div>
                     </div>
                   )}
                   {product.details.variedad && (
-                    <div className="flex">
-                      <span className="text-sm font-medium text-gray-600 w-28">Variedad:</span>
-                      <span className="text-sm text-gray-800">{product.details.variedad}</span>
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Variedad:</span>
+                      <div className="text-gray-800">{product.details.variedad}</div>
                     </div>
                   )}
                   {product.details.uso && (
-                    <div className="flex">
-                      <span className="text-sm font-medium text-gray-600 w-28">Uso:</span>
-                      <span className="text-sm text-gray-800">{product.details.uso}</span>
+                    <div>
+                      <span className="text-sm font-medium text-gray-500">Uso:</span>
+                      <div className="text-gray-800">{product.details.uso}</div>
                     </div>
                   )}
                 </div>
                 
+                {/* Beneficios */}
                 {product.details.beneficios && product.details.beneficios.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="text-sm font-medium text-gray-600 mb-2">Beneficios:</h4>
-                    <ul className="list-disc list-inside space-y-1">
+                  <div className="mt-6">
+                    <h4 className="text-sm font-medium text-gray-500 mb-3">Beneficios:</h4>
+                    <ul className="space-y-2">
                       {product.details.beneficios.map((beneficio, index) => (
-                        <li key={index} className="text-sm text-gray-800">{beneficio}</li>
+                        <li key={index} className="flex items-start gap-2">
+                          <Sparkles size={16} className="text-[#C6A96C] mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-800">{beneficio}</span>
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -389,51 +414,37 @@ const ProductModal = ({
               </div>
             )}
             
-            {/* Actions */}
-            <div className="mt-auto space-y-6">
-              <div className="flex items-center gap-4">
+            {/* Acciones - Al final de la página */}
+            <div className="mt-auto pb-6">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
                   <button 
-                    className="p-2 text-gray-600 hover:bg-gray-100"
+                    className="p-2 text-gray-600 hover:bg-gray-100 transition-colors"
                     onClick={handleDecrement}
                   >
                     <Minus size={16} />
                   </button>
-                  <div className="px-4 py-2 text-center min-w-[40px]">{quantity}</div>
+                  <div className="w-10 text-center py-2 font-medium text-gray-800">
+                    {quantity}
+                  </div>
                   <button 
-                    className="p-2 text-gray-600 hover:bg-gray-100"
+                    className="p-2 text-gray-600 hover:bg-gray-100 transition-colors"
                     onClick={handleIncrement}
                   >
                     <Plus size={16} />
                   </button>
                 </div>
                 
-                <button className="flex-1 bg-[#2D5C34] text-white py-3 px-6 rounded-md flex items-center justify-center gap-2 hover:bg-[#2D5C34]/90 transition-colors">
-                  <ShoppingCart size={18} />
+                <Button className="flex-1 bg-[#2D5C34] hover:bg-[#1F4425] text-white py-2 rounded-md text-sm">
+                  <ShoppingCart size={16} className="mr-2" />
                   <span>Añadir al carrito</span>
-                </button>
-                
-                <button className="p-3 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors">
-                  <Heart size={18} className="text-gray-600" />
-                </button>
+                </Button>
               </div>
               
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div className="flex flex-col items-center text-center">
-                  <Truck size={18} className="text-[#2D5C34] mb-1" />
-                  <span className="font-medium">Envío gratuito</span>
-                  <span className="text-gray-500 text-xs">En pedidos +$50</span>
-                </div>
-                <div className="flex flex-col items-center text-center">
-                  <Award size={18} className="text-[#2D5C34] mb-1" />
-                  <span className="font-medium">Calidad garantizada</span>
-                  <span className="text-gray-500 text-xs">Certificación premium</span>
-                </div>
-                <div className="flex flex-col items-center text-center">
-                  <Search size={18} className="text-[#2D5C34] mb-1" />
-                  <span className="font-medium">Trazabilidad</span>
-                  <span className="text-gray-500 text-xs">Origen verificado</span>
-                </div>
+              {/* Entrega - Estilo minimalista */}
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Truck size={16} />
+                <span>Envío gratis en pedidos superiores a S/100</span>
               </div>
             </div>
           </div>

@@ -65,8 +65,8 @@ const Header = () => {
         
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-8">
-          <a 
-            href="#home" 
+          <Link 
+            href="/" 
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
               scrolled 
@@ -75,9 +75,9 @@ const Header = () => {
             )}
           >
             Inicio
-          </a>
-          <a 
-            href="#products" 
+          </Link>
+          <Link 
+            href="/productos" 
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
               scrolled 
@@ -86,9 +86,9 @@ const Header = () => {
             )}
           >
             Productos
-          </a>
-          <a 
-            href="#about" 
+          </Link>
+          <Link 
+            href="/nosotros" 
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
               scrolled 
@@ -97,9 +97,9 @@ const Header = () => {
             )}
           >
             Nosotros
-          </a>
-          <a 
-            href="#benefits" 
+          </Link>
+          <Link 
+            href="/beneficios" 
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
               scrolled 
@@ -108,9 +108,9 @@ const Header = () => {
             )}
           >
             Beneficios
-          </a>
-          <a 
-            href="#gallery" 
+          </Link>
+          <Link 
+            href="/galeria" 
             className={cn(
               "font-body transition-all duration-300 text-sm uppercase tracking-widest",
               scrolled 
@@ -119,7 +119,7 @@ const Header = () => {
             )}
           >
             Galería
-          </a>
+          </Link>
           <Link
             href="/tienda"
             className={cn(
@@ -131,8 +131,8 @@ const Header = () => {
           >
             Tienda
           </Link>
-          <a 
-            href="#contact" 
+          <Link 
+            href="/contacto" 
             className={cn(
               "border px-6 py-2 font-body text-sm uppercase tracking-wider transition-all duration-300",
               scrolled
@@ -141,7 +141,7 @@ const Header = () => {
             )}
           >
             Contacto
-          </a>
+          </Link>
         </nav>
       </div>
       
@@ -159,8 +159,8 @@ const Header = () => {
         }}
       >
         <div className="container mx-auto px-4 py-4 space-y-3">
-          <a 
-            href="#home" 
+          <Link 
+            href="/" 
             onClick={closeMobileMenu} 
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
@@ -168,9 +168,9 @@ const Header = () => {
             )}
           >
             Inicio
-          </a>
-          <a 
-            href="#products" 
+          </Link>
+          <Link 
+            href="/productos" 
             onClick={closeMobileMenu} 
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
@@ -178,9 +178,9 @@ const Header = () => {
             )}
           >
             Productos
-          </a>
-          <a 
-            href="#about" 
+          </Link>
+          <Link 
+            href="/nosotros" 
             onClick={closeMobileMenu} 
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
@@ -188,9 +188,9 @@ const Header = () => {
             )}
           >
             Nosotros
-          </a>
-          <a 
-            href="#benefits" 
+          </Link>
+          <Link 
+            href="/beneficios" 
             onClick={closeMobileMenu} 
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
@@ -198,9 +198,9 @@ const Header = () => {
             )}
           >
             Beneficios
-          </a>
-          <a 
-            href="#gallery" 
+          </Link>
+          <Link 
+            href="/galeria" 
             onClick={closeMobileMenu} 
             className={cn(
               "block font-body text-sm uppercase tracking-widest transition-colors duration-300 py-2",
@@ -208,7 +208,7 @@ const Header = () => {
             )}
           >
             Galería
-          </a>
+          </Link>
           <Link 
             href="/tienda"
             onClick={closeMobileMenu} 
@@ -219,8 +219,8 @@ const Header = () => {
           >
             Tienda
           </Link>
-          <a 
-            href="#contact" 
+          <Link 
+            href="/contacto" 
             onClick={closeMobileMenu} 
             className={cn(
               "block text-center border py-3 px-6 font-body text-sm uppercase tracking-wider transition-all duration-300",
@@ -230,7 +230,7 @@ const Header = () => {
             )}
           >
             Contacto
-          </a>
+          </Link>
         </div>
       </div>
     </header>

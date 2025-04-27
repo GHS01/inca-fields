@@ -10,7 +10,11 @@ import Contact from '@/components/Contact';
 import Newsletter from '@/components/Newsletter';
 import Footer from '@/components/Footer';
 
-const Home = () => {
+interface HomeProps {
+  section?: string;
+}
+
+const Home = ({ section }: HomeProps) => {
   useEffect(() => {
     // Set page title
     document.title = "Inca Fields | Premium Avocados";
@@ -32,10 +36,20 @@ const Home = () => {
 
     document.addEventListener('click', handleAnchorClick);
     
+    // Scroll to section if provided
+    if (section) {
+      setTimeout(() => {
+        const element = document.getElementById(section);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+    
     return () => {
       document.removeEventListener('click', handleAnchorClick);
     };
-  }, []);
+  }, [section]);
 
   return (
     <div className="flex flex-col min-h-screen">

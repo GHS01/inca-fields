@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactSchema, insertSubscriberSchema } from "@shared/schema";
 import { z } from "zod";
+import { handleChatRequest } from "./chatbot";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Health check route
@@ -43,6 +44,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   });
+
+  // API route for chatbot
+  app.post("/api/chat", handleChatRequest);
 
   const httpServer = createServer(app);
   return httpServer;

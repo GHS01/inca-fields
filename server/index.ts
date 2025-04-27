@@ -6,6 +6,18 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Middleware para gestionar errores de parsing JSON
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof SyntaxError && 'body' in err) {
+    return res.status(400).json({ 
+      error: 'JSON inválido', 
+      response: "Lo siento, hubo un problema con tu solicitud. Por favor, intenta de nuevo." 
+    });
+  }
+  next();
+});
+
+// Logger mejorado
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -22,11 +34,17 @@ app.use((req, res, next) => {
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        // Limitar lo que mostramos en el log para evitar información sensible o logs demasiado largos
+        const safeResponse = { ...capturedJsonResponse };
+        if (safeResponse.response && typeof safeResponse.response === 'string' && safeResponse.response.length > 50) {
+          safeResponse.response = safeResponse.response.substring(0, 50) + '...';
+        }
+        
+        logLine += ` :: ${JSON.stringify(safeResponse)}`;
       }
 
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
+      if (logLine.length > 120) {
+        logLine = logLine.slice(0, 119) + "…";
       }
 
       log(logLine);
@@ -39,12 +57,29 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Middleware para manejar errores (debe estar después de las rutas)
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    console.error('Error en el servidor:', err);
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    // Siempre devolvemos JSON para las rutas API
+    if (_req.path.startsWith('/api')) {
+      return res.status(status).json({ 
+        error: message,
+        response: "Lo siento, hubo un problema técnico. Por favor, intenta de nuevo más tarde."
+      });
+    }
+    
     res.status(status).json({ message });
-    throw err;
+  });
+
+  // Middleware para manejar rutas no encontradas para API
+  app.use('/api/*', (req, res) => {
+    res.status(404).json({ 
+      error: 'Ruta no encontrada',
+      response: "Lo siento, esta funcionalidad no está disponible."
+    });
   });
 
   // importantly only setup vite in development and after
@@ -63,6 +98,6 @@ app.use((req, res, next) => {
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`serving on port ${port}`);
+    log(`Servidor funcionando en el puerto ${port}`);
   });
 })();
