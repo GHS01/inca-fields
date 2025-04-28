@@ -10,6 +10,7 @@ import {
   GEMINI_REQUESTS_PER_MINUTE,
   GEMINI_SYSTEM_PROMPT
 } from '@/config/gemini';
+import { getKnowledgeBase } from './knowledgeBaseService';
 
 // Clase para gestionar las claves API
 class ApiKeyManager {
@@ -104,6 +105,9 @@ export async function callGeminiAPI(userMessage: string, chatHistory: ChatMessag
       throw new Error('Límite de solicitudes a Gemini API alcanzado');
     }
 
+    // Cargar la base de conocimientos
+    const knowledgeBase = await getKnowledgeBase();
+
     // Preparar el contexto y el historial
     // Nota: gemini-1.5-flash no admite el rol 'system', así que incluimos las instrucciones en el primer mensaje
 
@@ -123,11 +127,17 @@ export async function callGeminiAPI(userMessage: string, chatHistory: ChatMessag
       });
     });
 
-    // Añadir el mensaje actual del usuario (con instrucciones del sistema si es el primer mensaje)
+    // Añadir el mensaje actual del usuario (con instrucciones del sistema y base de conocimientos si es el primer mensaje)
     const isFirstMessage = filteredHistory.length === 0;
-    const userContent = isFirstMessage
-      ? `${GEMINI_SYSTEM_PROMPT}\n\nConsulta del usuario: ${userMessage}`
-      : userMessage;
+    let userContent = '';
+
+    if (isFirstMessage) {
+      // Incluir el prompt del sistema y la base de conocimientos en el primer mensaje
+      userContent = `${GEMINI_SYSTEM_PROMPT}\n\n### BASE DE CONOCIMIENTOS ###\n${knowledgeBase}\n\n### CONSULTA DEL USUARIO ###\n${userMessage}`;
+    } else {
+      // Para mensajes posteriores, solo incluir la consulta del usuario
+      userContent = userMessage;
+    }
 
     contents.push({
       role: 'user',
