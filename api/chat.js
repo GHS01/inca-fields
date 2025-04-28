@@ -1,5 +1,5 @@
-// Importar las dependencias necesarias
-const fetch = require('node-fetch');
+// No necesitamos importar fetch en Vercel Edge Functions
+// Usaremos el fetch global disponible en el entorno
 
 // Configuración de la API de Gemini
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
@@ -95,39 +95,39 @@ const RESPUESTAS_GENERALES = {
 // Función para detectar el tipo de consulta
 function detectQueryType(message) {
   const lowerMessage = message.toLowerCase();
-  
+
   // Palabras clave para mayoreo
   const mayoreoKeywords = [
-    'mayor', 'mayoreo', 'tonelada', 'toneladas', 'ton', 'grandes cantidades', 
+    'mayor', 'mayoreo', 'tonelada', 'toneladas', 'ton', 'grandes cantidades',
     'grandes pedidos', 'grandes volúmenes', 'compra grande', 'cantidad grande',
     'grandes lotes', 'distribuidor', 'distribuidores', 'revender', 'reventa',
     'exportar', 'exportación', 'negocio', 'comercial', 'empresa', 'empresarial',
     'restaurante', 'hotel', 'supermercado', 'mayorista', 'mayoristas', '500 kg',
     '1000 kg', '10000', 'diez mil', '5000'
   ];
-  
+
   // Palabras clave para menudeo
   const menudeoKeywords = [
-    'menor', 'menudeo', 'kilo', 'kilos', 'kg', 'pequeñas cantidades', 
+    'menor', 'menudeo', 'kilo', 'kilos', 'kg', 'pequeñas cantidades',
     'pequeños pedidos', 'pequeños volúmenes', 'compra pequeña', 'cantidad pequeña',
     'unidad', 'unidades', 'personal', 'casa', 'hogar', 'familiar', 'consumo propio',
     'particular', 'individual', '6.50', 'seis', 'minorista'
   ];
-  
+
   // Verificar mayoreo
   for (const keyword of mayoreoKeywords) {
     if (lowerMessage.includes(keyword)) {
       return 'mayoreo';
     }
   }
-  
+
   // Verificar menudeo
   for (const keyword of menudeoKeywords) {
     if (lowerMessage.includes(keyword)) {
       return 'menudeo';
     }
   }
-  
+
   return 'unknown';
 }
 
@@ -135,12 +135,12 @@ function detectQueryType(message) {
 function isPriceQuestion(message) {
   const lowerMessage = message.toLowerCase();
   const priceKeywords = [
-    'precio', 'precios', 'costo', 'costos', 'valor', 'cuánto', 'cuanto', 
+    'precio', 'precios', 'costo', 'costos', 'valor', 'cuánto', 'cuanto',
     'cuestan', 'cuesta', 'tarifa', 'tarifas', 'pagar', 'cobran', 'cobra',
     'vale', 'valen', 'oferta', 'ofertas', 'descuento', 'descuentos',
     'económico', 'barato', 'costoso', 'promoción', 'promociones', 's/'
   ];
-  
+
   return priceKeywords.some(keyword => lowerMessage.includes(keyword));
 }
 
@@ -203,32 +203,32 @@ function isPaymentQuestion(message) {
 function getPredefinedResponse(message) {
   // Detectar tipo de consulta (mayoreo o menudeo)
   const queryType = detectQueryType(message);
-  
+
   // Si no es ni mayoreo ni menudeo, damos una respuesta general
   if (queryType === 'unknown') {
     return RESPUESTAS_GENERALES.default;
   }
-  
+
   // Seleccionar el conjunto de respuestas según el tipo de consulta
   const respuestas = queryType === 'mayoreo' ? RESPUESTAS_MAYOREO : RESPUESTAS_MENUDEO;
-  
+
   // Detectar tipo de pregunta (precio, disponibilidad, entrega, pago)
   if (isPriceQuestion(message)) {
     return respuestas.precio;
   }
-  
+
   if (isAvailabilityQuestion(message)) {
     return respuestas.disponibilidad;
   }
-  
+
   if (isDeliveryQuestion(message)) {
     return respuestas.entrega;
   }
-  
+
   if (isPaymentQuestion(message)) {
     return respuestas.pago;
   }
-  
+
   // Si no detectamos un tipo específico de pregunta, dar respuesta por defecto
   return respuestas.default;
 }
@@ -274,7 +274,7 @@ async function callGeminiAPI(userMessage, chatHistory, apiKey) {
     }
 
     const data = await response.json();
-    
+
     // Extraer la respuesta del modelo
     if (data.candidates && data.candidates[0]?.content?.parts && data.candidates[0].content.parts[0]?.text) {
       return data.candidates[0].content.parts[0].text;
@@ -288,78 +288,37 @@ async function callGeminiAPI(userMessage, chatHistory, apiKey) {
 }
 
 // Función principal para manejar las solicitudes
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // Configurar CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   // Manejar solicitudes OPTIONS (preflight)
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-  
+
   // Solo permitir solicitudes POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido', response: 'Solo se aceptan solicitudes POST' });
   }
-  
+
   try {
-    // Extraer mensaje y historial del chat
-    const { message, chatHistory = [] } = req.body;
-    
+    // Usar respuestas predefinidas directamente para simplificar
+    const { message } = req.body;
+
     if (!message) {
       return res.status(400).json({
         response: "Lo siento, no pude entender tu mensaje. ¿Podrías intentarlo de nuevo?"
       });
     }
-    
-    // Obtener las claves API de las variables de entorno
-    const apiKeys = [];
-    if (process.env.GEMINI_API_KEY) {
-      apiKeys.push(process.env.GEMINI_API_KEY);
-    }
-    if (process.env.GEMINI_API_KEY_2) {
-      apiKeys.push(process.env.GEMINI_API_KEY_2);
-    }
-    
-    // Si no hay claves API disponibles, usar respuestas predefinidas
-    if (apiKeys.length === 0) {
-      const fallbackResponse = getPredefinedResponse(message);
-      return res.status(200).json({ response: fallbackResponse });
-    }
-    
-    // Crear el gestor de claves API
-    const apiKeyManager = new ApiKeyManager(apiKeys);
-    
-    // Intentar usar la API de Gemini
-    try {
-      // Obtener la siguiente clave API disponible
-      const apiKey = apiKeyManager.getNextAvailableKey();
-      
-      // Si no hay claves disponibles, usar respuestas predefinidas
-      if (!apiKey) {
-        const fallbackResponse = getPredefinedResponse(message);
-        return res.status(200).json({ response: fallbackResponse });
-      }
-      
-      // Llamar a la API de Gemini
-      const geminiResponse = await callGeminiAPI(message, chatHistory, apiKey);
-      
-      // Devolver la respuesta
-      return res.status(200).json({ response: geminiResponse });
-    } catch (error) {
-      console.error('Error con Gemini API, usando respuestas predefinidas:', error);
-      
-      // Si el error es por límite de tasa, marcar la clave como no disponible
-      if (error.message === 'Límite de tasa excedido') {
-        apiKeyManager.markKeyAsUnavailable(apiKey);
-      }
-      
-      // Usar respuestas predefinidas como fallback
-      const fallbackResponse = getPredefinedResponse(message);
-      return res.status(200).json({ response: fallbackResponse });
-    }
+
+    // Generar respuesta predefinida
+    const fallbackResponse = getPredefinedResponse(message);
+
+    // Devolver la respuesta
+    return res.status(200).json({ response: fallbackResponse });
   } catch (error) {
     console.error('Error al procesar la solicitud:', error);
     return res.status(500).json({
