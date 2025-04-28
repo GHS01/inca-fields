@@ -6,10 +6,5 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "GEMINI_API_KEY": "@gemini_api_key",
-    "GEMINI_API_KEY_2": "@gemini_api_key_2"
-  }
+  ]
 }
