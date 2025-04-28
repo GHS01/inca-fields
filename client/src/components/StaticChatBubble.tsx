@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useCurrentSection } from '@/hooks/use-current-section';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { CHAT_API_URL, API_TIMEOUT, MAX_RETRIES } from '@/config/api';
 import { getFallbackResponse } from '@/lib/fallbackResponses';
+import { callGeminiAPI } from '@/services/geminiService';
 
 // Añadimos un keyframe personalizado para el efecto de pulsación
 const pulsateAnimation = `
@@ -197,123 +197,22 @@ const StaticChatBubble = () => {
         setQuantity(extractedNumber);
       }
 
-      // Preparar el historial de chat para enviar al servidor
-      // Limitamos a los últimos 10 mensajes para no sobrecargar la API
+      // Preparar el historial de chat para enviar a la API de Gemini
       const chatHistoryToSend = messages.slice(-10);
-      console.log(`Enviando historial de chat: ${chatHistoryToSend.length} mensajes`);
+      console.log(`Procesando mensaje con ${chatHistoryToSend.length} mensajes de historial`);
 
-      // Datos para enviar al servidor
-      const requestData = {
-        message: newMessage,
-        chatHistory: chatHistoryToSend,
-        messageCount: newCount,
-        queryType: queryType !== 'unknown' ? queryType : detectedType,
-        quantity: quantity || extractedNumber
-      };
+      // Llamar directamente a la API de Gemini desde el cliente
+      console.log('Llamando directamente a la API de Gemini desde el cliente...');
+      const geminiResponse = await callGeminiAPI(newMessage, chatHistoryToSend);
 
-      // Intentar llamar a la API con reintentos y timeout
-      let response = null;
-      let retryCount = 0;
-
-      while (retryCount <= MAX_RETRIES) {
-        try {
-          console.log(`Intento ${retryCount + 1} de llamada a la API...`);
-
-          // Crear un controlador de aborto para implementar timeout
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
-
-          try {
-            // Llamar al microservicio de chatbot con la URL de la configuración
-            response = await fetch(CHAT_API_URL, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(requestData),
-              signal: controller.signal
-            });
-
-            // Limpiar el timeout
-            clearTimeout(timeoutId);
-
-            // Si la respuesta es exitosa, salir del bucle
-            if (response.ok) {
-              break;
-            }
-
-            // Si es un error 405 (Method Not Allowed), no reintentar
-            if (response.status === 405) {
-              console.error('Error 405: Método no permitido. No se reintentará.');
-              throw new Error(`Error ${response.status}: Método no permitido`);
-            }
-
-            // Si es un error 504 (Gateway Timeout), usar fallback inmediatamente
-            if (response.status === 504) {
-              console.error('Error 504: Gateway Timeout. Usando fallback inmediatamente.');
-              throw new Error('Timeout del servidor');
-            }
-          } catch (fetchError) {
-            // Limpiar el timeout en caso de error
-            clearTimeout(timeoutId);
-            throw fetchError;
-          }
-
-          // Incrementar contador de reintentos
-          retryCount++;
-
-          // Si hemos alcanzado el máximo de reintentos, lanzar error
-          if (retryCount > MAX_RETRIES) {
-            throw new Error(`Error ${response?.status || 'desconocido'}: ${response?.statusText || 'Error de conexión'}`);
-          }
-
-          // Esperar antes de reintentar (backoff exponencial)
-          await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, retryCount)));
-        } catch (fetchError) {
-          console.error(`Error en intento ${retryCount + 1}:`, fetchError);
-
-          // Si es un error de timeout o un error 504, usar fallback inmediatamente
-          if (fetchError.name === 'AbortError' ||
-              (fetchError.message && fetchError.message.includes('Timeout')) ||
-              (response && response.status === 504)) {
-            console.log('Timeout detectado, usando fallback inmediatamente');
-
-            // En lugar de lanzar un error, incrementamos el contador de reintentos
-            // y verificamos si debemos seguir intentando o usar el fallback
-            retryCount++;
-
-            // Si hemos alcanzado el máximo de reintentos, lanzar error para usar fallback
-            if (retryCount > MAX_RETRIES) {
-              throw new Error('Timeout de la solicitud después de múltiples intentos');
-            }
-
-            // Esperar antes de reintentar con un tiempo de espera más largo
-            console.log(`Reintentando después de timeout (intento ${retryCount})...`);
-            await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
-            continue; // Continuar con el siguiente intento
-          }
-
-          // Si es un error de red (no de respuesta HTTP), incrementar contador
-          retryCount++;
-
-          // Si hemos alcanzado el máximo de reintentos, relanzar el error
-          if (retryCount > MAX_RETRIES) {
-            throw fetchError;
-          }
-
-          // Esperar antes de reintentar
-          await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, retryCount)));
-        }
-      }
-
-      // Procesar la respuesta
-      if (response && response.ok) {
-        const data = await response.json();
+      // Si tenemos una respuesta de Gemini, mostrarla
+      if (geminiResponse) {
+        console.log('Respuesta recibida de Gemini API');
 
         // Agregar la respuesta del chatbot
         setMessages(prev => [...prev, {
           role: 'assistant',
-          content: data.response || '¡Lo siento! Hubo un problema al procesar tu consulta. Por favor, intenta de nuevo.'
+          content: geminiResponse
         }]);
 
         // Actualizar estado de sugerencia de especialista
@@ -321,8 +220,8 @@ const StaticChatBubble = () => {
           setSpecialistSuggested(true);
         }
       } else {
-        // Si después de los reintentos no tenemos una respuesta válida, usar fallback
-        throw new Error('No se pudo obtener una respuesta válida del servidor');
+        // Si no hay respuesta de Gemini, usar el sistema de fallback
+        throw new Error('No se pudo obtener una respuesta de Gemini API');
       }
     } catch (error) {
       console.error('Error al procesar mensaje:', error);
