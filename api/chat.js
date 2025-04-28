@@ -288,42 +288,76 @@ async function callGeminiAPI(userMessage, chatHistory, apiKey) {
 }
 
 // Función principal para manejar las solicitudes
-export default async function handler(req, res) {
-  // Configurar CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+export default async function handler(req) {
+  // Configurar CORS para Edge Functions
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Content-Type': 'application/json'
+  };
 
   // Manejar solicitudes OPTIONS (preflight)
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return new Response(null, {
+      status: 204,
+      headers
+    });
   }
 
   // Solo permitir solicitudes POST
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método no permitido', response: 'Solo se aceptan solicitudes POST' });
+    return new Response(
+      JSON.stringify({
+        error: 'Método no permitido',
+        response: 'Solo se aceptan solicitudes POST'
+      }),
+      {
+        status: 405,
+        headers
+      }
+    );
   }
 
   try {
-    // Usar respuestas predefinidas directamente para simplificar
-    const { message } = req.body;
+    // Parsear el cuerpo de la solicitud como JSON
+    const body = await req.json();
+    const { message } = body;
 
     if (!message) {
-      return res.status(400).json({
-        response: "Lo siento, no pude entender tu mensaje. ¿Podrías intentarlo de nuevo?"
-      });
+      return new Response(
+        JSON.stringify({
+          response: "Lo siento, no pude entender tu mensaje. ¿Podrías intentarlo de nuevo?"
+        }),
+        {
+          status: 400,
+          headers
+        }
+      );
     }
 
     // Generar respuesta predefinida
     const fallbackResponse = getPredefinedResponse(message);
 
     // Devolver la respuesta
-    return res.status(200).json({ response: fallbackResponse });
+    return new Response(
+      JSON.stringify({ response: fallbackResponse }),
+      {
+        status: 200,
+        headers
+      }
+    );
   } catch (error) {
     console.error('Error al procesar la solicitud:', error);
-    return res.status(500).json({
-      error: 'Error interno del servidor',
-      response: "Lo siento, hubo un problema al procesar tu solicitud. Por favor, intenta de nuevo."
-    });
+    return new Response(
+      JSON.stringify({
+        error: 'Error interno del servidor',
+        response: "Lo siento, hubo un problema al procesar tu solicitud. Por favor, intenta de nuevo."
+      }),
+      {
+        status: 500,
+        headers
+      }
+    );
   }
 };

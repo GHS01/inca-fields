@@ -202,36 +202,87 @@ const StaticChatBubble = () => {
       const chatHistoryToSend = messages.slice(-10);
       console.log(`Enviando historial de chat: ${chatHistoryToSend.length} mensajes`);
 
-      // Llamar al microservicio de chatbot con la URL de la configuración
-      const response = await fetch(CHAT_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: newMessage,
-          chatHistory: chatHistoryToSend,
-          messageCount: newCount,
-          queryType: queryType !== 'unknown' ? queryType : detectedType,
-          quantity: quantity || extractedNumber
-        })
-      });
+      // Datos para enviar al servidor
+      const requestData = {
+        message: newMessage,
+        chatHistory: chatHistoryToSend,
+        messageCount: newCount,
+        queryType: queryType !== 'unknown' ? queryType : detectedType,
+        quantity: quantity || extractedNumber
+      };
 
-      if (!response.ok) {
-        throw new Error('Error en la respuesta del servidor');
+      // Intentar llamar a la API con reintentos
+      let response = null;
+      let retryCount = 0;
+      const maxRetries = 2;
+
+      while (retryCount <= maxRetries) {
+        try {
+          console.log(`Intento ${retryCount + 1} de llamada a la API...`);
+
+          // Llamar al microservicio de chatbot con la URL de la configuración
+          response = await fetch(CHAT_API_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+          });
+
+          // Si la respuesta es exitosa, salir del bucle
+          if (response.ok) {
+            break;
+          }
+
+          // Si es un error 405 (Method Not Allowed), no reintentar
+          if (response.status === 405) {
+            console.error('Error 405: Método no permitido. No se reintentará.');
+            throw new Error(`Error ${response.status}: Método no permitido`);
+          }
+
+          // Incrementar contador de reintentos
+          retryCount++;
+
+          // Si hemos alcanzado el máximo de reintentos, lanzar error
+          if (retryCount > maxRetries) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+          }
+
+          // Esperar antes de reintentar (backoff exponencial)
+          await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, retryCount)));
+        } catch (fetchError) {
+          console.error(`Error en intento ${retryCount + 1}:`, fetchError);
+
+          // Si es un error de red (no de respuesta HTTP), incrementar contador
+          retryCount++;
+
+          // Si hemos alcanzado el máximo de reintentos, relanzar el error
+          if (retryCount > maxRetries) {
+            throw fetchError;
+          }
+
+          // Esperar antes de reintentar
+          await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, retryCount)));
+        }
       }
 
-      const data = await response.json();
+      // Procesar la respuesta
+      if (response && response.ok) {
+        const data = await response.json();
 
-      // Agregar la respuesta del chatbot
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: data.response || '¡Lo siento! Hubo un problema al procesar tu consulta. Por favor, intenta de nuevo.'
-      }]);
+        // Agregar la respuesta del chatbot
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: data.response || '¡Lo siento! Hubo un problema al procesar tu consulta. Por favor, intenta de nuevo.'
+        }]);
 
-      // Actualizar estado de sugerencia de especialista
-      if (newCount >= 5 && !specialistSuggested) {
-        setSpecialistSuggested(true);
+        // Actualizar estado de sugerencia de especialista
+        if (newCount >= 5 && !specialistSuggested) {
+          setSpecialistSuggested(true);
+        }
+      } else {
+        // Si después de los reintentos no tenemos una respuesta válida, usar fallback
+        throw new Error('No se pudo obtener una respuesta válida del servidor');
       }
     } catch (error) {
       console.error('Error al procesar mensaje:', error);
