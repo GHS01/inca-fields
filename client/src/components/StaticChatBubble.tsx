@@ -277,7 +277,20 @@ const StaticChatBubble = () => {
               (fetchError.message && fetchError.message.includes('Timeout')) ||
               (response && response.status === 504)) {
             console.log('Timeout detectado, usando fallback inmediatamente');
-            throw new Error('Timeout de la solicitud');
+
+            // En lugar de lanzar un error, incrementamos el contador de reintentos
+            // y verificamos si debemos seguir intentando o usar el fallback
+            retryCount++;
+
+            // Si hemos alcanzado el máximo de reintentos, lanzar error para usar fallback
+            if (retryCount > MAX_RETRIES) {
+              throw new Error('Timeout de la solicitud después de múltiples intentos');
+            }
+
+            // Esperar antes de reintentar con un tiempo de espera más largo
+            console.log(`Reintentando después de timeout (intento ${retryCount})...`);
+            await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+            continue; // Continuar con el siguiente intento
           }
 
           // Si es un error de red (no de respuesta HTTP), incrementar contador

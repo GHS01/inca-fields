@@ -14,7 +14,7 @@ export const API_BASE_URL = isProduction
 export const CHAT_API_URL = `${API_BASE_URL}/chat`;
 
 // Configuración de timeouts
-export const API_TIMEOUT = 5000; // 5 segundos
+export const API_TIMEOUT = 15000; // 15 segundos (aumentado para evitar timeouts prematuros)
 
 // Número máximo de reintentos
 export const MAX_RETRIES = 3;
