@@ -21,20 +21,61 @@ const pulsateAnimation = `
   }
 `;
 
+// Tipos de consulta que puede hacer el usuario
+type QueryType = 'unknown' | 'mayoreo' | 'menudeo';
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
+// Respuestas predefinidas para el modo desarrollo (local)
+const RESPUESTAS_PARA_DESARROLLO = {
+  // Respuestas para preguntas de mayoreo
+  mayoreo: {
+    precio: 'Para compras al por mayor, el precio es de S/ 10,000 por tonelada (equivalente a 1000 kg o aproximadamente 4000 aguacates). Este precio es negociable para pedidos de 5+ toneladas, con descuentos disponibles para pedidos de 20+ toneladas sujeto a evaluación.',
+    disponibilidad: 'Los aguacates al por mayor están disponibles en los meses de Enero, Marzo y Mayo, que son nuestras temporadas principales de cosecha. Para otras fechas, por favor contacte directamente con nuestro equipo de ventas.',
+    entrega: 'La entrega se realiza por camionadas en camiones de 5 a 10 toneladas. El tiempo de entrega es de 3-7 días hábiles tras confirmar el pedido, dependiendo de la ubicación de entrega dentro del Perú.',
+    pago: 'Para pedidos al por mayor aceptamos pago del 50% por adelantado y 50% contra entrega. Los pagos pueden realizarse mediante transferencia bancaria, depósito o efectivo. Emitimos factura para todas las compras mayoristas.'
+  },
+  // Respuestas para preguntas de menudeo
+  menudeo: {
+    precio: 'El precio de nuestros aguacates al por menor es de S/ 6.50 por kg. Ofrecemos descuentos por volumen: 5% de descuento en compras de 10+ kg y 10% de descuento en compras de 25+ kg.',
+    disponibilidad: 'Nuestros aguacates al por menor están disponibles todo el año en nuestros puntos de venta y para entrega a domicilio, sujeto a disponibilidad según la temporada de cosecha.',
+    entrega: 'Ofrecemos entrega a domicilio en Lima Metropolitana con un costo adicional de S/ 10 para pedidos menores a S/ 100. La entrega es gratuita para pedidos mayores a S/ 100. El tiempo estimado de entrega es de 24-48 horas después de confirmar su pedido.',
+    pago: 'Para compras al por menor aceptamos efectivo, transferencias bancarias, Yape, Plin, y tarjetas de crédito/débito. El pago debe ser completo antes de la entrega o al recibir el producto en caso de pago contra entrega.'
+  },
+  // Respuestas generales y conversacionales
+  general: {
+    saludo: '¡Hola! Soy el asistente virtual de Inca Aguacates. ¿En qué puedo ayudarte hoy?',
+    despedida: 'Gracias por contactar a Inca Aguacates. ¡Que tengas un excelente día!',
+    ayuda: 'Puedo responder preguntas sobre nuestros precios, disponibilidad, entregas y métodos de pago. ¿Sobre qué tema te gustaría recibir información?',
+    contacto: 'Para hablar con un representante de ventas, puedes llamarnos al 01-234-5678 o enviarnos un correo a ventas@incaaguacates.com',
+    default: 'Lo siento, no entendí tu pregunta. ¿Podrías reformularla o preguntar sobre nuestros precios, disponibilidad, entregas o métodos de pago?'
+  }
+};
+
 const ChatBubble = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '¡Hola! Soy el asistente virtual de Inca Fields. ¿En qué puedo ayudarte con nuestros aguacates? 🥑' }
+    { role: 'assistant', content: '¡Hola! Soy el asistente virtual de Inca Fields. ¿Estás interesado en comprar aguacates al por mayor o al por menor? 🥑' }
   ]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Estado para el tipo de consulta (mayoreo o menudeo)
+  const [queryType, setQueryType] = useState<QueryType>('unknown');
+  
+  // Estado para la cantidad (kilos o toneladas)
+  const [quantity, setQuantity] = useState<number | null>(null);
+  
+  // Contador de preguntas del usuario
+  const [questionCount, setQuestionCount] = useState(0);
+  
+  // Estado para saber si ya sugerimos contactar a un especialista
+  const [specialistSuggested, setSpecialistSuggested] = useState(false);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -47,6 +88,146 @@ const ChatBubble = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  
+  // Detector de tipo de consulta mejorado con palabras clave más específicas
+  const detectQueryType = (message: string): 'mayoreo' | 'menudeo' | 'unknown' => {
+    const lowerMessage = message.toLowerCase();
+    
+    // Palabras clave para mayoreo
+    const mayoreoKeywords = [
+      'mayor', 'mayoreo', 'tonelada', 'toneladas', 'ton', 'grandes cantidades', 
+      'grandes pedidos', 'grandes volúmenes', 'compra grande', 'cantidad grande',
+      'grandes lotes', 'distribuidor', 'distribuidores', 'revender', 'reventa',
+      'exportar', 'exportación', 'negocio', 'comercial', 'empresa', 'empresarial',
+      'restaurante', 'hotel', 'supermercado', 'mayorista', 'mayoristas', '500 kg',
+      '1000 kg', '10000', 'diez mil', '5000'
+    ];
+    
+    // Palabras clave para menudeo
+    const menudeoKeywords = [
+      'menor', 'menudeo', 'kilo', 'kilos', 'kg', 'pequeñas cantidades', 
+      'pequeños pedidos', 'pequeños volúmenes', 'compra pequeña', 'cantidad pequeña',
+      'unidad', 'unidades', 'personal', 'casa', 'hogar', 'familiar', 'consumo propio',
+      'particular', 'individual', '6.50', 'seis', 'minorista'
+    ];
+    
+    // Verificar mayoreo
+    for (const keyword of mayoreoKeywords) {
+      if (lowerMessage.includes(keyword)) {
+        console.log("Detectado tipo de consulta: mayoreo");
+        return 'mayoreo';
+      }
+    }
+    
+    // Verificar menudeo
+    for (const keyword of menudeoKeywords) {
+      if (lowerMessage.includes(keyword)) {
+        console.log("Detectado tipo de consulta: menudeo");
+        return 'menudeo';
+      }
+    }
+    
+    // Si no detectamos nada específico, retornamos unknown
+    console.log("Tipo de consulta no detectado");
+    return 'unknown';
+  };
+  
+  // Función para extraer números del mensaje
+  const extractNumber = (message: string): number | null => {
+    const matches = message.match(/\d+/g);
+    if (matches && matches.length > 0) {
+      return parseInt(matches[0], 10);
+    }
+    return null;
+  };
+  
+  // Funciones de detección de temas específicos
+  const isPriceQuestion = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase();
+    const priceKeywords = [
+      'precio', 'precios', 'costo', 'costos', 'valor', 'cuánto', 'cuanto', 
+      'cuestan', 'cuesta', 'tarifa', 'tarifas', 'pagar', 'cobran', 'cobra',
+      'vale', 'valen', 'oferta', 'ofertas', 'descuento', 'descuentos',
+      'económico', 'barato', 'costoso', 'promoción', 'promociones', 's/'
+    ];
+    
+    return priceKeywords.some(keyword => lowerMessage.includes(keyword));
+  };
+  
+  const isAvailabilityQuestion = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase();
+    const availabilityKeywords = [
+      'disponible', 'disponibles', 'disponibilidad', 'hay', 'tienen', 'stock',
+      'inventario', 'existencia', 'existencias', 'temporada', 'temporadas',
+      'época', 'épocas', 'cuándo', 'cuando', 'mes', 'meses', 'año', 'años',
+      'periodo', 'periodos', 'estación', 'estaciones', 'cosecha'
+    ];
+    
+    return availabilityKeywords.some(keyword => lowerMessage.includes(keyword));
+  };
+  
+  const isDeliveryQuestion = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase();
+    const deliveryKeywords = [
+      'envío', 'envio', 'enviar', 'envían', 'envian', 'despacho', 'despachar',
+      'entrega', 'entregar', 'entregan', 'llevar', 'llevan', 'transporte',
+      'transportar', 'transportan', 'envíos', 'envios', 'entregas', 'delivery',
+      'reparto', 'distribución', 'distribucion', 'recogida', 'recoger', 'recojo',
+      'domicilio', 'tienda', 'local', 'tiempo', 'demora', 'tardanza', 'días', 'dias'
+    ];
+    
+    return deliveryKeywords.some(keyword => lowerMessage.includes(keyword));
+  };
+  
+  const isPaymentQuestion = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase();
+    const paymentKeywords = [
+      'pago', 'pagos', 'pagar', 'abonar', 'abono', 'forma de pago', 'formas de pago',
+      'método de pago', 'métodos de pago', 'metodo de pago', 'metodos de pago',
+      'transferencia', 'tarjeta', 'tarjetas', 'efectivo', 'crédito', 'credito',
+      'débito', 'debito', 'yape', 'plin', 'depósito', 'deposito', 'banco', 'bancos',
+      'cancelar', 'cancelación', 'cancelacion', 'factura', 'facturas', 'boleta', 'boletas',
+      'cuotas', 'adelanto', 'adelantos', 'inicial', 'iniciales'
+    ];
+    
+    return paymentKeywords.some(keyword => lowerMessage.includes(keyword));
+  };
+  
+  /**
+   * Procesa el mensaje del usuario y genera una respuesta apropiada
+   */
+  const processMessage = (message: string): string => {
+    console.log("Procesando mensaje localmente:", message);
+    
+    // Detectar tipo de consulta (mayoreo o menudeo)
+    const queryType = detectQueryType(message);
+    console.log("Tipo de consulta detectado:", queryType);
+    
+    // Si no es ni mayoreo ni menudeo, damos una respuesta general
+    if (queryType === 'unknown') {
+      return RESPUESTAS_PARA_DESARROLLO.general.default;
+    }
+    
+    // Detectar tipo de pregunta (precio, disponibilidad, entrega, pago)
+    if (isPriceQuestion(message)) {
+      return RESPUESTAS_PARA_DESARROLLO[queryType].precio;
+    }
+    
+    if (isAvailabilityQuestion(message)) {
+      return RESPUESTAS_PARA_DESARROLLO[queryType].disponibilidad;
+    }
+    
+    if (isDeliveryQuestion(message)) {
+      return RESPUESTAS_PARA_DESARROLLO[queryType].entrega;
+    }
+    
+    if (isPaymentQuestion(message)) {
+      return RESPUESTAS_PARA_DESARROLLO[queryType].pago;
+    }
+    
+    // Si no reconocemos la pregunta específica pero sabemos si es mayoreo o menudeo
+    return RESPUESTAS_PARA_DESARROLLO.general.default;
+  };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -57,92 +238,21 @@ const ChatBubble = () => {
     setIsLoading(true);
 
     try {
-      console.log('Enviando mensaje al servidor:', newMessage);
+      console.log('Procesando mensaje localmente:', newMessage);
 
-      // Crear un timeout para la solicitud
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 segundos de timeout
-
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: newMessage,
-            chatHistory: messages.map(msg => ({
-              role: msg.role,
-              content: msg.content
-            }))
-          }),
-          signal: controller.signal
-        });
-
-        // Limpiar el timeout
-        clearTimeout(timeoutId);
-
-        console.log('Respuesta recibida:', response.status, response.statusText);
-
-        // Verificar que la respuesta sea JSON
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          console.error(`Error de tipo de contenido: ${contentType}`);
-
-          // Intentar leer el cuerpo de la respuesta para depuración
-          const responseText = await response.text();
-          console.error('Cuerpo de la respuesta no-JSON:', responseText);
-
-          throw new Error(`Respuesta no es JSON: ${contentType}`);
-        }
-
-        if (!response.ok) {
-          let errorMessage = 'Error en la respuesta del servidor';
-          try {
-            const errorData = await response.json();
-            errorMessage = errorData.error || errorMessage;
-            console.error('Datos de error:', errorData);
-          } catch (jsonError) {
-            console.error('No se pudo parsear el error como JSON');
-          }
-          throw new Error(errorMessage);
-        }
-
-        const data = await response.json();
-        console.log('Datos recibidos:', data);
-
-        if (data && data.response) {
-          setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
-        } else {
-          console.error('Formato de respuesta inválido:', data);
-          throw new Error('Formato de respuesta inválido');
-        }
-      } catch (fetchError) {
-        // Limpiar el timeout si hay un error
-        clearTimeout(timeoutId);
-
-        if (fetchError.name === 'AbortError') {
-          console.error('La solicitud excedió el tiempo de espera');
-          throw new Error('La solicitud al servidor tardó demasiado. Por favor, intenta de nuevo.');
-        }
-
-        throw fetchError;
-      }
+      // Simulamos un tiempo de respuesta para que parezca natural
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+      
+      // Generamos una respuesta local basada en el contexto
+      const localResponse = processMessage(newMessage);
+      
+      // Agregamos la respuesta generada localmente
+      setMessages(prev => [...prev, { role: 'assistant', content: localResponse }]);
     } catch (error) {
-      console.error('Error al enviar mensaje:', error);
+      console.error('Error al procesar mensaje:', error);
 
-      // Mensaje de error personalizado según el tipo de error
-      let errorMessage = 'Lo siento, parece que tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo o contacta directamente con un especialista.';
-
-      if (error instanceof Error) {
-        if (error.message.includes('tiempo de espera')) {
-          errorMessage = 'Lo siento, el servidor está tardando en responder. Por favor, intenta de nuevo en unos momentos.';
-        } else if (error.message.includes('JSON')) {
-          errorMessage = 'Lo siento, hubo un problema técnico con el servidor. Estamos trabajando para solucionarlo.';
-        }
-
-        console.error('Mensaje de error detallado:', error.message);
-      }
+      // Mensaje de error personalizado
+      const errorMessage = 'Lo siento, parece que tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo o contacta directamente con un especialista.';
 
       setMessages(prev => [
         ...prev,
@@ -151,20 +261,6 @@ const ChatBubble = () => {
           content: errorMessage
         }
       ]);
-
-      // Intentar usar respuestas predefinidas como fallback
-      try {
-        // Simular una respuesta predefinida básica
-        setTimeout(() => {
-          const fallbackMessage = "Mientras tanto, puedo decirte que nuestros aguacates son cultivados con los más altos estándares de calidad. ¿Hay algo específico sobre nuestros productos que te gustaría conocer? 🥑";
-          setMessages(prev => [
-            ...prev,
-            { role: 'assistant', content: fallbackMessage }
-          ]);
-        }, 1500);
-      } catch (fallbackError) {
-        console.error('Error al generar respuesta de fallback:', fallbackError);
-      }
     } finally {
       setIsLoading(false);
     }

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useCurrentSection } from '@/hooks/use-current-section';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { CHAT_API_URL } from '@/config/api';
+import { CHAT_API_URL, API_TIMEOUT, MAX_RETRIES } from '@/config/api';
 import { getFallbackResponse } from '@/lib/fallbackResponses';
 
 // Añadimos un keyframe personalizado para el efecto de pulsación
@@ -211,41 +211,60 @@ const StaticChatBubble = () => {
         quantity: quantity || extractedNumber
       };
 
-      // Intentar llamar a la API con reintentos
+      // Intentar llamar a la API con reintentos y timeout
       let response = null;
       let retryCount = 0;
-      const maxRetries = 2;
 
-      while (retryCount <= maxRetries) {
+      while (retryCount <= MAX_RETRIES) {
         try {
           console.log(`Intento ${retryCount + 1} de llamada a la API...`);
 
-          // Llamar al microservicio de chatbot con la URL de la configuración
-          response = await fetch(CHAT_API_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-          });
+          // Crear un controlador de aborto para implementar timeout
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
-          // Si la respuesta es exitosa, salir del bucle
-          if (response.ok) {
-            break;
-          }
+          try {
+            // Llamar al microservicio de chatbot con la URL de la configuración
+            response = await fetch(CHAT_API_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(requestData),
+              signal: controller.signal
+            });
 
-          // Si es un error 405 (Method Not Allowed), no reintentar
-          if (response.status === 405) {
-            console.error('Error 405: Método no permitido. No se reintentará.');
-            throw new Error(`Error ${response.status}: Método no permitido`);
+            // Limpiar el timeout
+            clearTimeout(timeoutId);
+
+            // Si la respuesta es exitosa, salir del bucle
+            if (response.ok) {
+              break;
+            }
+
+            // Si es un error 405 (Method Not Allowed), no reintentar
+            if (response.status === 405) {
+              console.error('Error 405: Método no permitido. No se reintentará.');
+              throw new Error(`Error ${response.status}: Método no permitido`);
+            }
+
+            // Si es un error 504 (Gateway Timeout), usar fallback inmediatamente
+            if (response.status === 504) {
+              console.error('Error 504: Gateway Timeout. Usando fallback inmediatamente.');
+              throw new Error('Timeout del servidor');
+            }
+          } catch (fetchError) {
+            // Limpiar el timeout en caso de error
+            clearTimeout(timeoutId);
+            throw fetchError;
           }
 
           // Incrementar contador de reintentos
           retryCount++;
 
           // Si hemos alcanzado el máximo de reintentos, lanzar error
-          if (retryCount > maxRetries) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+          if (retryCount > MAX_RETRIES) {
+            throw new Error(`Error ${response?.status || 'desconocido'}: ${response?.statusText || 'Error de conexión'}`);
           }
 
           // Esperar antes de reintentar (backoff exponencial)
@@ -253,11 +272,19 @@ const StaticChatBubble = () => {
         } catch (fetchError) {
           console.error(`Error en intento ${retryCount + 1}:`, fetchError);
 
+          // Si es un error de timeout o un error 504, usar fallback inmediatamente
+          if (fetchError.name === 'AbortError' ||
+              (fetchError.message && fetchError.message.includes('Timeout')) ||
+              (response && response.status === 504)) {
+            console.log('Timeout detectado, usando fallback inmediatamente');
+            throw new Error('Timeout de la solicitud');
+          }
+
           // Si es un error de red (no de respuesta HTTP), incrementar contador
           retryCount++;
 
           // Si hemos alcanzado el máximo de reintentos, relanzar el error
-          if (retryCount > maxRetries) {
+          if (retryCount > MAX_RETRIES) {
             throw fetchError;
           }
 

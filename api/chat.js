@@ -233,17 +233,18 @@ function getPredefinedResponse(message) {
   return respuestas.default;
 }
 
-// Función para llamar a la API de Gemini
+// Función para llamar a la API de Gemini con timeout
 async function callGeminiAPI(userMessage, chatHistory, apiKey) {
   try {
-    // Preparar el contexto y el historial
+    // Preparar el contexto y el historial (simplificado para reducir tamaño)
     const messages = [
-      { role: 'system', content: 'Eres un asistente virtual especializado en aguacates de Inca Fields. Responde de manera concisa y amigable. Usa emojis ocasionalmente para dar un tono amable. Si no sabes algo, sugiere contactar a un especialista.' },
-      ...chatHistory,
+      { role: 'system', content: 'Eres un asistente virtual de Inca Fields. Responde de manera concisa sobre aguacates.' },
+      // Solo incluir los últimos 3 mensajes del historial para reducir tamaño
+      ...chatHistory.slice(-3),
       { role: 'user', content: userMessage }
     ];
 
-    // Formato para la API de Gemini
+    // Formato para la API de Gemini (configuración simplificada)
     const requestBody = {
       contents: messages.map(msg => ({
         role: msg.role === 'assistant' ? 'model' : msg.role,
@@ -251,43 +252,58 @@ async function callGeminiAPI(userMessage, chatHistory, apiKey) {
       })),
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 200,
-        topP: 0.95,
-        topK: 40
+        maxOutputTokens: 150, // Reducido para respuestas más cortas
+        topP: 0.9,
+        topK: 20
       }
     };
 
-    // Llamada a la API
-    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
-    });
+    // Crear un controlador de aborto para implementar timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 segundos de timeout
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        throw new Error('Límite de tasa excedido');
+    try {
+      // Llamada a la API con timeout
+      const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal
+      });
+
+      // Limpiar el timeout
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error('Límite de tasa excedido');
+        }
+        throw new Error(`Error en la API: ${response.status}`);
       }
-      throw new Error(`Error en la API: ${response.status}`);
-    }
 
-    const data = await response.json();
+      const data = await response.json();
 
-    // Extraer la respuesta del modelo
-    if (data.candidates && data.candidates[0]?.content?.parts && data.candidates[0].content.parts[0]?.text) {
-      return data.candidates[0].content.parts[0].text;
-    } else {
-      throw new Error('Formato de respuesta inesperado');
+      // Extraer la respuesta del modelo
+      if (data.candidates && data.candidates[0]?.content?.parts && data.candidates[0].content.parts[0]?.text) {
+        return data.candidates[0].content.parts[0].text;
+      } else {
+        throw new Error('Formato de respuesta inesperado');
+      }
+    } catch (fetchError) {
+      // Limpiar el timeout en caso de error
+      clearTimeout(timeoutId);
+      throw fetchError;
     }
   } catch (error) {
     console.error('Error al llamar a Gemini API:', error);
-    throw error;
+    // En lugar de propagar el error, devolvemos null para manejar el error en la función principal
+    return null;
   }
 }
 
-// Función principal para manejar las solicitudes
+// Función principal para manejar las solicitudes - versión optimizada
 export default async function handler(req) {
   // Configurar CORS para Edge Functions
   const headers = {
@@ -309,7 +325,6 @@ export default async function handler(req) {
   if (req.method !== 'POST') {
     return new Response(
       JSON.stringify({
-        error: 'Método no permitido',
         response: 'Solo se aceptan solicitudes POST'
       }),
       {
@@ -320,8 +335,22 @@ export default async function handler(req) {
   }
 
   try {
-    // Parsear el cuerpo de la solicitud como JSON
-    const body = await req.json();
+    // Parsear el cuerpo de la solicitud como JSON con un timeout
+    let body;
+    try {
+      body = await req.json();
+    } catch (parseError) {
+      return new Response(
+        JSON.stringify({
+          response: "Error al procesar la solicitud. Por favor, intenta de nuevo."
+        }),
+        {
+          status: 400,
+          headers
+        }
+      );
+    }
+
     const { message, chatHistory = [] } = body;
 
     if (!message) {
@@ -336,6 +365,9 @@ export default async function handler(req) {
       );
     }
 
+    // Generar respuesta predefinida inmediatamente como fallback
+    const fallbackResponse = getPredefinedResponse(message);
+
     // Obtener las claves API de las variables de entorno
     const apiKeys = [];
     if (process.env.GEMINI_API_KEY) {
@@ -345,10 +377,8 @@ export default async function handler(req) {
       apiKeys.push(process.env.GEMINI_API_KEY_2);
     }
 
-    // Si no hay claves API disponibles, usar respuestas predefinidas
+    // Si no hay claves API disponibles, usar respuestas predefinidas inmediatamente
     if (apiKeys.length === 0) {
-      console.log('No hay claves API disponibles, usando respuestas predefinidas');
-      const fallbackResponse = getPredefinedResponse(message);
       return new Response(
         JSON.stringify({ response: fallbackResponse }),
         {
@@ -358,47 +388,40 @@ export default async function handler(req) {
       );
     }
 
-    // Inicializar el gestor de claves API
-    const apiKeyManager = new ApiKeyManager(apiKeys);
+    // Intentar llamar a la API de Gemini con la primera clave disponible
+    // No usamos el gestor de claves API para simplificar y acelerar
+    const apiKey = apiKeys[0];
+    const geminiResponse = await callGeminiAPI(message, chatHistory, apiKey);
 
-    try {
-      // Intentar llamar a la API de Gemini
-      const apiKey = apiKeyManager.getNextAvailableKey();
-      if (!apiKey) {
-        throw new Error('No hay claves API disponibles');
+    // Si la llamada a Gemini falló o devolvió null, usar el fallback
+    if (!geminiResponse) {
+      return new Response(
+        JSON.stringify({ response: fallbackResponse }),
+        {
+          status: 200,
+          headers
+        }
+      );
+    }
+
+    // Si llegamos aquí, tenemos una respuesta válida de Gemini
+    return new Response(
+      JSON.stringify({ response: geminiResponse }),
+      {
+        status: 200,
+        headers
       }
-
-      const response = await callGeminiAPI(message, chatHistory, apiKey);
-
-      return new Response(
-        JSON.stringify({ response }),
-        {
-          status: 200,
-          headers
-        }
-      );
-    } catch (error) {
-      console.error('Error al llamar a Gemini API:', error);
-
-      // Si hay un error con la API, usar respuestas predefinidas
-      const fallbackResponse = getPredefinedResponse(message);
-      return new Response(
-        JSON.stringify({ response: fallbackResponse }),
-        {
-          status: 200,
-          headers
-        }
-      );
-    }
+    );
   } catch (error) {
-    console.error('Error al procesar la solicitud:', error);
+    // Capturar cualquier error y devolver una respuesta genérica
+    console.error('Error en la función Edge:', error);
+
     return new Response(
       JSON.stringify({
-        error: 'Error interno del servidor',
-        response: "Lo siento, hubo un problema al procesar tu solicitud. Por favor, intenta de nuevo."
+        response: "Actualmente no manejo esa información, te sugiero que te pongas en contacto con uno de nuestros especialistas para que puedan brindarte mayor información al respecto usando el botón que aparece abajo."
       }),
       {
-        status: 500,
+        status: 200,
         headers
       }
     );

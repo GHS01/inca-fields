@@ -103,8 +103,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Use the PORT environment variable provided by Vercel or default to 5000
-  const port = process.env.PORT || 5000;
+  // Use the PORT environment variable provided by Vercel or default to 5001
+  const port = process.env.PORT || 5001;
   server.listen({
     port: Number(port),
     host: "0.0.0.0",

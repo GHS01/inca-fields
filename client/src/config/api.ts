@@ -6,9 +6,15 @@
 const isProduction = import.meta.env.PROD || window.location.hostname !== 'localhost';
 
 // URL base de la API
-export const API_BASE_URL = isProduction 
+export const API_BASE_URL = isProduction
   ? '/api' // En producción, usar una ruta relativa
   : 'http://localhost:5000/api'; // En desarrollo, usar localhost
 
 // URLs específicas
 export const CHAT_API_URL = `${API_BASE_URL}/chat`;
+
+// Configuración de timeouts
+export const API_TIMEOUT = 5000; // 5 segundos
+
+// Número máximo de reintentos
+export const MAX_RETRIES = 3;
