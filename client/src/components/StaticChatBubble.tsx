@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send, X, ExternalLink, ArrowRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { getStaticResponse } from '@/lib/staticChatbot';
+import { useCurrentSection } from '@/hooks/use-current-section';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Añadimos un keyframe personalizado para el efecto de pulsación
 const pulsateAnimation = `
@@ -22,20 +23,44 @@ const pulsateAnimation = `
   }
 `;
 
+// Tipos de consulta que puede hacer el usuario
+type QueryType = 'unknown' | 'mayoreo' | 'menudeo';
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
+// URL del servicio de chatbot
+const CHATBOT_SERVICE_URL = 'http://localhost:5000/api';
+
 const StaticChatBubble = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '¡Hola! Soy el asistente virtual de Inca Fields. ¿En qué puedo ayudarte con nuestros aguacates? 🥑' }
+    { role: 'assistant', content: '¡Hola! Soy el asistente virtual de Inca Fields. ¿Estás interesado en comprar aguacates al por mayor o al por menor? 🥑' }
   ]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageContainerRef = useRef<HTMLDivElement>(null);
+
+  // Estado para el tipo de consulta (mayoreo o menudeo)
+  const [queryType, setQueryType] = useState<QueryType>('unknown');
+
+  // Estado para la cantidad (kilos o toneladas)
+  const [quantity, setQuantity] = useState<number | null>(null);
+
+  // Contador de preguntas del usuario
+  const [questionCount, setQuestionCount] = useState(0);
+
+  // Estado para saber si ya sugerimos contactar a un especialista
+  const [specialistSuggested, setSpecialistSuggested] = useState(false);
+
+  // Detectar si estamos en un dispositivo móvil o tablet
+  const isMobile = useIsMobile();
+
+  // Detectar la sección actual
+  const { isHomeSection } = useCurrentSection();
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -49,6 +74,103 @@ const StaticChatBubble = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Función para detectar si el mensaje es sobre compras al por mayor o menor
+  const detectQueryType = (message: string): QueryType => {
+    const lowerMessage = message.toLowerCase();
+
+    if (
+      lowerMessage.includes('mayor') ||
+      lowerMessage.includes('mayoreo') ||
+      lowerMessage.includes('tonelada') ||
+      lowerMessage.includes('grandes') ||
+      lowerMessage.includes('volumen') ||
+      lowerMessage.includes('grande') ||
+      lowerMessage.includes('mayorista')
+    ) {
+      return 'mayoreo';
+    }
+
+    if (
+      lowerMessage.includes('menor') ||
+      lowerMessage.includes('menudeo') ||
+      lowerMessage.includes('kilo') ||
+      lowerMessage.includes('poco') ||
+      lowerMessage.includes('pequeña') ||
+      lowerMessage.includes('pocos') ||
+      lowerMessage.includes('detalle') ||
+      lowerMessage.includes('personal')
+    ) {
+      return 'menudeo';
+    }
+
+    return 'unknown';
+  };
+
+  // Función para extraer números del mensaje
+  const extractNumber = (message: string): number | null => {
+    const matches = message.match(/\d+/g);
+    if (matches && matches.length > 0) {
+      return parseInt(matches[0], 10);
+    }
+    return null;
+  };
+
+  // Funciones para verificar si el mensaje incluye preguntas
+  const isPriceQuestion = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase();
+    return (
+      lowerMessage.includes('precio') ||
+      lowerMessage.includes('costo') ||
+      lowerMessage.includes('valor') ||
+      lowerMessage.includes('cuánto') ||
+      lowerMessage.includes('cuanto') ||
+      lowerMessage.includes('tarifa')
+    );
+  };
+
+  const isDeliveryQuestion = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase();
+    return (
+      lowerMessage.includes('entrega') ||
+      lowerMessage.includes('envío') ||
+      lowerMessage.includes('envio') ||
+      lowerMessage.includes('envian') ||
+      lowerMessage.includes('llega') ||
+      lowerMessage.includes('recibir') ||
+      lowerMessage.includes('recojo') ||
+      lowerMessage.includes('transporte') ||
+      lowerMessage.includes('despacho')
+    );
+  };
+
+  const isAvailabilityQuestion = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase();
+    return (
+      lowerMessage.includes('disponible') ||
+      lowerMessage.includes('cuando') ||
+      lowerMessage.includes('cuándo') ||
+      lowerMessage.includes('temporada') ||
+      lowerMessage.includes('época') ||
+      lowerMessage.includes('fecha') ||
+      lowerMessage.includes('mes') ||
+      lowerMessage.includes('tiempo')
+    );
+  };
+
+  const isPaymentQuestion = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase();
+    return (
+      lowerMessage.includes('pago') ||
+      lowerMessage.includes('pagar') ||
+      lowerMessage.includes('transferencia') ||
+      lowerMessage.includes('efectivo') ||
+      lowerMessage.includes('yape') ||
+      lowerMessage.includes('plin') ||
+      lowerMessage.includes('tarjeta') ||
+      lowerMessage.includes('factura')
+    );
+  };
+
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
@@ -58,31 +180,71 @@ const StaticChatBubble = () => {
     setIsLoading(true);
 
     try {
-      console.log('Procesando mensaje localmente:', newMessage);
-      
-      // Simular un pequeño retraso para dar sensación de procesamiento
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Obtener el número de mensajes del usuario para contextualizar la respuesta
-      const messageCount = messages.filter(msg => msg.role === 'user').length + 1;
-      
-      // Obtener respuesta estática basada en el mensaje y el contexto
-      const responseText = getStaticResponse(newMessage, messageCount);
-      
-      // Añadir la respuesta al chat
-      setMessages(prev => [...prev, { role: 'assistant', content: responseText }]);
-      
+      // Incrementar el contador de preguntas
+      const newCount = questionCount + 1;
+      setQuestionCount(newCount);
+
+      // Detectar tipo de consulta
+      const detectedType = detectQueryType(newMessage);
+      if (queryType === 'unknown' && detectedType !== 'unknown') {
+        setQueryType(detectedType);
+      }
+
+      // Detectar cantidad
+      const extractedNumber = extractNumber(newMessage);
+      if (extractedNumber !== null) {
+        setQuantity(extractedNumber);
+      }
+
+      // Preparar el historial de chat para enviar al servidor
+      // Limitamos a los últimos 10 mensajes para no sobrecargar la API
+      const chatHistoryToSend = messages.slice(-10);
+      console.log(`Enviando historial de chat: ${chatHistoryToSend.length} mensajes`);
+
+      // Llamar al microservicio de chatbot
+      const response = await fetch(`${CHATBOT_SERVICE_URL}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: newMessage,
+          chatHistory: chatHistoryToSend,
+          messageCount: newCount,
+          queryType: queryType !== 'unknown' ? queryType : detectedType,
+          quantity: quantity || extractedNumber
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+
+      const data = await response.json();
+
+      // Agregar la respuesta del chatbot
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: data.response || '¡Lo siento! Hubo un problema al procesar tu consulta. Por favor, intenta de nuevo.'
+      }]);
+
+      // Actualizar estado de sugerencia de especialista
+      if (newCount >= 5 && !specialistSuggested) {
+        setSpecialistSuggested(true);
+      }
     } catch (error) {
       console.error('Error al procesar mensaje:', error);
-      
-      // Mensaje de error genérico
-      const errorMessage = 'Lo siento, parece que tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo.';
-      
+
+      // Mensaje de error personalizado
+      const errorMessage = 'Lo siento, parece que tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo o contacta directamente con un especialista.';
+
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: errorMessage }
+        {
+          role: 'assistant',
+          content: errorMessage
+        }
       ]);
-      
     } finally {
       setIsLoading(false);
     }
@@ -99,12 +261,39 @@ const StaticChatBubble = () => {
     window.open('https://w.app/incafields', '_blank');
   };
 
+  // Determinar si debemos mostrar la burbuja de chat
+  const shouldShowChatBubble = !isMobile || !isHomeSection || isOpen;
+
   return (
     <>
       {/* Inyectar los keyframes de la animación en el DOM */}
       <style>{pulsateAnimation}</style>
 
-      <div className="fixed bottom-5 right-5 z-50">
+      {/* Estilos adicionales para la transición de la burbuja */}
+      <style>{`
+        @media (max-width: 768px) {
+          .chat-bubble-container {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+          }
+          .chat-bubble-hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+          }
+          .chat-bubble-visible {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          .chat-text-mobile {
+            font-size: 0.75rem;
+          }
+        }
+      `}</style>
+
+      <div className={cn(
+        "fixed bottom-5 right-5 z-50 chat-bubble-container",
+        shouldShowChatBubble ? "chat-bubble-visible" : "chat-bubble-hidden"
+      )}>
         {/* Botón flotante estilo WhatsApp - Solo visible cuando el chat está cerrado */}
         {!isOpen && (
           <div className="flex flex-col items-end">
@@ -115,7 +304,10 @@ const StaticChatBubble = () => {
                 transformOrigin: 'center'
               }}
             >
-              <span className="font-body text-sm text-[#2D5C34] font-normal tracking-normal">¿Compras al por mayor?</span>
+              <span className={cn(
+                "font-body text-[#2D5C34] font-normal tracking-normal",
+                isMobile ? "chat-text-mobile" : "text-sm"
+              )}>¿Compras al por mayor?</span>
             </div>
             <Button
               onClick={toggleChat}
@@ -190,11 +382,14 @@ const StaticChatBubble = () => {
                 ))}
                 {isLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-gray-100 rounded-full px-4 py-2 text-sm animate-pulse">
-                      <span>Escribiendo</span>
-                      <span className="animate-[bounce_1s_infinite]">.</span>
-                      <span className="animate-[bounce_1s_infinite_200ms]">.</span>
-                      <span className="animate-[bounce_1s_infinite_400ms]">.</span>
+                    <div className="max-w-[75%]">
+                      <div className="bg-white text-gray-800 px-3 py-2 rounded-2xl border border-gray-100 rounded-tl-none shadow-sm">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-gray-300 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
