@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useCurrentSection } from '@/hooks/use-current-section';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { CHAT_API_URL } from '@/config/api';
+import { getFallbackResponse } from '@/lib/fallbackResponses';
 
 // Añadimos un keyframe personalizado para el efecto de pulsación
 const pulsateAnimation = `
@@ -31,8 +33,7 @@ interface Message {
   content: string;
 }
 
-// URL del servicio de chatbot
-const CHATBOT_SERVICE_URL = 'http://localhost:5000/api';
+// La URL del servicio de chatbot ahora se importa desde config/api.ts
 
 const StaticChatBubble = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -201,8 +202,8 @@ const StaticChatBubble = () => {
       const chatHistoryToSend = messages.slice(-10);
       console.log(`Enviando historial de chat: ${chatHistoryToSend.length} mensajes`);
 
-      // Llamar al microservicio de chatbot
-      const response = await fetch(`${CHATBOT_SERVICE_URL}/chat`, {
+      // Llamar al microservicio de chatbot con la URL de la configuración
+      const response = await fetch(CHAT_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -235,14 +236,15 @@ const StaticChatBubble = () => {
     } catch (error) {
       console.error('Error al procesar mensaje:', error);
 
-      // Mensaje de error personalizado
-      const errorMessage = 'Lo siento, parece que tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo o contacta directamente con un especialista.';
+      // Usar el sistema de fallback para generar una respuesta local
+      console.log('Usando sistema de fallback para generar respuesta...');
+      const fallbackResponse = getFallbackResponse(newMessage);
 
       setMessages(prev => [
         ...prev,
         {
           role: 'assistant',
-          content: errorMessage
+          content: fallbackResponse
         }
       ]);
     } finally {
