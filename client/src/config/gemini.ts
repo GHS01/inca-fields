@@ -8,8 +8,8 @@ export const GEMINI_API_KEYS = [
   'AIzaSyBEDtNY0MAWLsHcSn4rObEM_Cp7VdKwDjU'  // Clave secundaria
 ];
 
-// URL de la API de Gemini (versión v1)
-export const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
+// URL de la API de Gemini (versión v1beta)
+export const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
 // Configuración para la generación de texto
 export const GEMINI_GENERATION_CONFIG = {
