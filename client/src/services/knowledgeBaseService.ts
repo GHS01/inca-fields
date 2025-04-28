@@ -20,18 +20,19 @@ export async function loadKnowledgeBase(): Promise<string> {
   try {
     // Cargar el archivo de la base de conocimientos
     const response = await fetch(KNOWLEDGE_BASE_PATH);
-    
+
     if (!response.ok) {
       throw new Error(`Error al cargar la base de conocimientos: ${response.status}`);
     }
-    
+
     // Leer el contenido del archivo
     const knowledgeBase = await response.text();
-    
+
     // Guardar en caché
     knowledgeBaseCache = knowledgeBase;
-    
+
     console.log('Base de conocimientos cargada correctamente');
+    console.log('Contenido de la base de conocimientos (primeros 200 caracteres):', knowledgeBase.substring(0, 200));
     return knowledgeBase;
   } catch (error) {
     console.error('Error al cargar la base de conocimientos:', error);

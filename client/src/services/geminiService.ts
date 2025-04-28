@@ -127,17 +127,12 @@ export async function callGeminiAPI(userMessage: string, chatHistory: ChatMessag
       });
     });
 
-    // Añadir el mensaje actual del usuario (con instrucciones del sistema y base de conocimientos si es el primer mensaje)
+    // Añadir el mensaje actual del usuario (siempre con instrucciones del sistema y base de conocimientos)
     const isFirstMessage = filteredHistory.length === 0;
-    let userContent = '';
 
-    if (isFirstMessage) {
-      // Incluir el prompt del sistema y la base de conocimientos en el primer mensaje
-      userContent = `${GEMINI_SYSTEM_PROMPT}\n\n### BASE DE CONOCIMIENTOS ###\n${knowledgeBase}\n\n### CONSULTA DEL USUARIO ###\n${userMessage}`;
-    } else {
-      // Para mensajes posteriores, solo incluir la consulta del usuario
-      userContent = userMessage;
-    }
+    // Siempre incluir el prompt del sistema y la base de conocimientos en cada mensaje
+    // Esto asegura que el modelo siempre tenga acceso a la información necesaria
+    const userContent = `${GEMINI_SYSTEM_PROMPT}\n\n### BASE DE CONOCIMIENTOS ###\n${knowledgeBase}\n\n### CONSULTA DEL USUARIO ###\n${userMessage}`;
 
     contents.push({
       role: 'user',
@@ -149,6 +144,12 @@ export async function callGeminiAPI(userMessage: string, chatHistory: ChatMessag
       contents: contents,
       generationConfig: GEMINI_GENERATION_CONFIG
     };
+
+    // Mostrar el contenido que se está enviando a la API (solo para depuración)
+    if (isFirstMessage) {
+      console.log('Enviando a Gemini (primeros 500 caracteres del primer mensaje):',
+        contents[0].parts[0].text.substring(0, 500));
+    }
 
     // Crear un controlador de aborto para implementar timeout
     const controller = new AbortController();
