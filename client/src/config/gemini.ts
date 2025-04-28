@@ -9,7 +9,7 @@ export const GEMINI_API_KEYS = [
 ];
 
 // URL de la API de Gemini (versión v1beta)
-export const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+export const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 // Configuración para la generación de texto
 export const GEMINI_GENERATION_CONFIG = {
