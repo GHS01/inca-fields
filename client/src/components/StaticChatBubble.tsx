@@ -201,40 +201,53 @@ const StaticChatBubble = () => {
       const chatHistoryToSend = messages.slice(-10);
       console.log(`Procesando mensaje con ${chatHistoryToSend.length} mensajes de historial`);
 
-      // Llamar directamente a la API de Gemini desde el cliente
-      console.log('Llamando directamente a la API de Gemini desde el cliente...');
-      const geminiResponse = await callGeminiAPI(newMessage, chatHistoryToSend);
+      let geminiResponse = null;
+      let usedFallback = false;
 
-      // Si tenemos una respuesta de Gemini, mostrarla
-      if (geminiResponse) {
-        console.log('Respuesta recibida de Gemini API');
+      try {
+        // Intentar llamar a la API de Gemini desde el cliente
+        console.log('Llamando directamente a la API de Gemini desde el cliente...');
+        geminiResponse = await callGeminiAPI(newMessage, chatHistoryToSend);
 
-        // Agregar la respuesta del chatbot
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: geminiResponse
-        }]);
-
-        // Actualizar estado de sugerencia de especialista
-        if (newCount >= 5 && !specialistSuggested) {
-          setSpecialistSuggested(true);
+        // Si no obtuvimos respuesta, lanzar error para usar fallback
+        if (!geminiResponse) {
+          throw new Error('No se pudo obtener una respuesta de Gemini API');
         }
-      } else {
-        // Si no hay respuesta de Gemini, usar el sistema de fallback
-        throw new Error('No se pudo obtener una respuesta de Gemini API');
+
+        console.log('Respuesta recibida de Gemini API');
+      } catch (apiError) {
+        console.error('Error al llamar a Gemini API:', apiError);
+        usedFallback = true;
+
+        // Usar el sistema de fallback para generar una respuesta local
+        console.log('Usando sistema de fallback para generar respuesta...');
+        geminiResponse = getFallbackResponse(newMessage);
+      }
+
+      // Agregar la respuesta (ya sea de Gemini o del fallback)
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: geminiResponse
+      }]);
+
+      // Actualizar estado de sugerencia de especialista
+      if (newCount >= 5 && !specialistSuggested) {
+        setSpecialistSuggested(true);
+      }
+
+      // Registrar si usamos fallback para análisis
+      if (usedFallback) {
+        console.log('Se utilizó el sistema de fallback para esta respuesta');
       }
     } catch (error) {
-      console.error('Error al procesar mensaje:', error);
+      console.error('Error crítico al procesar mensaje:', error);
 
-      // Usar el sistema de fallback para generar una respuesta local
-      console.log('Usando sistema de fallback para generar respuesta...');
-      const fallbackResponse = getFallbackResponse(newMessage);
-
+      // En caso de error crítico, usar una respuesta de error genérica
       setMessages(prev => [
         ...prev,
         {
           role: 'assistant',
-          content: fallbackResponse
+          content: 'Actualmente no manejo esa información, te sugiero que te pongas en contacto con uno de nuestros especialistas para que puedan brindarte mayor información al respecto usando el botón que aparece abajo.'
         }
       ]);
     } finally {

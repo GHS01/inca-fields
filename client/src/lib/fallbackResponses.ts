@@ -2,6 +2,8 @@
  * Respuestas predefinidas para cuando la API no está disponible
  */
 
+import { KEYWORDS } from '@/config/fallback';
+
 // Respuestas para preguntas de mayoreo
 export const RESPUESTAS_MAYOREO = {
   precio: 'Para compras al por mayor, el precio es de S/ 10,000 por tonelada (equivalente a 1000 kg o aproximadamente 4000 aguacates). Este precio es negociable para pedidos de 5+ toneladas, con descuentos disponibles para pedidos de 20+ toneladas sujeto a evaluación.',
@@ -25,7 +27,7 @@ export const RESPUESTAS_MENUDEO = {
 // Respuestas generales
 export const RESPUESTAS_GENERALES = {
   default: 'Actualmente no manejo esa información, te sugiero que te pongas en contacto con uno de nuestros especialistas para que puedan brindarte mayor información al respecto usando el botón que aparece abajo.',
-  horarios: 'Nuestros horarios de atención son de Lunes a Viernes de 9:00 AM a 6:00 PM y Sábados de 9:00 AM a 1:00 PM. Estamos cerrados los domingos y feriados.',
+  horarios: 'Nuestros horarios de atención son de Lunes a Viernes de 9:00 AM a 6:00 PM, Sábados de 10:00 AM a 3:00 PM y Domingos de 12:00 PM a 3:00 PM.',
   contacto: 'Puedes contactarnos a través de nuestro WhatsApp: +51 987 654 321, por correo electrónico a info@incafields.com o mediante el formulario de contacto en nuestra página web.',
   ubicacion: 'Nuestra sede principal se encuentra en Av. La Molina 1234, La Molina, Lima. También contamos con puntos de venta en Miraflores y San Isidro.'
 };
@@ -35,39 +37,21 @@ export const RESPUESTAS_GENERALES = {
  */
 export function detectQueryType(message: string): 'mayoreo' | 'menudeo' | 'unknown' {
   const lowerMessage = message.toLowerCase();
-  
-  // Palabras clave para mayoreo
-  const mayoreoKeywords = [
-    'mayor', 'mayoreo', 'tonelada', 'toneladas', 'ton', 'grandes cantidades', 
-    'grandes pedidos', 'grandes volúmenes', 'compra grande', 'cantidad grande',
-    'grandes lotes', 'distribuidor', 'distribuidores', 'revender', 'reventa',
-    'exportar', 'exportación', 'negocio', 'comercial', 'empresa', 'empresarial',
-    'restaurante', 'hotel', 'supermercado', 'mayorista', 'mayoristas', '500 kg',
-    '1000 kg', '10000', 'diez mil', '5000'
-  ];
-  
-  // Palabras clave para menudeo
-  const menudeoKeywords = [
-    'menor', 'menudeo', 'kilo', 'kilos', 'kg', 'pequeñas cantidades', 
-    'pequeños pedidos', 'pequeños volúmenes', 'compra pequeña', 'cantidad pequeña',
-    'unidad', 'unidades', 'personal', 'casa', 'hogar', 'familiar', 'consumo propio',
-    'particular', 'individual', '6.50', 'seis', 'minorista'
-  ];
-  
+
   // Verificar mayoreo
-  for (const keyword of mayoreoKeywords) {
+  for (const keyword of KEYWORDS.mayoreo) {
     if (lowerMessage.includes(keyword)) {
       return 'mayoreo';
     }
   }
-  
+
   // Verificar menudeo
-  for (const keyword of menudeoKeywords) {
+  for (const keyword of KEYWORDS.menudeo) {
     if (lowerMessage.includes(keyword)) {
       return 'menudeo';
     }
   }
-  
+
   return 'unknown';
 }
 
@@ -76,14 +60,7 @@ export function detectQueryType(message: string): 'mayoreo' | 'menudeo' | 'unkno
  */
 export function isPriceQuestion(message: string): boolean {
   const lowerMessage = message.toLowerCase();
-  const priceKeywords = [
-    'precio', 'precios', 'costo', 'costos', 'valor', 'cuánto', 'cuanto', 
-    'cuestan', 'cuesta', 'tarifa', 'tarifas', 'pagar', 'cobran', 'cobra',
-    'vale', 'valen', 'oferta', 'ofertas', 'descuento', 'descuentos',
-    'económico', 'barato', 'costoso', 'promoción', 'promociones', 's/'
-  ];
-  
-  return priceKeywords.some(keyword => lowerMessage.includes(keyword));
+  return KEYWORDS.precio.some(keyword => lowerMessage.includes(keyword));
 }
 
 /**
@@ -91,16 +68,7 @@ export function isPriceQuestion(message: string): boolean {
  */
 export function isAvailabilityQuestion(message: string): boolean {
   const lowerMessage = message.toLowerCase();
-  return (
-    lowerMessage.includes('disponible') ||
-    lowerMessage.includes('cuando') ||
-    lowerMessage.includes('cuándo') ||
-    lowerMessage.includes('temporada') ||
-    lowerMessage.includes('época') ||
-    lowerMessage.includes('fecha') ||
-    lowerMessage.includes('mes') ||
-    lowerMessage.includes('tiempo')
-  );
+  return KEYWORDS.disponibilidad.some(keyword => lowerMessage.includes(keyword));
 }
 
 /**
@@ -108,20 +76,7 @@ export function isAvailabilityQuestion(message: string): boolean {
  */
 export function isDeliveryQuestion(message: string): boolean {
   const lowerMessage = message.toLowerCase();
-  return (
-    lowerMessage.includes('entrega') ||
-    lowerMessage.includes('envío') ||
-    lowerMessage.includes('envio') ||
-    lowerMessage.includes('despacho') ||
-    lowerMessage.includes('recibir') ||
-    lowerMessage.includes('recibo') ||
-    lowerMessage.includes('llega') ||
-    lowerMessage.includes('llegada') ||
-    lowerMessage.includes('domicilio') ||
-    lowerMessage.includes('casa') ||
-    lowerMessage.includes('dirección') ||
-    lowerMessage.includes('direccion')
-  );
+  return KEYWORDS.entrega.some(keyword => lowerMessage.includes(keyword));
 }
 
 /**
@@ -129,56 +84,78 @@ export function isDeliveryQuestion(message: string): boolean {
  */
 export function isPaymentQuestion(message: string): boolean {
   const lowerMessage = message.toLowerCase();
-  return (
-    lowerMessage.includes('pago') ||
-    lowerMessage.includes('pagar') ||
-    lowerMessage.includes('tarjeta') ||
-    lowerMessage.includes('efectivo') ||
-    lowerMessage.includes('transferencia') ||
-    lowerMessage.includes('yape') ||
-    lowerMessage.includes('plin') ||
-    lowerMessage.includes('depósito') ||
-    lowerMessage.includes('deposito') ||
-    lowerMessage.includes('contra entrega') ||
-    lowerMessage.includes('crédito') ||
-    lowerMessage.includes('credito') ||
-    lowerMessage.includes('débito') ||
-    lowerMessage.includes('debito')
-  );
+  return KEYWORDS.pago.some(keyword => lowerMessage.includes(keyword));
+}
+
+/**
+ * Detecta si es una pregunta sobre horarios
+ */
+export function isScheduleQuestion(message: string): boolean {
+  const lowerMessage = message.toLowerCase();
+  return KEYWORDS.horarios.some(keyword => lowerMessage.includes(keyword));
+}
+
+/**
+ * Detecta si es una pregunta sobre contacto
+ */
+export function isContactQuestion(message: string): boolean {
+  const lowerMessage = message.toLowerCase();
+  return KEYWORDS.contacto.some(keyword => lowerMessage.includes(keyword));
+}
+
+/**
+ * Detecta si es una pregunta sobre ubicación
+ */
+export function isLocationQuestion(message: string): boolean {
+  const lowerMessage = message.toLowerCase();
+  return KEYWORDS.ubicacion.some(keyword => lowerMessage.includes(keyword));
 }
 
 /**
  * Genera una respuesta basada en el mensaje del usuario
  */
 export function getFallbackResponse(message: string): string {
+  // Primero verificar si es una pregunta sobre horarios, contacto o ubicación
+  if (isScheduleQuestion(message)) {
+    return RESPUESTAS_GENERALES.horarios;
+  }
+
+  if (isContactQuestion(message)) {
+    return RESPUESTAS_GENERALES.contacto;
+  }
+
+  if (isLocationQuestion(message)) {
+    return RESPUESTAS_GENERALES.ubicacion;
+  }
+
   // Detectar tipo de consulta (mayoreo o menudeo)
   const queryType = detectQueryType(message);
-  
+
   // Si no es ni mayoreo ni menudeo, damos una respuesta general
   if (queryType === 'unknown') {
     return RESPUESTAS_GENERALES.default;
   }
-  
+
   // Seleccionar el conjunto de respuestas según el tipo de consulta
   const respuestas = queryType === 'mayoreo' ? RESPUESTAS_MAYOREO : RESPUESTAS_MENUDEO;
-  
+
   // Detectar tipo de pregunta (precio, disponibilidad, entrega, pago)
   if (isPriceQuestion(message)) {
     return respuestas.precio;
   }
-  
+
   if (isAvailabilityQuestion(message)) {
     return respuestas.disponibilidad;
   }
-  
+
   if (isDeliveryQuestion(message)) {
     return respuestas.entrega;
   }
-  
+
   if (isPaymentQuestion(message)) {
     return respuestas.pago;
   }
-  
+
   // Si no detectamos un tipo específico de pregunta, dar respuesta por defecto
   return respuestas.default;
 }
