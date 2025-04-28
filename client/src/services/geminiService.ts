@@ -105,19 +105,38 @@ export async function callGeminiAPI(userMessage: string, chatHistory: ChatMessag
     }
 
     // Preparar el contexto y el historial
-    const messages = [
-      { role: 'system', content: GEMINI_SYSTEM_PROMPT },
-      // Solo incluir los últimos 5 mensajes del historial para reducir tamaño
-      ...chatHistory.slice(-5),
-      { role: 'user', content: userMessage }
-    ];
+    // Nota: gemini-1.5-flash no admite el rol 'system', así que incluimos las instrucciones en el primer mensaje
+
+    // Filtrar solo los mensajes de usuario y asistente
+    const filteredHistory = chatHistory.slice(-5).filter(msg =>
+      msg.role === 'user' || msg.role === 'assistant'
+    );
+
+    // Crear el contenido para la API de Gemini
+    const contents = [];
+
+    // Añadir los mensajes del historial
+    filteredHistory.forEach(msg => {
+      contents.push({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }]
+      });
+    });
+
+    // Añadir el mensaje actual del usuario (con instrucciones del sistema si es el primer mensaje)
+    const isFirstMessage = filteredHistory.length === 0;
+    const userContent = isFirstMessage
+      ? `${GEMINI_SYSTEM_PROMPT}\n\nConsulta del usuario: ${userMessage}`
+      : userMessage;
+
+    contents.push({
+      role: 'user',
+      parts: [{ text: userContent }]
+    });
 
     // Formato para la API de Gemini
     const requestBody = {
-      contents: messages.map(msg => ({
-        role: msg.role === 'assistant' ? 'model' : msg.role,
-        parts: [{ text: msg.content }]
-      })),
+      contents: contents,
       generationConfig: GEMINI_GENERATION_CONFIG
     };
 
