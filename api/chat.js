@@ -322,7 +322,7 @@ export default async function handler(req) {
   try {
     // Parsear el cuerpo de la solicitud como JSON
     const body = await req.json();
-    const { message } = body;
+    const { message, chatHistory = [] } = body;
 
     if (!message) {
       return new Response(
@@ -336,17 +336,60 @@ export default async function handler(req) {
       );
     }
 
-    // Generar respuesta predefinida
-    const fallbackResponse = getPredefinedResponse(message);
+    // Obtener las claves API de las variables de entorno
+    const apiKeys = [];
+    if (process.env.GEMINI_API_KEY) {
+      apiKeys.push(process.env.GEMINI_API_KEY);
+    }
+    if (process.env.GEMINI_API_KEY_2) {
+      apiKeys.push(process.env.GEMINI_API_KEY_2);
+    }
 
-    // Devolver la respuesta
-    return new Response(
-      JSON.stringify({ response: fallbackResponse }),
-      {
-        status: 200,
-        headers
+    // Si no hay claves API disponibles, usar respuestas predefinidas
+    if (apiKeys.length === 0) {
+      console.log('No hay claves API disponibles, usando respuestas predefinidas');
+      const fallbackResponse = getPredefinedResponse(message);
+      return new Response(
+        JSON.stringify({ response: fallbackResponse }),
+        {
+          status: 200,
+          headers
+        }
+      );
+    }
+
+    // Inicializar el gestor de claves API
+    const apiKeyManager = new ApiKeyManager(apiKeys);
+
+    try {
+      // Intentar llamar a la API de Gemini
+      const apiKey = apiKeyManager.getNextAvailableKey();
+      if (!apiKey) {
+        throw new Error('No hay claves API disponibles');
       }
-    );
+
+      const response = await callGeminiAPI(message, chatHistory, apiKey);
+
+      return new Response(
+        JSON.stringify({ response }),
+        {
+          status: 200,
+          headers
+        }
+      );
+    } catch (error) {
+      console.error('Error al llamar a Gemini API:', error);
+
+      // Si hay un error con la API, usar respuestas predefinidas
+      const fallbackResponse = getPredefinedResponse(message);
+      return new Response(
+        JSON.stringify({ response: fallbackResponse }),
+        {
+          status: 200,
+          headers
+        }
+      );
+    }
   } catch (error) {
     console.error('Error al procesar la solicitud:', error);
     return new Response(
