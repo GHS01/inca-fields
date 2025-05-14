@@ -14,7 +14,7 @@ try {
   // Nota: Esta importación dinámica es necesaria porque el archivo puede no existir en desarrollo
   const generatedModule = require('@/generated/knowledge-base');
   KNOWLEDGE_BASE_CONTENT = generatedModule.KNOWLEDGE_BASE_CONTENT;
-  console.log('Base de conocimientos cargada desde el archivo generado');
+  console.debug('Base de conocimientos cargada desde el archivo generado');
 } catch (error) {
   console.warn('No se pudo cargar el archivo generado de la base de conocimientos. Usando contenido de fallback.');
   console.warn('Este mensaje es normal durante el desarrollo. En producción, el archivo debería existir.');
@@ -43,7 +43,7 @@ let knowledgeBaseCache: string | null = null;
 export async function loadKnowledgeBase(): Promise<string> {
   // Si ya tenemos la base de conocimientos en caché, devolverla
   if (knowledgeBaseCache) {
-    console.log('Usando base de conocimientos en caché');
+    console.debug('Usando base de conocimientos en caché');
     return knowledgeBaseCache;
   }
 
@@ -65,8 +65,8 @@ export async function loadKnowledgeBase(): Promise<string> {
     // Guardar en caché
     knowledgeBaseCache = knowledgeBase;
 
-    console.log('Base de conocimientos cargada correctamente');
-    console.log('Contenido de la base de conocimientos (primeros 300 caracteres):', knowledgeBase.substring(0, 300));
+    console.debug('Base de conocimientos cargada correctamente');
+    console.debug('Contenido de la base de conocimientos (primeros 300 caracteres):', knowledgeBase.substring(0, 300));
     return knowledgeBase;
   } catch (error) {
     console.error('Error al cargar la base de conocimientos:', error);

@@ -35,7 +35,7 @@ try {
   // Intentar importar el archivo generado
   const generatedModule = require('@/generated/fallback-responses');
   FALLBACK_RESPONSES = generatedModule.FALLBACK_RESPONSES;
-  console.log('Respuestas de fallback cargadas desde el archivo generado');
+  console.debug('Respuestas de fallback cargadas desde el archivo generado');
 } catch (error) {
   console.warn('No se pudo cargar el archivo generado de respuestas de fallback. Usando contenido de fallback.');
   console.warn('Este mensaje es normal durante el desarrollo. En producción, el archivo debería existir.');

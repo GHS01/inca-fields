@@ -201,11 +201,13 @@ export async function callGeminiAPI(userMessage: string, chatHistory: ChatMessag
       }
 
       const data = await response.json();
-      console.log('Datos recibidos de Gemini API:', JSON.stringify(data).substring(0, 200) + '...');
+      // Solo registrar en consola para depuración, no mostrar en la interfaz
+      console.debug('Datos recibidos de Gemini API:', JSON.stringify(data).substring(0, 200) + '...');
 
       // Extraer la respuesta del modelo
       if (data.candidates && data.candidates[0]?.content?.parts && data.candidates[0].content.parts[0]?.text) {
-        return data.candidates[0].content.parts[0].text;
+        const responseText = data.candidates[0].content.parts[0].text;
+        return responseText;
       } else {
         console.error('Formato de respuesta inesperado:', JSON.stringify(data));
         throw new Error('Formato de respuesta inesperado');

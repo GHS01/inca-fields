@@ -206,14 +206,14 @@ const StaticChatBubble = () => {
 
       // Preparar el historial de chat para enviar a la API de Gemini
       const chatHistoryToSend = messages.slice(-10);
-      console.log(`Procesando mensaje con ${chatHistoryToSend.length} mensajes de historial`);
+      console.debug(`Procesando mensaje con ${chatHistoryToSend.length} mensajes de historial`);
 
       let geminiResponse = null;
       let usedFallback = false;
 
       try {
         // Intentar llamar a la API de Gemini desde el cliente
-        console.log('Llamando directamente a la API de Gemini desde el cliente...');
+        console.debug('Llamando directamente a la API de Gemini desde el cliente...');
         geminiResponse = await callGeminiAPI(newMessage, chatHistoryToSend);
 
         // Si no obtuvimos respuesta, lanzar error para usar fallback
@@ -221,13 +221,13 @@ const StaticChatBubble = () => {
           throw new Error('No se pudo obtener una respuesta de Gemini API');
         }
 
-        console.log('Respuesta recibida de Gemini API');
+        console.debug('Respuesta recibida de Gemini API');
       } catch (apiError) {
         console.error('Error al llamar a Gemini API:', apiError);
         usedFallback = true;
 
         // Usar el sistema de fallback para generar una respuesta local
-        console.log('Usando sistema de fallback para generar respuesta...');
+        console.debug('Usando sistema de fallback para generar respuesta...');
         geminiResponse = getFallbackResponse(newMessage);
       }
 
@@ -244,7 +244,7 @@ const StaticChatBubble = () => {
 
       // Registrar si usamos fallback para análisis
       if (usedFallback) {
-        console.log('Se utilizó el sistema de fallback para esta respuesta');
+        console.debug('Se utilizó el sistema de fallback para esta respuesta');
       }
     } catch (error) {
       console.error('Error crítico al procesar mensaje:', error);
