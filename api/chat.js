@@ -66,12 +66,12 @@ class ApiKeyManager {
 
 // Respuestas predefinidas para cuando la API no está disponible
 const RESPUESTAS_MAYOREO = {
-  precio: 'Para compras al por mayor, el precio es de S/ 10,000 por tonelada (equivalente a 1000 kg o aproximadamente 4000 aguacates). Este precio es negociable para pedidos de 5+ toneladas, con descuentos disponibles para pedidos de 20+ toneladas sujeto a evaluación.',
+  precio: 'Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto.',
   disponibilidad: 'Los aguacates al por mayor están disponibles en los meses de Enero, Marzo y Mayo, que son nuestras temporadas principales de cosecha. Para otras fechas, por favor contacte directamente con nuestro equipo de ventas.',
-  entrega: 'Para pedidos al por mayor, ofrecemos entrega en todo el Perú. El tiempo de entrega varía según la ubicación, generalmente entre 3-7 días hábiles. Los costos de envío se calculan según el volumen y distancia.',
-  pago: 'Aceptamos transferencias bancarias, depósitos y pagos contra entrega para pedidos al por mayor. Para pedidos grandes, ofrecemos opciones de pago en cuotas previa evaluación.',
+  entrega: 'Para pedidos al por mayor: Entrega por camionadas en 3-7 días hábiles tras confirmar pedido.',
+  pago: 'Transferencia bancaria, efectivo o pagos digitales (Yape, Plin) para ambos tipos de venta.',
   calidad: 'Nuestros aguacates al por mayor son de la misma calidad premium que vendemos al por menor. Garantizamos un producto fresco, con el punto óptimo de maduración para que llegue en perfectas condiciones.',
-  default: 'Para compras al por mayor, trabajamos con un mínimo de 1 tonelada. Ofrecemos precios competitivos, garantía de calidad y soporte logístico completo. ¿Te gustaría conocer más detalles sobre precios, disponibilidad o proceso de compra?'
+  default: 'Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto. Los aguacates al por mayor están disponibles en enero, marzo y mayo. ¿Te gustaría conocer más detalles?'
 };
 
 // Respuestas para preguntas de menudeo
@@ -103,7 +103,7 @@ function detectQueryType(message) {
     'grandes lotes', 'distribuidor', 'distribuidores', 'revender', 'reventa',
     'exportar', 'exportación', 'negocio', 'comercial', 'empresa', 'empresarial',
     'restaurante', 'hotel', 'supermercado', 'mayorista', 'mayoristas', '500 kg',
-    '1000 kg', '10000', 'diez mil', '5000'
+    '1000 kg'
   ];
 
   // Palabras clave para menudeo
@@ -238,7 +238,7 @@ async function callGeminiAPI(userMessage, chatHistory, apiKey) {
   try {
     // Preparar el contexto y el historial (simplificado para reducir tamaño)
     const messages = [
-      { role: 'system', content: 'Eres un asistente virtual de Inca Fields. Responde de manera concisa sobre aguacates.' },
+      { role: 'system', content: 'Eres un asistente virtual de Inca Fields. Responde de manera concisa sobre aguacates. IMPORTANTE: Para preguntas sobre precios al por mayor, SIEMPRE responde: "Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto." NO menciones precios específicos para compras al por mayor.' },
       // Solo incluir los últimos 3 mensajes del historial para reducir tamaño
       ...chatHistory.slice(-3),
       { role: 'user', content: userMessage }

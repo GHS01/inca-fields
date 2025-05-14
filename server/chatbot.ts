@@ -279,7 +279,7 @@ setInterval(loadKnowledgeBase, 30000);
 // Extraer información clave de la base de conocimientos
 const precioUnidad = 2.50; // S/ 2.50 por unidad
 const pesoPromedio = 0.25; // 0.25 kg o 250g por aguacate
-const precioTonelada = 10000; // S/ 10,000 por tonelada
+// No especificamos precio por tonelada, se debe contactar a un mayorista
 const periodosMayoreo = ['enero', 'marzo', 'mayo'];
 
 // Prompt del sistema para el asistente de ventas (actualizado)
@@ -288,6 +288,8 @@ Eres el asistente virtual amigable de Inca Fields, una empresa especializada en 
 Tu objetivo es ayudar a los clientes de manera conversacional y natural, proporcionando ÚNICAMENTE información
 que esté presente en la base de conocimientos proporcionada.
 
+IMPORTANTE: Para preguntas sobre precios al por mayor, SIEMPRE responde: "Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto." NO menciones precios específicos para compras al por mayor, incluso si aparecen en la base de conocimientos.
+
 Usa EXCLUSIVAMENTE esta base de conocimientos para responder preguntas específicas:
 ${knowledgeBase}
 
@@ -295,10 +297,10 @@ Instrucciones importantes:
 1. Inicia SIEMPRE con un saludo amigable y pregunta si están interesados en compras al por mayor o menor.
 2. Cuando el usuario responda sobre su interés en compras al por mayor o menor:
    - Si menciona "menor" o "minorista": Pregúntale por cuántos kilos de aguacate está interesado.
-   - Si menciona "mayor" o "mayorista": Infórmale que la venta al por mayor empieza desde 1 tonelada y pregunta cuántas toneladas le interesa adquirir.
+   - Si menciona "mayor" o "mayorista": Infórmale que para compras al por mayor debe contactarse con uno de nuestros mayoristas para atención exclusiva.
 3. Realiza cálculos basados en la información proporcionada:
    - Ventas al por menor: Calcula el precio basado en los kilos (1 kg = 4 aguacates aprox. a S/ 2.50 cada uno)
-   - Ventas al por mayor: Calcula el precio basado en toneladas (1 tonelada = S/ 10,000)
+   - Ventas al por mayor: NO proporciones precios específicos, indica que debe contactar a un mayorista
 4. Responde preguntas ÚNICAMENTE usando la información de la base de conocimientos proporcionada.
 5. Mantén tus respuestas amigables, naturales y conversacionales.
 6. Usa emojis ocasionalmente para ser más amigable, pero sin exagerar.
@@ -339,12 +341,12 @@ const predefinedResponses: { [key: string]: { [key: string]: string } } = {
 
   // Respuestas para ventas al por mayor
   "mayor": {
-    "intro": "¡Excelente! Para ventas al por mayor, nuestro precio es de S/ 10,000 por tonelada. Las ventas mayoristas están disponibles en los meses de enero, marzo y mayo. ¿Cuántas toneladas te interesaría adquirir?",
-    "precio": "El precio por tonelada de aguacates es S/ 10,000. Para pedidos de 5+ toneladas, ofrecemos precios negociables. ¿Qué volumen estás considerando?",
+    "intro": "¡Excelente! Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto. Las ventas mayoristas están disponibles en los meses de enero, marzo y mayo.",
+    "precio": "Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto.",
     "disponibilidad": "Para compras al por mayor, los mejores meses son enero, marzo y mayo, que coinciden con nuestros períodos de mayor producción. ¿Ya tienes en mente cuándo realizarías tu compra?",
     "entrega": "La entrega de pedidos al por mayor se realiza en camiones de 5 a 10 toneladas, en un plazo de 3-7 días hábiles después de confirmar el pedido. ¿Necesitas información sobre alguna ubicación específica?",
-    "pago": "Para ventas al por mayor, aceptamos un depósito inicial del 50% y el resto contra entrega. Los pagos pueden realizarse mediante transferencia bancaria o depósito. ¿Te gustaría conocer nuestras cuentas bancarias?",
-    "cantidad": "Una tonelada equivale a aproximadamente 4,000 aguacates. Para pedidos mayoristas, el mínimo es de 1 tonelada. ¿Qué cantidad te interesaría adquirir?",
+    "pago": "Para ventas al por mayor, aceptamos transferencia bancaria, efectivo o pagos digitales (Yape, Plin). ¿Te gustaría conocer más detalles?",
+    "cantidad": "Para pedidos mayoristas, el mínimo es de 1 tonelada. Para más información sobre precios, contáctese con uno de nuestros mayoristas usando el botón de contacto.",
     "calidad": "Nuestros aguacates mayoristas cumplen con los más altos estándares de calidad y están certificados para exportación. Trabajamos principalmente con la variedad Hass, conocida por su excelente sabor y durabilidad."
   },
 
@@ -372,15 +374,21 @@ const predefinedResponses: { [key: string]: { [key: string]: string } } = {
 function detectarTipoCompra(mensaje: string): 'mayor' | 'menor' | null {
   const mensajeLower = mensaje.toLowerCase();
 
-  // Detectar compra al por mayor
-  if (mensajeLower.includes('mayor') ||
-      mensajeLower.includes('mayoreo') ||
-      mensajeLower.includes('tonelada') ||
-      mensajeLower.includes('toneladas') ||
-      mensajeLower.includes('grandes cantidades') ||
-      mensajeLower.includes('distribuidor') ||
-      mensajeLower.includes('wholesale')) {
-    return 'mayor';
+  // Palabras clave para mayoreo
+  const mayoreoKeywords = [
+    'mayor', 'mayoreo', 'tonelada', 'toneladas', 'ton', 'grandes cantidades',
+    'grandes pedidos', 'grandes volúmenes', 'compra grande', 'cantidad grande',
+    'grandes lotes', 'distribuidor', 'distribuidores', 'revender', 'reventa',
+    'exportar', 'exportación', 'negocio', 'comercial', 'empresa', 'empresarial',
+    'restaurante', 'hotel', 'supermercado', 'mayorista', 'mayoristas', '500 kg',
+    '1000 kg', 'wholesale'
+  ];
+
+  // Verificar mayoreo
+  for (const keyword of mayoreoKeywords) {
+    if (mensajeLower.includes(keyword)) {
+      return 'mayor';
+    }
   }
 
   // Detectar compra al por menor
@@ -401,9 +409,8 @@ function detectarTipoCompra(mensaje: string): 'mayor' | 'menor' | null {
 // Función para calcular precio basado en cantidad
 function calcularPrecio(cantidad: number, tipo: 'mayor' | 'menor'): string {
   if (tipo === 'mayor') {
-    // Calcular precio por toneladas
-    const precio = cantidad * precioTonelada;
-    return `Para ${cantidad} tonelada${cantidad > 1 ? 's' : ''} de aguacates, el precio sería S/ ${precio.toLocaleString('es-PE')}. Recuerda que nuestras ventas al por mayor se realizan en los meses de ${periodosMayoreo.join(', ')}.`;
+    // No calculamos precio por toneladas, se debe contactar a un mayorista
+    return `Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto. Recuerda que nuestras ventas al por mayor se realizan en los meses de ${periodosMayoreo.join(', ')}.`;
   } else {
     // Calcular precio por kilos
     const aguacatesAproximados = Math.ceil(cantidad / pesoPromedio);

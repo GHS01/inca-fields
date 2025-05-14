@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send, X, ExternalLink, ArrowRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { getFallbackResponse } from '@/lib/fallbackResponses';
 
 // Añadimos un keyframe personalizado para el efecto de pulsación
 const pulsateAnimation = `
@@ -29,11 +30,12 @@ interface Message {
   content: string;
 }
 
-// Respuestas predefinidas para el modo desarrollo (local)
+// Respuestas predefinidas para el modo desarrollo (local) - Ya no se utilizan, se usa getFallbackResponse
+// Mantenemos la estructura por compatibilidad, pero las respuestas se generan dinámicamente
 const RESPUESTAS_PARA_DESARROLLO = {
   // Respuestas para preguntas de mayoreo
   mayoreo: {
-    precio: 'Para compras al por mayor, el precio es de S/ 10,000 por tonelada (equivalente a 1000 kg o aproximadamente 4000 aguacates). Este precio es negociable para pedidos de 5+ toneladas, con descuentos disponibles para pedidos de 20+ toneladas sujeto a evaluación.',
+    precio: 'Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto.',
     disponibilidad: 'Los aguacates al por mayor están disponibles en los meses de Enero, Marzo y Mayo, que son nuestras temporadas principales de cosecha. Para otras fechas, por favor contacte directamente con nuestro equipo de ventas.',
     entrega: 'La entrega se realiza por camionadas en camiones de 5 a 10 toneladas. El tiempo de entrega es de 3-7 días hábiles tras confirmar el pedido, dependiendo de la ubicación de entrega dentro del Perú.',
     pago: 'Para pedidos al por mayor aceptamos pago del 50% por adelantado y 50% contra entrega. Los pagos pueden realizarse mediante transferencia bancaria, depósito o efectivo. Emitimos factura para todas las compras mayoristas.'
@@ -64,16 +66,16 @@ const ChatBubble = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messageContainerRef = useRef<HTMLDivElement>(null);
-  
+
   // Estado para el tipo de consulta (mayoreo o menudeo)
   const [queryType, setQueryType] = useState<QueryType>('unknown');
-  
+
   // Estado para la cantidad (kilos o toneladas)
   const [quantity, setQuantity] = useState<number | null>(null);
-  
+
   // Contador de preguntas del usuario
   const [questionCount, setQuestionCount] = useState(0);
-  
+
   // Estado para saber si ya sugerimos contactar a un especialista
   const [specialistSuggested, setSpecialistSuggested] = useState(false);
 
@@ -88,29 +90,29 @@ const ChatBubble = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-  
+
   // Detector de tipo de consulta mejorado con palabras clave más específicas
   const detectQueryType = (message: string): 'mayoreo' | 'menudeo' | 'unknown' => {
     const lowerMessage = message.toLowerCase();
-    
+
     // Palabras clave para mayoreo
     const mayoreoKeywords = [
-      'mayor', 'mayoreo', 'tonelada', 'toneladas', 'ton', 'grandes cantidades', 
+      'mayor', 'mayoreo', 'tonelada', 'toneladas', 'ton', 'grandes cantidades',
       'grandes pedidos', 'grandes volúmenes', 'compra grande', 'cantidad grande',
       'grandes lotes', 'distribuidor', 'distribuidores', 'revender', 'reventa',
       'exportar', 'exportación', 'negocio', 'comercial', 'empresa', 'empresarial',
       'restaurante', 'hotel', 'supermercado', 'mayorista', 'mayoristas', '500 kg',
-      '1000 kg', '10000', 'diez mil', '5000'
+      '1000 kg'
     ];
-    
+
     // Palabras clave para menudeo
     const menudeoKeywords = [
-      'menor', 'menudeo', 'kilo', 'kilos', 'kg', 'pequeñas cantidades', 
+      'menor', 'menudeo', 'kilo', 'kilos', 'kg', 'pequeñas cantidades',
       'pequeños pedidos', 'pequeños volúmenes', 'compra pequeña', 'cantidad pequeña',
       'unidad', 'unidades', 'personal', 'casa', 'hogar', 'familiar', 'consumo propio',
       'particular', 'individual', '6.50', 'seis', 'minorista'
     ];
-    
+
     // Verificar mayoreo
     for (const keyword of mayoreoKeywords) {
       if (lowerMessage.includes(keyword)) {
@@ -118,7 +120,7 @@ const ChatBubble = () => {
         return 'mayoreo';
       }
     }
-    
+
     // Verificar menudeo
     for (const keyword of menudeoKeywords) {
       if (lowerMessage.includes(keyword)) {
@@ -126,12 +128,12 @@ const ChatBubble = () => {
         return 'menudeo';
       }
     }
-    
+
     // Si no detectamos nada específico, retornamos unknown
     console.log("Tipo de consulta no detectado");
     return 'unknown';
   };
-  
+
   // Función para extraer números del mensaje
   const extractNumber = (message: string): number | null => {
     const matches = message.match(/\d+/g);
@@ -140,20 +142,20 @@ const ChatBubble = () => {
     }
     return null;
   };
-  
+
   // Funciones de detección de temas específicos
   const isPriceQuestion = (message: string): boolean => {
     const lowerMessage = message.toLowerCase();
     const priceKeywords = [
-      'precio', 'precios', 'costo', 'costos', 'valor', 'cuánto', 'cuanto', 
+      'precio', 'precios', 'costo', 'costos', 'valor', 'cuánto', 'cuanto',
       'cuestan', 'cuesta', 'tarifa', 'tarifas', 'pagar', 'cobran', 'cobra',
       'vale', 'valen', 'oferta', 'ofertas', 'descuento', 'descuentos',
       'económico', 'barato', 'costoso', 'promoción', 'promociones', 's/'
     ];
-    
+
     return priceKeywords.some(keyword => lowerMessage.includes(keyword));
   };
-  
+
   const isAvailabilityQuestion = (message: string): boolean => {
     const lowerMessage = message.toLowerCase();
     const availabilityKeywords = [
@@ -162,10 +164,10 @@ const ChatBubble = () => {
       'época', 'épocas', 'cuándo', 'cuando', 'mes', 'meses', 'año', 'años',
       'periodo', 'periodos', 'estación', 'estaciones', 'cosecha'
     ];
-    
+
     return availabilityKeywords.some(keyword => lowerMessage.includes(keyword));
   };
-  
+
   const isDeliveryQuestion = (message: string): boolean => {
     const lowerMessage = message.toLowerCase();
     const deliveryKeywords = [
@@ -175,10 +177,10 @@ const ChatBubble = () => {
       'reparto', 'distribución', 'distribucion', 'recogida', 'recoger', 'recojo',
       'domicilio', 'tienda', 'local', 'tiempo', 'demora', 'tardanza', 'días', 'dias'
     ];
-    
+
     return deliveryKeywords.some(keyword => lowerMessage.includes(keyword));
   };
-  
+
   const isPaymentQuestion = (message: string): boolean => {
     const lowerMessage = message.toLowerCase();
     const paymentKeywords = [
@@ -189,44 +191,18 @@ const ChatBubble = () => {
       'cancelar', 'cancelación', 'cancelacion', 'factura', 'facturas', 'boleta', 'boletas',
       'cuotas', 'adelanto', 'adelantos', 'inicial', 'iniciales'
     ];
-    
+
     return paymentKeywords.some(keyword => lowerMessage.includes(keyword));
   };
-  
+
   /**
    * Procesa el mensaje del usuario y genera una respuesta apropiada
    */
   const processMessage = (message: string): string => {
     console.log("Procesando mensaje localmente:", message);
-    
-    // Detectar tipo de consulta (mayoreo o menudeo)
-    const queryType = detectQueryType(message);
-    console.log("Tipo de consulta detectado:", queryType);
-    
-    // Si no es ni mayoreo ni menudeo, damos una respuesta general
-    if (queryType === 'unknown') {
-      return RESPUESTAS_PARA_DESARROLLO.general.default;
-    }
-    
-    // Detectar tipo de pregunta (precio, disponibilidad, entrega, pago)
-    if (isPriceQuestion(message)) {
-      return RESPUESTAS_PARA_DESARROLLO[queryType].precio;
-    }
-    
-    if (isAvailabilityQuestion(message)) {
-      return RESPUESTAS_PARA_DESARROLLO[queryType].disponibilidad;
-    }
-    
-    if (isDeliveryQuestion(message)) {
-      return RESPUESTAS_PARA_DESARROLLO[queryType].entrega;
-    }
-    
-    if (isPaymentQuestion(message)) {
-      return RESPUESTAS_PARA_DESARROLLO[queryType].pago;
-    }
-    
-    // Si no reconocemos la pregunta específica pero sabemos si es mayoreo o menudeo
-    return RESPUESTAS_PARA_DESARROLLO.general.default;
+
+    // Usar el sistema de fallback para generar una respuesta
+    return getFallbackResponse(message);
   };
 
   const handleSendMessage = async () => {
@@ -242,10 +218,10 @@ const ChatBubble = () => {
 
       // Simulamos un tiempo de respuesta para que parezca natural
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
-      
+
       // Generamos una respuesta local basada en el contexto
       const localResponse = processMessage(newMessage);
-      
+
       // Agregamos la respuesta generada localmente
       setMessages(prev => [...prev, { role: 'assistant', content: localResponse }]);
     } catch (error) {
@@ -293,7 +269,7 @@ const ChatBubble = () => {
                 transformOrigin: 'center'
               }}
             >
-              <span className="font-body text-sm text-[#2D5C34] font-normal tracking-normal">¿Compras al por mayor?</span>
+              <span className="font-body text-sm text-[#2D5C34] font-normal tracking-normal">¿Necesitas ayuda con tu compra?</span>
             </div>
             <Button
               onClick={toggleChat}

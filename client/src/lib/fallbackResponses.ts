@@ -1,36 +1,75 @@
 /**
  * Respuestas predefinidas para cuando la API no está disponible
+ *
+ * Este archivo utiliza las respuestas generadas automáticamente durante el proceso de construcción
+ * que contienen información extraída del archivo markdown.
  */
 
 import { KEYWORDS } from '@/config/fallback';
 
-// Respuestas para preguntas de mayoreo
-export const RESPUESTAS_MAYOREO = {
-  precio: 'Para compras al por mayor, el precio es de S/ 10,000 por tonelada (equivalente a 1000 kg o aproximadamente 4000 aguacates). Este precio es negociable para pedidos de 5+ toneladas, con descuentos disponibles para pedidos de 20+ toneladas sujeto a evaluación.',
-  disponibilidad: 'Los aguacates al por mayor están disponibles en los meses de Enero, Marzo y Mayo, que son nuestras temporadas principales de cosecha. Para otras fechas, por favor contacte directamente con nuestro equipo de ventas.',
-  entrega: 'Para pedidos al por mayor, ofrecemos entrega en todo el Perú. El tiempo de entrega varía según la ubicación, generalmente entre 3-7 días hábiles. Los costos de envío se calculan según el volumen y distancia.',
-  pago: 'Aceptamos transferencias bancarias, depósitos y pagos contra entrega para pedidos al por mayor. Para pedidos grandes, ofrecemos opciones de pago en cuotas previa evaluación.',
-  calidad: 'Nuestros aguacates al por mayor son de la misma calidad premium que vendemos al por menor. Garantizamos un producto fresco, con el punto óptimo de maduración para que llegue en perfectas condiciones.',
-  default: 'Para compras al por mayor, trabajamos con un mínimo de 1 tonelada. Ofrecemos precios competitivos, garantía de calidad y soporte logístico completo. ¿Te gustaría conocer más detalles sobre precios, disponibilidad o proceso de compra?'
+// Intentar importar las respuestas generadas
+let FALLBACK_RESPONSES: {
+  mayoreo: {
+    precio: string;
+    disponibilidad: string;
+    entrega: string;
+    pago: string;
+    default: string;
+  };
+  menudeo: {
+    precio: string;
+    disponibilidad: string;
+    entrega: string;
+    pago: string;
+    default: string;
+  };
+  general: {
+    default: string;
+    horarios: string;
+    contacto: string;
+    ubicacion: string;
+  };
 };
 
-// Respuestas para preguntas de menudeo
-export const RESPUESTAS_MENUDEO = {
-  precio: 'El precio de nuestros aguacates premium al por menor es de S/ 6.50 por kilogramo (aproximadamente 4 aguacates). También ofrecemos packs especiales: Pack Familiar (3kg) por S/ 18.50 y Pack Gourmet (selección especial de 8 aguacates) por S/ 24.99.',
-  disponibilidad: 'Nuestros aguacates al por menor están disponibles durante todo el año en nuestra tienda online y puntos de venta seleccionados. Realizamos envíos de Lunes a Sábado.',
-  entrega: 'Para compras al por menor, realizamos entregas en Lima Metropolitana en 24-48 horas. El costo de envío es de S/ 5.00 para pedidos menores a S/ 50.00, y gratis para compras mayores.',
-  pago: 'Para compras al por menor aceptamos todas las tarjetas de crédito y débito, transferencias bancarias, Yape, Plin y pago contra entrega en efectivo.',
-  conservacion: 'Para conservar tus aguacates, mantén los que están duros a temperatura ambiente hasta que maduren. Una vez maduros, puedes refrigerarlos para extender su vida útil por 2-3 días adicionales.',
-  default: 'Nuestros aguacates premium al por menor tienen un precio de S/ 6.50 por kilogramo. Realizamos entregas en Lima Metropolitana en 24-48 horas. ¿Te gustaría conocer más sobre nuestros productos, precios especiales o métodos de conservación?'
-};
+try {
+  // Intentar importar el archivo generado
+  const generatedModule = require('@/generated/fallback-responses');
+  FALLBACK_RESPONSES = generatedModule.FALLBACK_RESPONSES;
+  console.log('Respuestas de fallback cargadas desde el archivo generado');
+} catch (error) {
+  console.warn('No se pudo cargar el archivo generado de respuestas de fallback. Usando contenido de fallback.');
+  console.warn('Este mensaje es normal durante el desarrollo. En producción, el archivo debería existir.');
+  console.warn('Error:', error);
 
-// Respuestas generales
-export const RESPUESTAS_GENERALES = {
-  default: 'Actualmente no manejo esa información, te sugiero que te pongas en contacto con uno de nuestros especialistas para que puedan brindarte mayor información al respecto usando el botón que aparece abajo.',
-  horarios: 'Nuestros horarios de atención son de Lunes a Viernes de 9:00 AM a 6:00 PM, Sábados de 10:00 AM a 3:00 PM y Domingos de 12:00 PM a 3:00 PM.',
-  contacto: 'Puedes contactarnos a través de nuestro WhatsApp: +51 987 654 321, por correo electrónico a info@incafields.com o mediante el formulario de contacto en nuestra página web.',
-  ubicacion: 'Nuestra sede principal se encuentra en Av. La Molina 1234, La Molina, Lima. También contamos con puntos de venta en Miraflores y San Isidro.'
-};
+  // Respuestas de fallback para desarrollo (se usarán solo si el archivo generado no existe)
+  FALLBACK_RESPONSES = {
+    mayoreo: {
+      precio: 'Para compras al por mayor, contacte a un mayorista para obtener información sobre precios actualizados.',
+      disponibilidad: 'Los aguacates al por mayor están disponibles en temporadas específicas. Contacte para más información.',
+      entrega: 'Para pedidos al por mayor, ofrecemos entrega según acuerdo con el cliente.',
+      pago: 'Aceptamos diversos métodos de pago para compras al por mayor.',
+      default: 'Para compras al por mayor, contacte a un mayorista para obtener información detallada.'
+    },
+    menudeo: {
+      precio: 'El precio de nuestros aguacates al por menor es de S/ 6.50 por kilogramo aproximadamente.',
+      disponibilidad: 'Nuestros aguacates al por menor están disponibles durante todo el año, sujeto a disponibilidad.',
+      entrega: 'Para compras al por menor, ofrecemos entrega a domicilio o recogida en puntos de venta.',
+      pago: 'Aceptamos diversos métodos de pago para compras al por menor.',
+      default: 'Para compras al por menor, ofrecemos aguacates de alta calidad a precios competitivos.'
+    },
+    general: {
+      default: 'Actualmente no manejo esa información, te sugiero que te pongas en contacto con uno de nuestros especialistas para que puedan brindarte mayor información al respecto usando el botón que aparece abajo.',
+      horarios: 'Contacte para información sobre nuestros horarios de atención.',
+      contacto: 'Puedes contactarnos usando el botón que aparece abajo para hablar con un especialista.',
+      ubicacion: 'Para información sobre nuestra ubicación, por favor contacta con uno de nuestros especialistas.'
+    }
+  };
+}
+
+// Exportar las respuestas para uso en el código
+export const RESPUESTAS_MAYOREO = FALLBACK_RESPONSES.mayoreo;
+export const RESPUESTAS_MENUDEO = FALLBACK_RESPONSES.menudeo;
+export const RESPUESTAS_GENERALES = FALLBACK_RESPONSES.general;
 
 /**
  * Detecta el tipo de consulta basado en palabras clave

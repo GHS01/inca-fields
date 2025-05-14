@@ -79,29 +79,36 @@ const StaticChatBubble = () => {
   const detectQueryType = (message: string): QueryType => {
     const lowerMessage = message.toLowerCase();
 
-    if (
-      lowerMessage.includes('mayor') ||
-      lowerMessage.includes('mayoreo') ||
-      lowerMessage.includes('tonelada') ||
-      lowerMessage.includes('grandes') ||
-      lowerMessage.includes('volumen') ||
-      lowerMessage.includes('grande') ||
-      lowerMessage.includes('mayorista')
-    ) {
-      return 'mayoreo';
+    // Palabras clave para mayoreo
+    const mayoreoKeywords = [
+      'mayor', 'mayoreo', 'tonelada', 'toneladas', 'ton', 'grandes cantidades',
+      'grandes pedidos', 'grandes volúmenes', 'compra grande', 'cantidad grande',
+      'grandes lotes', 'distribuidor', 'distribuidores', 'revender', 'reventa',
+      'exportar', 'exportación', 'negocio', 'comercial', 'empresa', 'empresarial',
+      'restaurante', 'hotel', 'supermercado', 'mayorista', 'mayoristas', '500 kg',
+      '1000 kg'
+    ];
+
+    // Palabras clave para menudeo
+    const menudeoKeywords = [
+      'menor', 'menudeo', 'kilo', 'kilos', 'kg', 'pequeñas cantidades',
+      'pequeños pedidos', 'pequeños volúmenes', 'compra pequeña', 'cantidad pequeña',
+      'unidad', 'unidades', 'personal', 'casa', 'hogar', 'familiar', 'consumo propio',
+      'particular', 'individual', '6.50', 'seis', 'minorista'
+    ];
+
+    // Verificar mayoreo
+    for (const keyword of mayoreoKeywords) {
+      if (lowerMessage.includes(keyword)) {
+        return 'mayoreo';
+      }
     }
 
-    if (
-      lowerMessage.includes('menor') ||
-      lowerMessage.includes('menudeo') ||
-      lowerMessage.includes('kilo') ||
-      lowerMessage.includes('poco') ||
-      lowerMessage.includes('pequeña') ||
-      lowerMessage.includes('pocos') ||
-      lowerMessage.includes('detalle') ||
-      lowerMessage.includes('personal')
-    ) {
-      return 'menudeo';
+    // Verificar menudeo
+    for (const keyword of menudeoKeywords) {
+      if (lowerMessage.includes(keyword)) {
+        return 'menudeo';
+      }
     }
 
     return 'unknown';
@@ -312,7 +319,7 @@ const StaticChatBubble = () => {
               <span className={cn(
                 "font-body text-[#2D5C34] font-normal tracking-normal",
                 isMobile ? "chat-text-mobile" : "text-sm"
-              )}>¿Compras al por mayor?</span>
+              )}>¿Necesitas ayuda con tu compra?</span>
             </div>
             <Button
               onClick={toggleChat}

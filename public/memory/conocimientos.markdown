@@ -9,13 +9,7 @@ Proveer información breve y precisa sobre la venta de aguacates de Inca Fields,
   - **Al por mayor**: Por toneladas.
   - **Al por menor**: Por kilogramos.
 - **Precios**:
-  - **Al por mayor**:
-    - Precio por unidad: S/ 2.50 (dos soles con cincuenta céntimos).
-    - Peso promedio por aguacate: 0.25 kg (250 gramos).
-    - Cálculo por tonelada:
-      - 1 tonelada = 1000 kg.
-      - Aguacates por tonelada: 1000 kg ÷ 0.25 kg = 4000 aguacates.
-      - Precio por tonelada: 4000 aguacates × S/ 2.50 = **S/ 10,000**.
+  - **Al por mayor**: No se especifica precio; contactar a mayorista para cotización.
   - **Al por menor**:
     - Precio por kilogramo: S/ 6.50 (basado en mercado minorista promedio en Perú).
 - **Períodos de venta al por mayor**:
@@ -30,7 +24,7 @@ Proveer información breve y precisa sobre la venta de aguacates de Inca Fields,
 
 ## Preguntas Frecuentes (FAQ)
 1. **¿Cuál es el precio de los aguacates?**
-   - Al por mayor: S/ 10,000 por tonelada. Al por menor: S/ 6.50 por kg.
+   - Al por mayor: Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto. Al por menor: S/ 6.50 por kg.
 2. **¿Cuándo están disponibles los aguacates al por mayor?**
    - En enero, marzo y mayo.
 3. **¿Venden aguacates al por menor?**
@@ -74,7 +68,7 @@ Proveer información breve y precisa sobre la venta de aguacates de Inca Fields,
 - **Al por mayor**:
   - **Conversacion inicial**:
     - Cliente solicita cotización o disponibilidad dentro de horarios de atención.
-    - Agente confirma precio base (S/ 10,000/tonelada) y períodos de venta.
+    - Agente indica contactar a un mayorista para información de precios y disponibilidad.
   - **Negociación**:
     - Precio negociable para pedidos de 5+ toneladas.
     - Descuentos para pedidos de 20+ toneladas (sujeto a evaluación).
@@ -102,7 +96,7 @@ Proveer información breve y precisa sobre la venta de aguacates de Inca Fields,
 
 ## Respuestas Sugeridas para el Agente
 1. **Consulta sobre precio**:
-   - "Al por mayor: S/ 10,000 por tonelada, negociable. Al por menor: S/ 6.50 por kg."
+   - "Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto. Al por menor: S/ 6.50 por kg."
 2. **Consulta sobre disponibilidad**:
    - "Al por mayor en enero, marzo y mayo. Al por menor todo el año, según cosecha."
 3. **Consulta sobre entrega**:

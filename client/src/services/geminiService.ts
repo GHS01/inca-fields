@@ -105,8 +105,19 @@ export async function callGeminiAPI(userMessage: string, chatHistory: ChatMessag
       throw new Error('Límite de solicitudes a Gemini API alcanzado');
     }
 
-    // Cargar la base de conocimientos
+    // Cargar la base de conocimientos (forzar recarga)
+    // Invalidar la caché para asegurar que se carga la versión más reciente
     const knowledgeBase = await getKnowledgeBase();
+
+    // Verificar si la base de conocimientos contiene información sobre precios al por mayor
+    const containsMayoreoPrice = knowledgeBase.includes('10,000') ||
+                               knowledgeBase.includes('10000') ||
+                               knowledgeBase.includes('diez mil');
+
+    if (containsMayoreoPrice) {
+      console.warn('⚠️ ADVERTENCIA: La base de conocimientos contiene información sobre precios al por mayor');
+      console.warn('Esto puede causar que el asistente responda con precios específicos');
+    }
 
     // Preparar el contexto y el historial
     // Nota: gemini-1.5-flash no admite el rol 'system', así que incluimos las instrucciones en el primer mensaje
