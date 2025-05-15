@@ -359,12 +359,12 @@ const ChatBubble = () => {
               </div>
             </div>
 
-            {/* Botón para hablar con especialista */}
+            {/* Botón para hablar con especialista - Siempre con estilo hover */}
             <div className="px-3 py-2 bg-gray-50 border-t border-gray-100">
               <Button
                 onClick={redirectToSpecialist}
                 variant="outline"
-                className="w-full flex items-center justify-center gap-2 py-2 text-[#2D5C34] border-[#2D5C34]/30 hover:bg-gradient-to-r hover:from-[#2D5C34] hover:to-[#3D7244] hover:text-white hover:border-transparent transition-all duration-300 rounded-xl shadow-sm hover:shadow-md group text-sm"
+                className="w-full flex items-center justify-center gap-2 py-2 text-white border-transparent bg-gradient-to-r from-[#2D5C34] to-[#3D7244] transition-all duration-300 rounded-xl shadow-md group text-sm"
               >
                 <span className="font-medium">Hablar con un especialista</span>
                 <ExternalLink size={14} className="transition-transform group-hover:translate-x-1" />
