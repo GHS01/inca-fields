@@ -8,7 +8,7 @@
     "prebuild": "node scripts/build-knowledge-base.js",
     "build": "vite build",
     "postbuild": "node scripts/verify-build.js",
-    "start": "node server/index.js",
+    "start": "tsx server/index.ts",
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "prevercel-build": "node scripts/build-knowledge-base.js",
