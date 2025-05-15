@@ -9,28 +9,51 @@
 // En desarrollo, si el archivo no existe, se utilizará un contenido de fallback
 let KNOWLEDGE_BASE_CONTENT = '';
 
-try {
-  // Intentar importar el archivo generado
-  // Nota: Esta importación dinámica es necesaria porque el archivo puede no existir en desarrollo
-  const generatedModule = require('@/generated/knowledge-base');
-  KNOWLEDGE_BASE_CONTENT = generatedModule.KNOWLEDGE_BASE_CONTENT;
-  console.debug('Base de conocimientos cargada desde el archivo generado');
-} catch (error) {
-  console.warn('No se pudo cargar el archivo generado de la base de conocimientos. Usando contenido de fallback.');
-  console.warn('Este mensaje es normal durante el desarrollo. En producción, el archivo debería existir.');
-  console.warn('Error:', error);
-
-  // Contenido de fallback para desarrollo (se usará solo si el archivo generado no existe)
-  // Este contenido será reemplazado por el archivo generado durante el build
-  KNOWLEDGE_BASE_CONTENT = `# Base de Conocimientos: Venta de Aguacates - Inca Fields (FALLBACK)
+// En producción, intentamos cargar el contenido desde un archivo estático
+// Esto evita el uso de require() que no está disponible en el navegador
+const FALLBACK_CONTENT = `# Base de Conocimientos: Venta de Aguacates - Inca Fields (FALLBACK)
 
 ## Propósito
-Este es un contenido de fallback que se usa solo durante el desarrollo cuando el archivo generado no existe.
-En producción, este contenido será reemplazado por el contenido del archivo markdown.
+Este es un contenido de fallback que se usa cuando no se puede cargar la base de conocimientos.
 
-## Nota Importante
-Si ves este mensaje en producción, significa que el script de build no se ejecutó correctamente.
-Por favor, verifica que el script scripts/build-knowledge-base.js se esté ejecutando durante el build.`;
+## Información General
+- Somos Inca Fields, productores y distribuidores de aguacates de alta calidad.
+- Ofrecemos aguacates tanto al por mayor como al por menor.
+- Para más información específica, contacta con nuestros especialistas.
+
+## Contacto
+Puedes contactarnos usando el botón que aparece abajo para hablar con un especialista.
+
+## Horarios
+Lunes a viernes de 9:00 AM a 6:00 PM. Sábados de 10:00 AM a 2:00 PM. Domingos cerrado.`;
+
+// Inicializamos con el contenido de fallback
+KNOWLEDGE_BASE_CONTENT = FALLBACK_CONTENT;
+
+// Intentamos cargar el contenido generado usando importación dinámica
+// Esta es compatible con navegadores modernos y entornos de producción
+try {
+  // Usamos una función autoejecutable asíncrona para poder usar await
+  (async () => {
+    try {
+      // Intentar importar el archivo generado usando import() dinámico
+      const generatedModule = await import('@/generated/knowledge-base');
+      if (generatedModule && generatedModule.KNOWLEDGE_BASE_CONTENT) {
+        KNOWLEDGE_BASE_CONTENT = generatedModule.KNOWLEDGE_BASE_CONTENT;
+        console.debug('Base de conocimientos cargada desde el archivo generado');
+        // Actualizar la caché
+        knowledgeBaseCache = KNOWLEDGE_BASE_CONTENT;
+      }
+    } catch (importError) {
+      console.warn('No se pudo cargar el archivo generado de la base de conocimientos. Usando contenido de fallback.');
+      console.warn('Este mensaje es normal durante el desarrollo. En producción, el archivo debería existir.');
+      console.warn('Error:', importError);
+      // Ya tenemos el contenido de fallback inicializado
+    }
+  })();
+} catch (error) {
+  console.warn('Error al intentar cargar la base de conocimientos:', error);
+  // Ya tenemos el contenido de fallback inicializado
 }
 
 // Variable para almacenar en caché la base de conocimientos

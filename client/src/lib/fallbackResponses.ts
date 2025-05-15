@@ -31,39 +31,52 @@ let FALLBACK_RESPONSES: {
   };
 };
 
-try {
-  // Intentar importar el archivo generado
-  const generatedModule = require('@/generated/fallback-responses');
-  FALLBACK_RESPONSES = generatedModule.FALLBACK_RESPONSES;
-  console.debug('Respuestas de fallback cargadas desde el archivo generado');
-} catch (error) {
-  console.warn('No se pudo cargar el archivo generado de respuestas de fallback. Usando contenido de fallback.');
-  console.warn('Este mensaje es normal durante el desarrollo. En producción, el archivo debería existir.');
-  console.warn('Error:', error);
+// Definimos respuestas de fallback predeterminadas
+FALLBACK_RESPONSES = {
+  mayoreo: {
+    precio: 'Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto.',
+    disponibilidad: 'Los aguacates al por mayor están disponibles en enero, marzo y mayo.',
+    entrega: 'Para pedidos al por mayor: Entrega por camionadas en 3-7 días hábiles tras confirmar pedido.',
+    pago: 'Transferencia bancaria, efectivo o pagos digitales (Yape, Plin) para ambos tipos de venta.',
+    default: 'Para compras al por mayor, contáctese con uno de nuestros mayoristas para atención exclusiva usando el botón de contacto.'
+  },
+  menudeo: {
+    precio: 'El precio de nuestros aguacates al por menor es de S/ 6.50 por kilogramo aproximadamente.',
+    disponibilidad: 'Nuestros aguacates al por menor están disponibles durante todo el año, sujeto a disponibilidad.',
+    entrega: 'Para compras al por menor, ofrecemos entrega a domicilio o recogida en puntos de venta.',
+    pago: 'Transferencia bancaria, efectivo o pagos digitales (Yape, Plin) para ambos tipos de venta.',
+    default: 'Para compras al por menor, ofrecemos aguacates de alta calidad a precios competitivos.'
+  },
+  general: {
+    default: 'Actualmente no manejo esa información, te sugiero que te pongas en contacto con uno de nuestros especialistas para que puedan brindarte mayor información al respecto usando el botón que aparece abajo.',
+    horarios: 'Lunes a viernes de 9:00 AM a 6:00 PM. Sábados de 10:00 AM a 2:00 PM. Domingos cerrado.',
+    contacto: 'Puedes contactarnos usando el botón que aparece abajo para hablar con un especialista.',
+    ubicacion: 'Para información sobre nuestra ubicación, por favor contacta con uno de nuestros especialistas usando el botón que aparece abajo.'
+  }
+};
 
-  // Respuestas de fallback para desarrollo (se usarán solo si el archivo generado no existe)
-  FALLBACK_RESPONSES = {
-    mayoreo: {
-      precio: 'Para compras al por mayor, contacte a un mayorista para obtener información sobre precios actualizados.',
-      disponibilidad: 'Los aguacates al por mayor están disponibles en temporadas específicas. Contacte para más información.',
-      entrega: 'Para pedidos al por mayor, ofrecemos entrega según acuerdo con el cliente.',
-      pago: 'Aceptamos diversos métodos de pago para compras al por mayor.',
-      default: 'Para compras al por mayor, contacte a un mayorista para obtener información detallada.'
-    },
-    menudeo: {
-      precio: 'El precio de nuestros aguacates al por menor es de S/ 6.50 por kilogramo aproximadamente.',
-      disponibilidad: 'Nuestros aguacates al por menor están disponibles durante todo el año, sujeto a disponibilidad.',
-      entrega: 'Para compras al por menor, ofrecemos entrega a domicilio o recogida en puntos de venta.',
-      pago: 'Aceptamos diversos métodos de pago para compras al por menor.',
-      default: 'Para compras al por menor, ofrecemos aguacates de alta calidad a precios competitivos.'
-    },
-    general: {
-      default: 'Actualmente no manejo esa información, te sugiero que te pongas en contacto con uno de nuestros especialistas para que puedan brindarte mayor información al respecto usando el botón que aparece abajo.',
-      horarios: 'Contacte para información sobre nuestros horarios de atención.',
-      contacto: 'Puedes contactarnos usando el botón que aparece abajo para hablar con un especialista.',
-      ubicacion: 'Para información sobre nuestra ubicación, por favor contacta con uno de nuestros especialistas.'
+// Intentamos cargar las respuestas generadas usando importación dinámica
+// Esta es compatible con navegadores modernos y entornos de producción
+try {
+  // Usamos una función autoejecutable asíncrona para poder usar await
+  (async () => {
+    try {
+      // Intentar importar el archivo generado usando import() dinámico
+      const generatedModule = await import('@/generated/fallback-responses');
+      if (generatedModule && generatedModule.FALLBACK_RESPONSES) {
+        FALLBACK_RESPONSES = generatedModule.FALLBACK_RESPONSES;
+        console.debug('Respuestas de fallback cargadas desde el archivo generado');
+      }
+    } catch (importError) {
+      console.warn('No se pudo cargar el archivo generado de respuestas de fallback. Usando contenido de fallback.');
+      console.warn('Este mensaje es normal durante el desarrollo. En producción, el archivo debería existir.');
+      console.warn('Error:', importError);
+      // Ya tenemos las respuestas de fallback inicializadas
     }
-  };
+  })();
+} catch (error) {
+  console.warn('Error al intentar cargar las respuestas de fallback:', error);
+  // Ya tenemos las respuestas de fallback inicializadas
 }
 
 // Exportar las respuestas para uso en el código
