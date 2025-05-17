@@ -7,6 +7,8 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import Tienda from "@/pages/Tienda";
 import StaticChatBubble from "@/components/StaticChatBubble";
+import { useEffect } from "react";
+import { initEmailJS } from "@/services/emailService";
 
 function Router() {
   return (
@@ -24,6 +26,11 @@ function Router() {
 }
 
 function App() {
+  // Inicializar EmailJS cuando la aplicación se carga
+  useEffect(() => {
+    initEmailJS();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
