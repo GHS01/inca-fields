@@ -19,6 +19,7 @@ import { insertContactSchema } from '@shared/schema';
 const contactSchema = insertContactSchema.extend({
   email: z.string().email("Por favor, introduce un email válido"),
   name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  whatsapp: z.string().min(9, "El número de WhatsApp debe tener al menos 9 dígitos"),
   subject: z.string().min(5, "El asunto debe tener al menos 5 caracteres"),
   message: z.string().min(10, "El mensaje debe tener al menos 10 caracteres"),
   acceptedPrivacy: z.boolean().refine(val => val === true, {
@@ -97,6 +98,7 @@ const Contact = () => {
     defaultValues: {
       name: "",
       email: "",
+      whatsapp: "",
       subject: "",
       message: "",
       acceptedPrivacy: false
@@ -210,22 +212,22 @@ const Contact = () => {
                   <div className="flex space-x-4">
                     <SocialLink
                       icon={<Facebook size={18} />}
-                      href="https://facebook.com/incafields"
+                      href="https://inca-fields-ghs.vercel.app"
                       delay={0.8}
                     />
                     <SocialLink
                       icon={<Instagram size={18} />}
-                      href="https://instagram.com/incafields"
+                      href="https://inca-fields-ghs.vercel.app"
                       delay={0.85}
                     />
                     <SocialLink
                       icon={<Twitter size={18} />}
-                      href="https://twitter.com/incafields"
+                      href="https://inca-fields-ghs.vercel.app"
                       delay={0.9}
                     />
                     <SocialLink
                       icon={<Linkedin size={18} />}
-                      href="https://linkedin.com/company/incafields"
+                      href="https://inca-fields-ghs.vercel.app"
                       delay={0.95}
                     />
                   </div>
@@ -295,23 +297,43 @@ const Contact = () => {
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                      <FormItem className="mb-6">
-                        <FormLabel className="font-body text-sm uppercase tracking-wider mb-2 text-white/80">Asunto</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Asunto de tu mensaje"
-                            className="border-white/10 bg-white/5 focus:ring-1 focus:ring-[#C6A96C] focus:border-[#C6A96C] transition-colors duration-300 placeholder:text-white/40 text-white"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-300" />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <FormField
+                      control={form.control}
+                      name="subject"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-body text-sm uppercase tracking-wider mb-2 text-white/80">Asunto</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Asunto de tu mensaje"
+                              className="border-white/10 bg-white/5 focus:ring-1 focus:ring-[#C6A96C] focus:border-[#C6A96C] transition-colors duration-300 placeholder:text-white/40 text-white"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-300" />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="whatsapp"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-body text-sm uppercase tracking-wider mb-2 text-white/80">Nro. WhatsApp</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="+51 998 123 456"
+                              className="border-white/10 bg-white/5 focus:ring-1 focus:ring-[#C6A96C] focus:border-[#C6A96C] transition-colors duration-300 placeholder:text-white/40 text-white"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage className="text-red-300" />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}

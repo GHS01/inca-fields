@@ -241,12 +241,12 @@ const galleryItems: GalleryItem[] = [
   }
 ];
 
-const GalleryImage = ({ 
-  item, 
-  index, 
-  onClick 
-}: { 
-  item: GalleryItem; 
+const GalleryImage = ({
+  item,
+  index,
+  onClick
+}: {
+  item: GalleryItem;
   index: number;
   onClick: () => void;
 }) => {
@@ -263,12 +263,12 @@ const GalleryImage = ({
       onClick={onClick}
     >
       <div className="relative h-80 overflow-hidden rounded-xl">
-        <img 
-          src={item.image} 
-          alt={item.alt} 
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+        <img
+          src={item.image}
+          alt={item.alt}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        
+
         {/* Image overlay with zoom icon on hover */}
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
           <div className="opacity-0 group-hover:opacity-100 transform scale-50 group-hover:scale-100 transition-all duration-300">
@@ -281,7 +281,7 @@ const GalleryImage = ({
           <p className="text-white font-display text-lg">{item.alt}</p>
         </div>
       </div>
-      
+
       {/* Category badge */}
       <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 text-xs tracking-wider text-[#2D5C34] uppercase rounded-md">
         {item.category}
@@ -291,19 +291,19 @@ const GalleryImage = ({
 };
 
 // Modal component for expanded view
-const GalleryModal = ({ 
-  item, 
-  onClose, 
-  onPrev, 
-  onNext 
-}: { 
-  item: GalleryItem | null; 
-  onClose: () => void; 
-  onPrev: () => void; 
+const GalleryModal = ({
+  item,
+  onClose,
+  onPrev,
+  onNext
+}: {
+  item: GalleryItem | null;
+  onClose: () => void;
+  onPrev: () => void;
   onNext: () => void;
 }) => {
   if (!item) return null;
-  
+
   const hasRecipe = item.category === 'platos' && item.receta;
 
   // Efecto para ocultar el header cuando se abre el modal
@@ -313,10 +313,10 @@ const GalleryModal = ({
     if (header) {
       header.style.display = 'none';
     }
-    
+
     // También añadimos una clase al body para evitar el scroll en la página de fondo
     document.body.style.overflow = 'hidden';
-    
+
     // Limpiar el efecto cuando se cierra el modal
     return () => {
       if (header) {
@@ -347,37 +347,37 @@ const GalleryModal = ({
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 py-6 px-4 md:py-10 md:px-10 overflow-y-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       {/* Botones de navegación y cierre ahora están fuera del contenedor principal */}
-      <button 
-        onClick={onClose} 
+      <button
+        onClick={onClose}
         className="fixed top-6 right-6 text-white hover:text-[#C6A96C] z-[60] transition-colors duration-300 bg-black/40 p-2 rounded-full"
         aria-label="Close modal"
       >
         <X size={28} />
       </button>
-      
-      <button 
-        onClick={onPrev} 
+
+      <button
+        onClick={onPrev}
         className="fixed left-6 top-1/2 -translate-y-1/2 text-white hover:text-[#C6A96C] z-[60] transition-colors duration-300 bg-black/40 p-3 rounded-full"
         aria-label="Previous image"
       >
         <ChevronLeft size={32} />
       </button>
-      
-      <button 
-        onClick={onNext} 
+
+      <button
+        onClick={onNext}
         className="fixed right-6 top-1/2 -translate-y-1/2 text-white hover:text-[#C6A96C] z-[60] transition-colors duration-300 bg-black/40 p-3 rounded-full"
         aria-label="Next image"
       >
         <ChevronRight size={32} />
       </button>
-      
+
       <motion.div
         className="bg-white w-full max-w-6xl mx-auto rounded-xl overflow-hidden shadow-2xl relative"
         initial={{ opacity: 0, y: 50 }}
@@ -388,13 +388,13 @@ const GalleryModal = ({
           {/* Image Section */}
           <div className="relative h-[350px] md:h-auto">
             <div className="absolute inset-0">
-              <img 
-                src={item.image} 
-                alt={item.alt} 
+              <img
+                src={item.image}
+                alt={item.alt}
                 className="w-full h-full object-cover"
               />
             </div>
-        
+
             <div className="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/60 to-transparent pt-20">
               <div className="inline-block px-3 py-1 bg-[#C6A96C] text-white text-xs uppercase tracking-wider mb-2 rounded-sm">
                 {item.category}
@@ -404,7 +404,7 @@ const GalleryModal = ({
               </h3>
             </div>
           </div>
-          
+
           {/* Content Section */}
           <div className="p-8 max-h-[90vh] md:max-h-[85vh] overflow-y-auto">
             {hasRecipe ? (
@@ -414,7 +414,7 @@ const GalleryModal = ({
                   <h2 className="text-[#2D5C34] font-display text-3xl font-bold mb-4 border-b border-[#C6A96C]/30 pb-5">
                     {item.alt}
                   </h2>
-                  
+
                   {/* Recipe Info in horizontal format - Updated to match new design */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-4 border-b border-[#C6A96C]/20 pb-6 mb-4">
                     <div className="flex items-center gap-3">
@@ -426,7 +426,7 @@ const GalleryModal = ({
                         <span className="text-[#2D5C34] text-sm font-medium">{item.receta?.tiempo}</span>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-[#F9F6F0] flex items-center justify-center">
                         <ChefHat size={18} className="text-[#2D5C34]" />
@@ -436,7 +436,7 @@ const GalleryModal = ({
                         <span className="text-[#2D5C34] text-sm font-medium">{item.receta?.dificultad}</span>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-[#F9F6F0] flex items-center justify-center">
                         <Users size={18} className="text-[#2D5C34]" />
@@ -447,7 +447,7 @@ const GalleryModal = ({
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="mb-3">
                     <div className="flex items-center mb-2">
                       <div className="h-[1px] w-8 bg-[#C6A96C] mr-3"></div>
@@ -459,7 +459,7 @@ const GalleryModal = ({
                       ))}
                     </ul>
                   </div>
-                  
+
                   {/* Preparation */}
                   <div className="mt-3">
                     <div className="flex items-center mb-2">
@@ -511,10 +511,10 @@ const Gallery = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [selectedCategory, setSelectedCategory] = useState<string>('todos');
   const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null);
-  
+
   // Filter items based on selected category
-  const filteredItems = selectedCategory === 'todos' 
-    ? galleryItems 
+  const filteredItems = selectedCategory === 'todos'
+    ? galleryItems
     : galleryItems.filter(item => item.category === selectedCategory);
 
   // Handle modal navigation
@@ -552,10 +552,10 @@ const Gallery = () => {
       <div className="absolute inset-0 bg-[#F9F6F0] opacity-20 pointer-events-none">
         <div className="w-full h-full" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C6A96C' fill-opacity='0.1'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10zm10 8c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm40 40c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
       </div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <motion.div 
+          <motion.div
             className="mb-16 text-center"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -566,16 +566,16 @@ const Gallery = () => {
               <span className="text-[#2D5C34] text-sm tracking-[0.2em] uppercase font-light">Creaciones Culinarias</span>
               <div className="h-[1px] w-10 bg-[#C6A96C] ml-3"></div>
             </div>
-            
+
             <h2 className="text-[#2D5C34] font-display text-4xl md:text-5xl font-bold mb-8 leading-tight">
               Galería <span className="text-[#C6A96C]">Gourmet</span>
             </h2>
-            
+
             <p className="text-gray-600 font-body text-lg max-w-2xl mx-auto mb-10">
               Descubre la versatilidad de nuestros aguacates en creaciones culinarias espectaculares
               y el proceso de cultivo que los hace únicos.
             </p>
-            
+
             <div className="flex flex-wrap justify-center gap-2 mb-12">
               <CategoryButton name="todos" label="Todos" />
               <CategoryButton name="platos" label="Platos" />
@@ -583,37 +583,37 @@ const Gallery = () => {
               <CategoryButton name="cultivo" label="Cultivo" />
             </div>
           </motion.div>
-          
+
           {/* Gallery grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredItems.map((item, index) => (
-              <GalleryImage 
-                key={item.id} 
-                item={item} 
-                index={index} 
+              <GalleryImage
+                key={item.id}
+                item={item}
+                index={index}
                 onClick={() => setSelectedItem(item)}
               />
             ))}
           </div>
-          
+
           {/* Modal gallery */}
           {selectedItem && (
-            <GalleryModal 
-              item={selectedItem} 
+            <GalleryModal
+              item={selectedItem}
               onClose={() => setSelectedItem(null)}
               onPrev={handlePrev}
               onNext={handleNext}
             />
           )}
-          
-          <motion.div 
+
+          <motion.div
             className="text-center mt-16"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
             <a
-              href="https://www.instagram.com/incafields"
+              href="https://inca-fields-ghs.vercel.app"
               target="_blank"
               rel="noopener noreferrer"
               className="luxury-button-gold inline-flex items-center gap-2 text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2.5 max-w-full"

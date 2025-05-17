@@ -2,16 +2,16 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'wouter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { 
-  ArrowLeft, 
-  ShoppingCart, 
-  Heart, 
-  Star, 
-  Award, 
-  Truck, 
-  Search, 
-  Plus, 
-  Minus, 
+import {
+  ArrowLeft,
+  ShoppingCart,
+  Heart,
+  Star,
+  Award,
+  Truck,
+  Search,
+  Plus,
+  Minus,
   ChevronDown,
   ArrowRight,
   Sparkles,
@@ -251,11 +251,11 @@ const getBadgeStyles = (variant: string) => {
   }
 };
 
-const ProductModal = ({ 
-  product, 
-  onClose 
-}: { 
-  product: Product | null; 
+const ProductModal = ({
+  product,
+  onClose
+}: {
+  product: Product | null;
   onClose: () => void;
 }) => {
   const [selectedImage, setSelectedImage] = useState<string>('');
@@ -281,10 +281,10 @@ const ProductModal = ({
 
   const renderStars = (rating: number) => {
     return Array(5).fill(0).map((_, index) => (
-      <Star 
-        key={index} 
-        size={16} 
-        className={index < Math.floor(rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"} 
+      <Star
+        key={index}
+        size={16}
+        className={index < Math.floor(rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}
       />
     ));
   };
@@ -299,7 +299,7 @@ const ProductModal = ({
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity backdrop-blur-sm"
         onClick={onClose}
       ></div>
-      
+
       {/* Modal container - Rediseñado para imitar exactamente el modal de Galería Gourmet */}
       <div className="relative bg-white rounded-lg w-full max-w-6xl shadow-lg flex flex-col md:flex-row h-[85vh]">
         {/* Botón de cierre */}
@@ -310,7 +310,7 @@ const ProductModal = ({
         >
           <X className="h-5 w-5" />
         </button>
-        
+
         {/* Columna de imagen - Estática, sin scroll, ocupando toda la altura */}
         <div className="md:w-1/2 h-full relative">
           <img
@@ -319,7 +319,7 @@ const ProductModal = ({
             className="w-full h-full object-cover object-center"
           />
         </div>
-        
+
         {/* Columna de información - Con scroll independiente */}
         <div className="md:w-1/2 h-full overflow-y-auto">
           <div className="p-8">
@@ -337,10 +337,10 @@ const ProductModal = ({
                 </div>
               )}
             </div>
-            
+
             {/* Nombre del producto */}
             <h2 className="text-3xl font-display font-bold text-gray-800 mb-3">{product.name}</h2>
-            
+
             {/* Calificación en formato simplificado */}
             <div className="flex items-center gap-2 mb-4">
               <div className="flex">
@@ -350,10 +350,10 @@ const ProductModal = ({
                 {product.rating} ({product.reviewCount} reseñas)
               </span>
             </div>
-            
+
             {/* Descripción */}
             <p className="text-gray-700 mb-6 text-base leading-relaxed">{product.description}</p>
-            
+
             {/* Precio con formato grande */}
             <div className="flex items-baseline gap-3 mb-8">
               <span className="text-3xl font-bold text-[#2D5C34]">{product.price}</span>
@@ -361,15 +361,15 @@ const ProductModal = ({
                 <span className="text-gray-500 line-through text-base">{product.originalPrice}</span>
               )}
             </div>
-            
+
             {/* Divisor visual */}
             <div className="w-full h-px bg-gray-200 my-6"></div>
-            
+
             {/* Detalles del producto - Diseño simplificado */}
             {product.details && (
               <div className="mb-8">
                 <h3 className="font-display text-xl font-bold text-gray-800 mb-4">Detalles del producto</h3>
-                
+
                 <div className="grid grid-cols-2 gap-y-4 gap-x-8">
                   {product.details.origen && (
                     <div>
@@ -396,7 +396,7 @@ const ProductModal = ({
                     </div>
                   )}
                 </div>
-                
+
                 {/* Beneficios */}
                 {product.details.beneficios && product.details.beneficios.length > 0 && (
                   <div className="mt-6">
@@ -413,12 +413,12 @@ const ProductModal = ({
                 )}
               </div>
             )}
-            
+
             {/* Acciones - Al final de la página */}
             <div className="mt-auto pb-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
-                  <button 
+                  <button
                     className="p-2 text-gray-600 hover:bg-gray-100 transition-colors"
                     onClick={handleDecrement}
                   >
@@ -427,20 +427,20 @@ const ProductModal = ({
                   <div className="w-10 text-center py-2 font-medium text-gray-800">
                     {quantity}
                   </div>
-                  <button 
+                  <button
                     className="p-2 text-gray-600 hover:bg-gray-100 transition-colors"
                     onClick={handleIncrement}
                   >
                     <Plus size={16} />
                   </button>
                 </div>
-                
+
                 <Button className="flex-1 bg-[#2D5C34] hover:bg-[#1F4425] text-white py-2 rounded-md text-sm">
                   <ShoppingCart size={16} className="mr-2" />
                   <span>Añadir al carrito</span>
                 </Button>
               </div>
-              
+
               {/* Entrega - Estilo minimalista */}
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Truck size={16} />
@@ -454,12 +454,12 @@ const ProductModal = ({
   );
 };
 
-const ProductCard = ({ 
-  product, 
+const ProductCard = ({
+  product,
   onClick,
   index = 0
-}: { 
-  product: Product; 
+}: {
+  product: Product;
   onClick: () => void;
   index?: number;
 }) => {
@@ -482,10 +482,10 @@ const ProductCard = ({
 
   const renderStars = (rating: number) => {
     return Array(5).fill(0).map((_, i) => (
-      <Star 
-        key={i} 
-        size={12} 
-        className={i < Math.floor(rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"} 
+      <Star
+        key={i}
+        size={12}
+        className={i < Math.floor(rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}
       />
     ));
   };
@@ -496,11 +496,11 @@ const ProductCard = ({
       onClick={onClick}
     >
       <div className="relative pt-[100%] overflow-hidden bg-[#f8f8f8]">
-        <motion.img 
-          src={product.image} 
-          alt={product.name} 
+        <motion.img
+          src={product.image}
+          alt={product.name}
           className="absolute inset-0 w-full h-full object-cover"
-          animate={{ 
+          animate={{
             scale: isHovered ? 1.05 : 1
           }}
           transition={{ duration: 0.4 }}
@@ -511,10 +511,10 @@ const ProductCard = ({
           {renderStars(product.rating)}
           <span className="text-xs text-gray-500 ml-2">({product.reviewCount})</span>
         </div>
-        
+
         <h3 className="text-lg font-bold text-[#2D5C34] mb-1">{product.name}</h3>
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-        
+
         <div className="flex justify-between items-center">
           <div>
             <div className="text-[#C6A96C] font-bold text-lg">{product.price}</div>
@@ -531,21 +531,21 @@ const ProductCard = ({
   );
 };
 
-const CategoryButton = ({ 
-  active, 
-  category, 
-  label, 
-  onClick 
-}: { 
-  active: boolean; 
-  category: ProductCategory; 
-  label: string; 
-  onClick: (category: ProductCategory) => void 
+const CategoryButton = ({
+  active,
+  category,
+  label,
+  onClick
+}: {
+  active: boolean;
+  category: ProductCategory;
+  label: string;
+  onClick: (category: ProductCategory) => void
 }) => (
   <button
     onClick={() => onClick(category)}
     className={`px-3 py-2 md:px-4 md:py-2 text-sm md:text-base rounded-full border transition-colors whitespace-nowrap ${
-      active 
+      active
         ? "bg-[#2D5C34] text-white border-[#2D5C34]"
         : "border-[#2D5C34] text-[#2D5C34] hover:bg-[#2D5C34] hover:text-white"
     }`}
@@ -555,7 +555,7 @@ const CategoryButton = ({
 );
 
 // Sección de filtros ajustada para móvil
-const SortButton = ({ 
+const SortButton = ({
   label,
   active,
   onClick
@@ -585,8 +585,8 @@ const Tienda = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   // Filter products by category
-  const filteredProducts = activeCategory === 'todos' 
-    ? products 
+  const filteredProducts = activeCategory === 'todos'
+    ? products
     : products.filter(product => product.category === activeCategory);
 
   // Sort products based on active sort
@@ -608,15 +608,15 @@ const Tienda = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      
+
       <main className="flex-grow pt-16 md:pt-24 overflow-hidden">
         {/* Hero section */}
         <section className="relative bg-[#2D5C34] py-12 md:py-24 overflow-hidden" ref={ref}>
           {/* Subtle pattern background */}
           <div className="absolute inset-0 opacity-10 bg-pattern"></div>
-          
+
           <div className="container mx-auto px-4 relative z-10">
-            <motion.div 
+            <motion.div
               className="text-center max-w-4xl mx-auto"
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -626,24 +626,24 @@ const Tienda = () => {
                 <ArrowLeft size={16} className="mr-2" />
                 <span>Volver a Inicio</span>
               </Link>
-              
+
               <div className="flex items-center justify-center mb-2 md:mb-4">
                 <div className="h-[1px] w-6 md:w-10 bg-[#C6A96C] mr-2 md:mr-3"></div>
                 <span className="text-[#C6A96C] text-xs md:text-sm tracking-[0.2em] uppercase font-light">Exclusividad y Calidad</span>
                 <div className="h-[1px] w-6 md:w-10 bg-[#C6A96C] ml-2 md:ml-3"></div>
               </div>
-              
+
               <h1 className="text-white font-display text-2xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-6">
                 Descubre Nuestra <span className="text-[#C6A96C]">Colección Premium</span>
               </h1>
-              
+
               <p className="text-white/80 mb-6 md:mb-12 text-sm md:text-lg leading-relaxed px-2">
-                Nuestra exclusiva selección de productos de aguacate, elaborados bajo los más estrictos 
+                Nuestra exclusiva selección de productos de aguacate, elaborados bajo los más estrictos
                 estándares de calidad, sostenibilidad y excelencia.
               </p>
             </motion.div>
           </div>
-          
+
           {/* Wave divider */}
           <div className="absolute bottom-0 left-0 w-full">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" fill="#F9F6F0">
@@ -656,45 +656,45 @@ const Tienda = () => {
         <section className="py-6 md:py-12 bg-[#F9F6F0]">
           <div className="container mx-auto px-4">
             <div className="flex flex-col gap-3 md:gap-6">
-              <motion.div 
+              <motion.div
                 className="flex flex-wrap gap-2 md:gap-3 justify-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
               >
-                <CategoryButton 
-                  active={activeCategory === 'todos'} 
-                  category='todos' 
-                  label='Todos' 
-                  onClick={setActiveCategory} 
+                <CategoryButton
+                  active={activeCategory === 'todos'}
+                  category='todos'
+                  label='Todos'
+                  onClick={setActiveCategory}
                 />
-                <CategoryButton 
-                  active={activeCategory === 'aguacates'} 
-                  category='aguacates' 
-                  label='Aguacates' 
-                  onClick={setActiveCategory} 
+                <CategoryButton
+                  active={activeCategory === 'aguacates'}
+                  category='aguacates'
+                  label='Aguacates'
+                  onClick={setActiveCategory}
                 />
-                <CategoryButton 
-                  active={activeCategory === 'aceites'} 
-                  category='aceites' 
-                  label='Aceites' 
-                  onClick={setActiveCategory} 
+                <CategoryButton
+                  active={activeCategory === 'aceites'}
+                  category='aceites'
+                  label='Aceites'
+                  onClick={setActiveCategory}
                 />
-                <CategoryButton 
-                  active={activeCategory === 'cuidado-personal'} 
-                  category='cuidado-personal' 
-                  label='Cuidado Personal' 
-                  onClick={setActiveCategory} 
+                <CategoryButton
+                  active={activeCategory === 'cuidado-personal'}
+                  category='cuidado-personal'
+                  label='Cuidado Personal'
+                  onClick={setActiveCategory}
                 />
               </motion.div>
-              
-              <motion.div 
+
+              <motion.div
                 className="flex flex-col md:flex-row items-center justify-center md:justify-end gap-2"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
               >
-                <button 
+                <button
                   onClick={() => setShowFilters(!showFilters)}
                   className="md:hidden flex items-center gap-1 text-[#2D5C34] font-medium text-sm py-1.5 px-3 bg-white/80 rounded-full shadow-sm w-full max-w-[160px] justify-center"
                 >
@@ -709,62 +709,62 @@ const Tienda = () => {
                     <span>Ordenar por:</span>
                   </div>
                   <div className="flex space-x-1">
-                    <SortButton 
-                      label="Más populares" 
-                      active={activeSort === 'popular'} 
-                      onClick={() => setActiveSort('popular')} 
+                    <SortButton
+                      label="Más populares"
+                      active={activeSort === 'popular'}
+                      onClick={() => setActiveSort('popular')}
                     />
-                    <SortButton 
-                      label="Novedades" 
-                      active={activeSort === 'newest'} 
-                      onClick={() => setActiveSort('newest')} 
+                    <SortButton
+                      label="Novedades"
+                      active={activeSort === 'newest'}
+                      onClick={() => setActiveSort('newest')}
                     />
-                    <SortButton 
-                      label="Precio: Menor a mayor" 
-                      active={activeSort === 'price-low'} 
-                      onClick={() => setActiveSort('price-low')} 
+                    <SortButton
+                      label="Precio: Menor a mayor"
+                      active={activeSort === 'price-low'}
+                      onClick={() => setActiveSort('price-low')}
                     />
-                    <SortButton 
-                      label="Precio: Mayor a menor" 
-                      active={activeSort === 'price-high'} 
-                      onClick={() => setActiveSort('price-high')} 
+                    <SortButton
+                      label="Precio: Mayor a menor"
+                      active={activeSort === 'price-high'}
+                      onClick={() => setActiveSort('price-high')}
                     />
                   </div>
                 </div>
 
                 {/* Mobile sort buttons dropdown */}
                 <div className={`md:hidden w-full ${showFilters ? 'flex' : 'hidden'} flex-wrap gap-1 justify-center`}>
-                  <SortButton 
-                    label="Más populares" 
-                    active={activeSort === 'popular'} 
+                  <SortButton
+                    label="Más populares"
+                    active={activeSort === 'popular'}
                     onClick={() => {
                       setActiveSort('popular');
                       setShowFilters(false);
-                    }} 
+                    }}
                   />
-                  <SortButton 
-                    label="Novedades" 
-                    active={activeSort === 'newest'} 
+                  <SortButton
+                    label="Novedades"
+                    active={activeSort === 'newest'}
                     onClick={() => {
                       setActiveSort('newest');
                       setShowFilters(false);
-                    }} 
+                    }}
                   />
-                  <SortButton 
-                    label="Precio: Menor" 
-                    active={activeSort === 'price-low'} 
+                  <SortButton
+                    label="Precio: Menor"
+                    active={activeSort === 'price-low'}
                     onClick={() => {
                       setActiveSort('price-low');
                       setShowFilters(false);
-                    }} 
+                    }}
                   />
-                  <SortButton 
-                    label="Precio: Mayor" 
-                    active={activeSort === 'price-high'} 
+                  <SortButton
+                    label="Precio: Mayor"
+                    active={activeSort === 'price-high'}
                     onClick={() => {
                       setActiveSort('price-high');
                       setShowFilters(false);
-                    }} 
+                    }}
                   />
                 </div>
               </motion.div>
@@ -776,18 +776,18 @@ const Tienda = () => {
         <section className="py-6 md:py-16">
           <div className="container mx-auto px-4">
             <div className="mb-4 md:mb-6 flex justify-between items-center">
-              <motion.h2 
+              <motion.h2
                 className="text-lg md:text-2xl font-display font-bold text-[#2D5C34]"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4 }}
               >
-                {activeCategory === 'todos' ? 'Todos los Productos' : 
+                {activeCategory === 'todos' ? 'Todos los Productos' :
                  activeCategory === 'aguacates' ? 'Aguacates Premium' :
                  activeCategory === 'aceites' ? 'Aceites Gourmet' : 'Cuidado Personal'}
               </motion.h2>
-              
-              <motion.div 
+
+              <motion.div
                 className="text-gray-600 text-xs md:text-sm"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -796,18 +796,18 @@ const Tienda = () => {
                 Mostrando {sortedProducts.length} productos
               </motion.div>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8">
               {sortedProducts.map((product, index) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
+                <ProductCard
+                  key={product.id}
+                  product={product}
                   onClick={() => setSelectedProduct(product)}
                   index={index}
                 />
               ))}
             </div>
-            
+
             {sortedProducts.length === 0 && (
               <div className="text-center py-16">
                 <p className="text-gray-500 text-lg">No hay productos disponibles en esta categoría.</p>
@@ -815,14 +815,14 @@ const Tienda = () => {
             )}
           </div>
         </section>
-        
+
         {/* Footer banner */}
         <section className="bg-[#F9F6F0] py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto bg-white rounded-lg p-8 md:p-12 shadow-lg relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 border-t border-r border-[#C6A96C]/20"></div>
               <div className="absolute bottom-0 left-0 w-24 h-24 border-b border-l border-[#C6A96C]/20"></div>
-              
+
               <div className="md:flex justify-between items-center gap-8 relative z-10">
                 <div className="mb-6 md:mb-0">
                   <div className="flex items-center mb-2">
@@ -833,13 +833,15 @@ const Tienda = () => {
                   <p className="text-gray-600 mb-0">Nuestros expertos pueden ayudarte a elegir los productos que mejor se adapten a tus necesidades específicas.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
+                  <Button
                     className="border border-[#2D5C34] bg-white text-[#2D5C34] hover:bg-[#2D5C34] hover:text-white px-6 py-3"
+                    onClick={() => window.open('https://wa.link/reqscn', '_blank')}
                   >
                     Contacta con nosotros
                   </Button>
-                  <Button 
+                  <Button
                     className="bg-[#2D5C34] text-white border-[#2D5C34] px-6 py-3 flex items-center gap-2"
+                    onClick={() => window.open('https://wa.link/reqscn', '_blank')}
                   >
                     <span>Catálogo completo</span>
                     <ArrowRight size={16} />
@@ -850,19 +852,19 @@ const Tienda = () => {
           </div>
         </section>
       </main>
-      
+
       {/* Product Modal */}
       <AnimatePresence>
         {selectedProduct && (
-          <ProductModal 
-            product={selectedProduct} 
+          <ProductModal
+            product={selectedProduct}
             onClose={() => setSelectedProduct(null)}
           />
         )}
       </AnimatePresence>
-      
+
       <Footer />
-      
+
       {/* El CSS para el fondo con patrón lo hemos movido a un estilo inline en el propio div con clase .bg-pattern */}
     </div>
   );

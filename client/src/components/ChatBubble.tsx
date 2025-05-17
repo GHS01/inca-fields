@@ -250,7 +250,7 @@ const ChatBubble = () => {
   };
 
   const redirectToSpecialist = () => {
-    window.open('https://w.app/incafields', '_blank');
+    window.open('https://wa.link/reqscn', '_blank');
   };
 
   return (

@@ -270,7 +270,7 @@ const StaticChatBubble = () => {
   };
 
   const redirectToSpecialist = () => {
-    window.open('https://w.app/incafields', '_blank');
+    window.open('https://wa.link/reqscn', '_blank');
   };
 
   // Determinar si debemos mostrar la burbuja de chat
