@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { insertContactSchema, insertSubscriberSchema } from "@shared/schema";
 import { z } from "zod";
 import { handleChatRequest } from "./chatbot";
+import { mailerSend } from "./services/mailerSend";
+import { log } from "./vite";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Health check route
@@ -15,13 +17,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/contact", async (req, res) => {
     try {
       const validatedData = insertContactSchema.parse(req.body);
+
+      // Store in memory (optional, can be removed if you only want to use MailerSend)
       const contact = await storage.createContact(validatedData);
-      res.status(201).json({ success: true, message: "Contact message received", contact });
+
+      // Send email using MailerSend
+      const emailSent = await mailerSend.sendContactFormEmail(validatedData);
+
+      if (emailSent) {
+        log('✅ Contact form email sent successfully');
+        res.status(201).json({
+          success: true,
+          message: "Contact message received and email sent",
+          contact
+        });
+      } else {
+        log('⚠️ Failed to send contact form email, but data was stored');
+        res.status(201).json({
+          success: true,
+          message: "Contact message received but email could not be sent",
+          contact
+        });
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ success: false, message: "Invalid form data", errors: error.errors });
       } else {
-        console.error("Error creating contact:", error);
+        console.error("Error processing contact form:", error);
         res.status(500).json({ success: false, message: "Error processing contact form" });
       }
     }

@@ -103,8 +103,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Force port 5002 to avoid conflicts
-  const port = 5002;
+  // Use port from .env or default to 5003
+  const port = process.env.PORT || 5003;
   server.listen({
     port: Number(port),
     host: "0.0.0.0",

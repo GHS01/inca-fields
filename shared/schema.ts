@@ -12,6 +12,7 @@ export const contactMessages = pgTable("contact_messages", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull(),
+  whatsapp: text("whatsapp").notNull(),
   subject: text("subject").notNull(),
   message: text("message").notNull(),
   acceptedPrivacy: boolean("accepted_privacy").notNull(),
@@ -30,6 +31,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export const insertContactSchema = createInsertSchema(contactMessages).pick({
   name: true,
   email: true,
+  whatsapp: true,
   subject: true,
   message: true,
   acceptedPrivacy: true,
