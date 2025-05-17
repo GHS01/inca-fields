@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
@@ -15,7 +15,6 @@ import { useMutation } from '@tanstack/react-query';
 import { MapPin, Phone, Mail, Clock, Send, ArrowRight, Instagram, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { insertContactSchema } from '@shared/schema';
-import { initEmailJS, sendEmail } from '@/services/emailService';
 
 const contactSchema = insertContactSchema.extend({
   email: z.string().email("Por favor, introduce un email válido"),
@@ -93,11 +92,6 @@ const Contact = () => {
   const isFormInView = useInView(formRef, { once: true, margin: "-100px" });
   const { toast } = useToast();
 
-  // Inicializar EmailJS cuando el componente se monta
-  useEffect(() => {
-    initEmailJS();
-  }, []);
-
   const form = useForm<FormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -109,56 +103,30 @@ const Contact = () => {
     },
   });
 
-  // Mutación para enviar el formulario usando EmailJS
-  const mutation = useMutation({
-    mutationFn: async (values: FormValues) => {
-      try {
-        // Primero intentamos enviar por correo electrónico usando EmailJS
-        const emailResult = await sendEmail({
-          name: values.name,
-          email: values.email,
-          subject: values.subject,
-          message: values.message
-        });
+  // Estado para controlar el envío del formulario
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
-        if (!emailResult.success) {
-          throw new Error(emailResult.message);
-        }
-
-        // Si el envío por correo fue exitoso, también guardamos en el backend como respaldo
-        try {
-          await apiRequest('POST', '/api/contact', values);
-        } catch (backendError) {
-          console.warn('No se pudo guardar el contacto en el backend, pero el correo se envió correctamente:', backendError);
-          // No lanzamos error aquí porque el correo ya se envió correctamente
-        }
-
-        return emailResult;
-      } catch (error) {
-        // Si falla EmailJS, intentamos el método de respaldo usando solo el backend
-        console.warn('Error al enviar por EmailJS, intentando método de respaldo:', error);
-        await apiRequest('POST', '/api/contact', values);
-        return { success: true, message: "Mensaje recibido. Te contactaremos pronto." };
-      }
-    },
-    onSuccess: (result) => {
-      toast({
-        title: "Mensaje enviado",
-        description: result.message || "Gracias por tu mensaje. Te contactaremos pronto.",
-      });
-      form.reset();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.",
-        variant: "destructive",
-      });
-    },
-  });
-
+  // Función para manejar el envío del formulario
   function onSubmit(values: FormValues) {
-    mutation.mutate(values);
+    setIsSubmitting(true);
+
+    // Mostrar mensaje de éxito
+    toast({
+      title: "Mensaje enviado",
+      description: "Gracias por tu mensaje. Te contactaremos pronto.",
+    });
+
+    // Resetear el formulario después de un breve retraso para permitir que el formulario HTML se envíe
+    setTimeout(() => {
+      form.reset();
+      setFormSubmitted(true);
+      setIsSubmitting(false);
+    }, 1000);
+
+    // El formulario HTML se enviará automáticamente a FormSubmit
+    // No necesitamos hacer una solicitud fetch manual
+    // FormSubmit procesará el formulario y enviará el correo electrónico
   }
 
   return (
@@ -275,7 +243,14 @@ const Contact = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={isFormInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                   transition={{ duration: 0.6 }}
+                  action="https://formsubmit.co/info@incafields.com"
+                  method="POST"
                 >
+                  {/* Campos ocultos para FormSubmit */}
+                  <input type="hidden" name="_subject" value="Nuevo mensaje de contacto desde Inca Fields" />
+                  <input type="hidden" name="_captcha" value="false" />
+                  <input type="hidden" name="_next" value="https://incafields.com/gracias" />
+                  <input type="hidden" name="_template" value="table" />
                   {/* Decorative elements */}
                   <div className="absolute top-0 right-0 w-24 h-24 border-t border-r border-[#C6A96C]/20"></div>
                   <div className="absolute bottom-0 left-0 w-24 h-24 border-b border-l border-[#C6A96C]/20"></div>
@@ -392,10 +367,19 @@ const Contact = () => {
                     <Button
                       type="submit"
                       className="luxury-button bg-[#C6A96C] text-white border-[#C6A96C] inline-flex items-center gap-2"
-                      disabled={mutation.isPending}
+                      disabled={isSubmitting}
                     >
-                      <span>{mutation.isPending ? "Enviando..." : "Enviar Mensaje"}</span>
-                      {!mutation.isPending && <Send size={16} />}
+                      {isSubmitting ? (
+                        <>
+                          <span>Enviando...</span>
+                          <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                        </>
+                      ) : (
+                        <>
+                          <span>Enviar Mensaje</span>
+                          <Send size={16} />
+                        </>
+                      )}
                     </Button>
                   </div>
                 </motion.form>
