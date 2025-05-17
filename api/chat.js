@@ -88,8 +88,8 @@ const RESPUESTAS_MENUDEO = {
 const RESPUESTAS_GENERALES = {
   default: 'Actualmente no manejo esa información, te sugiero que te pongas en contacto con uno de nuestros especialistas para que puedan brindarte mayor información al respecto usando el botón que aparece abajo.',
   horarios: 'Nuestros horarios de atención son de Lunes a Viernes de 9:00 AM a 6:00 PM y Sábados de 9:00 AM a 1:00 PM. Estamos cerrados los domingos y feriados.',
-  contacto: 'Puedes contactarnos a través de nuestro WhatsApp: +51 987 654 321, por correo electrónico a info@incafields.com o mediante el formulario de contacto en nuestra página web.',
-  ubicacion: 'Nuestra sede principal se encuentra en Av. La Molina 1234, La Molina, Lima. También contamos con puntos de venta en Miraflores y San Isidro.'
+  contacto: 'Puedes contactarnos a través de nuestro teléfono: +51 998 148 917, por correo electrónico a peru.aguacates@gmail.com o mediante el formulario de contacto en nuestra página web.',
+  ubicacion: 'Nuestra oficina central se encuentra en Av. Blv de la Literatura 164, Lima, Perú.'
 };
 
 // Función para detectar el tipo de consulta

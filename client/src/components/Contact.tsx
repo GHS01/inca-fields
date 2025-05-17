@@ -28,20 +28,20 @@ const contactSchema = insertContactSchema.extend({
 
 type FormValues = z.infer<typeof contactSchema>;
 
-const ContactItem = ({ 
-  icon, 
-  title, 
-  content, 
-  delay 
-}: { 
-  icon: React.ReactNode; 
-  title: string; 
-  content: string; 
+const ContactItem = ({
+  icon,
+  title,
+  content,
+  delay
+}: {
+  icon: React.ReactNode;
+  title: string;
+  content: string;
   delay: number;
 }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
-  
+
   return (
     <motion.div
       ref={ref}
@@ -61,13 +61,13 @@ const ContactItem = ({
   );
 };
 
-const SocialLink = ({ 
-  icon, 
-  href, 
-  delay 
-}: { 
-  icon: React.ReactNode; 
-  href: string; 
+const SocialLink = ({
+  icon,
+  href,
+  delay
+}: {
+  icon: React.ReactNode;
+  href: string;
   delay: number;
 }) => {
   return (
@@ -131,11 +131,11 @@ const Contact = () => {
     <section id="contact" className="py-28 bg-[#2D5C34] text-white relative" ref={ref}>
       {/* Background pattern */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23FFFFFF' fill-opacity='0.05'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'%3E%3C/path%3E%3C/g%3E%3C/svg%3E')] bg-fixed"></div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="mb-16 text-center">
-            <motion.div 
+            <motion.div
               className="inline-flex items-center mb-4"
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -145,7 +145,7 @@ const Contact = () => {
               <span className="text-[#C6A96C] text-sm tracking-[0.2em] uppercase font-light">Estamos Para Servirte</span>
               <div className="h-[1px] w-10 bg-[#C6A96C] ml-3"></div>
             </motion.div>
-            
+
             <motion.h2
               className="font-display text-4xl md:text-5xl font-bold mb-6 leading-tight"
               initial={{ opacity: 0, y: 20 }}
@@ -154,7 +154,7 @@ const Contact = () => {
             >
               Contacta con <span className="text-[#C6A96C]">Nosotros</span>
             </motion.h2>
-            
+
             <motion.p
               className="font-body text-white/80 text-lg max-w-2xl mx-auto mb-12"
               initial={{ opacity: 0, y: 20 }}
@@ -165,40 +165,40 @@ const Contact = () => {
               Nuestro equipo especializado está listo para ayudarte.
             </motion.p>
           </div>
-        
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-1">
               <div className="border-l border-[#C6A96C]/30 pl-8 h-full flex flex-col">
-                <ContactItem 
+                <ContactItem
                   icon={<MapPin size={18} />}
                   title="Oficina Central"
-                  content="Av. Agricultura 1250, Lima, Perú"
+                  content="Av. Blv de la Literatura 164, Lima, Perú"
                   delay={0.3}
                 />
-                
-                <ContactItem 
+
+                <ContactItem
                   icon={<Phone size={18} />}
                   title="Teléfono"
-                  content="+51 123 456 789"
+                  content="+51 998 148 917"
                   delay={0.4}
                 />
-                
-                <ContactItem 
+
+                <ContactItem
                   icon={<Mail size={18} />}
                   title="Email"
-                  content="info@incafields.com"
+                  content="peru.aguacates@gmail.com"
                   delay={0.5}
                 />
-                
-                <ContactItem 
+
+                <ContactItem
                   icon={<Clock size={18} />}
                   title="Horario de Atención"
                   content="Lunes a Viernes: 9:00 AM - 6:00 PM"
                   delay={0.6}
                 />
-                
+
                 <div className="mt-auto">
-                  <motion.h3 
+                  <motion.h3
                     className="font-display text-xl font-bold mb-6 mt-10"
                     initial={{ opacity: 0 }}
                     animate={isInView ? { opacity: 1 } : { opacity: 0 }}
@@ -206,37 +206,37 @@ const Contact = () => {
                   >
                     Síguenos en Redes
                   </motion.h3>
-                  
+
                   <div className="flex space-x-4">
-                    <SocialLink 
-                      icon={<Facebook size={18} />} 
-                      href="https://facebook.com/incafields" 
-                      delay={0.8} 
+                    <SocialLink
+                      icon={<Facebook size={18} />}
+                      href="https://facebook.com/incafields"
+                      delay={0.8}
                     />
-                    <SocialLink 
-                      icon={<Instagram size={18} />} 
-                      href="https://instagram.com/incafields" 
-                      delay={0.85} 
+                    <SocialLink
+                      icon={<Instagram size={18} />}
+                      href="https://instagram.com/incafields"
+                      delay={0.85}
                     />
-                    <SocialLink 
-                      icon={<Twitter size={18} />} 
-                      href="https://twitter.com/incafields" 
-                      delay={0.9} 
+                    <SocialLink
+                      icon={<Twitter size={18} />}
+                      href="https://twitter.com/incafields"
+                      delay={0.9}
                     />
-                    <SocialLink 
-                      icon={<Linkedin size={18} />} 
-                      href="https://linkedin.com/company/incafields" 
-                      delay={0.95} 
+                    <SocialLink
+                      icon={<Linkedin size={18} />}
+                      href="https://linkedin.com/company/incafields"
+                      delay={0.95}
                     />
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div className="lg:col-span-2" ref={formRef}>
               <Form {...form}>
-                <motion.form 
-                  onSubmit={form.handleSubmit(onSubmit)} 
+                <motion.form
+                  onSubmit={form.handleSubmit(onSubmit)}
                   className="bg-white/5 border border-white/10 p-8 md:p-10 backdrop-blur-sm relative overflow-hidden"
                   initial={{ opacity: 0, y: 30 }}
                   animate={isFormInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
@@ -245,8 +245,8 @@ const Contact = () => {
                   {/* Decorative elements */}
                   <div className="absolute top-0 right-0 w-24 h-24 border-t border-r border-[#C6A96C]/20"></div>
                   <div className="absolute bottom-0 left-0 w-24 h-24 border-b border-l border-[#C6A96C]/20"></div>
-                  
-                  <motion.h3 
+
+                  <motion.h3
                     className="font-display text-2xl font-bold mb-8 relative"
                     initial={{ opacity: 0, y: 20 }}
                     animate={isFormInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
@@ -255,7 +255,7 @@ const Contact = () => {
                     Envíanos un Mensaje
                     <div className="h-[1px] w-16 bg-[#C6A96C] mt-4"></div>
                   </motion.h3>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <FormField
                       control={form.control}
@@ -274,7 +274,7 @@ const Contact = () => {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="email"
@@ -294,7 +294,7 @@ const Contact = () => {
                       )}
                     />
                   </div>
-                  
+
                   <FormField
                     control={form.control}
                     name="subject"
@@ -312,7 +312,7 @@ const Contact = () => {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="message"
@@ -331,7 +331,7 @@ const Contact = () => {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="acceptedPrivacy"
@@ -353,10 +353,10 @@ const Contact = () => {
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="flex justify-end">
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       className="luxury-button bg-[#C6A96C] text-white border-[#C6A96C] inline-flex items-center gap-2"
                       disabled={mutation.isPending}
                     >
@@ -368,17 +368,17 @@ const Contact = () => {
               </Form>
             </div>
           </div>
-          
-          <motion.div 
+
+          <motion.div
             className="mt-20 text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <a 
-              href="https://www.google.com/maps/place/Lima,+Perú" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://www.google.com/maps/place/Lima,+Perú"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-[#C6A96C] hover:text-white/90 transition-colors duration-300"
             >
               <span>Ver Nuestra Ubicación en el Mapa</span>

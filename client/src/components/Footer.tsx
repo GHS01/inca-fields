@@ -2,7 +2,7 @@ import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  
+
   return (
     <footer className="bg-[#2D5C34] text-white pt-16 pb-8">
       <div className="container mx-auto px-4">
@@ -29,7 +29,7 @@ const Footer = () => {
               </a>
             </div>
           </div>
-          
+
           <div>
             <h4 className="font-display text-xl font-bold mb-6">Enlaces Rápidos</h4>
             <ul className="font-body space-y-3">
@@ -41,21 +41,21 @@ const Footer = () => {
               <li><a href="#contact" className="hover:text-[#C6A96C] transition-colors duration-300">Contacto</a></li>
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-display text-xl font-bold mb-6">Contacto</h4>
             <ul className="font-body space-y-3">
               <li className="flex items-start">
                 <MapPin className="mt-1 mr-3 text-[#C6A96C]" size={16} />
-                <span>Av. Agricultura 1250, Lima, Perú</span>
+                <span>Av. Blv de la Literatura 164, Lima, Perú</span>
               </li>
               <li className="flex items-start">
                 <Phone className="mt-1 mr-3 text-[#C6A96C]" size={16} />
-                <span>+51 123 456 789</span>
+                <span>+51 998 148 917</span>
               </li>
               <li className="flex items-start">
                 <Mail className="mt-1 mr-3 text-[#C6A96C]" size={16} />
-                <span>info@incafields.com</span>
+                <span>peru.aguacates@gmail.com</span>
               </li>
               <li className="flex items-start">
                 <Clock className="mt-1 mr-3 text-[#C6A96C]" size={16} />
@@ -63,7 +63,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h4 className="font-display text-xl font-bold mb-6">Certificaciones</h4>
             <div className="grid grid-cols-2 gap-4">
@@ -85,7 +85,7 @@ const Footer = () => {
             </p>
           </div>
         </div>
-        
+
         <div className="border-t border-white border-opacity-20 pt-8">
           <div className="grid grid-cols-1 md:grid-cols-2 items-center">
             <p className="font-body text-sm text-white text-opacity-70 mb-4 md:mb-0">

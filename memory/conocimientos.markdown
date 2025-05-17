@@ -16,6 +16,10 @@ Proveer información breve y precisa sobre la venta de aguacates de Inca Fields,
 - **Períodos de venta al por menor**:
   - Todo el año, sujeto a disponibilidad de cosecha.
 - **Disponibilidad**: Producción anual en Perú supera las 911,000 toneladas, con alta disponibilidad en La Libertad, Lambayeque y Lima.
+- **Contacto**:
+  - **Oficina Central**: Av. Blv de la Literatura 164, Lima, Perú
+  - **Teléfono**: +51 998 148 917
+  - **Email**: peru.aguacates@gmail.com
 - **Horarios de atención**:
   - Lunes a viernes: 9:00 AM - 6:00 PM.
   - Sábado: 10:00 AM - 2:00 PM.
