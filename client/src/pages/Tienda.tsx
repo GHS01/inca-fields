@@ -435,7 +435,22 @@ const ProductModal = ({
                   </button>
                 </div>
 
-                <Button className="flex-1 bg-[#2D5C34] hover:bg-[#1F4425] text-white py-2 rounded-md text-sm">
+                <Button
+                  className="flex-1 bg-[#2D5C34] hover:bg-[#1F4425] text-white py-2 rounded-md text-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Redirigir según el tipo de aguacate
+                    if (product.name === "Aguacate fuerte Premium") {
+                      window.open("https://wa.link/wdn6az", "_blank");
+                    } else if (product.name === "Aguacate Hass Premium") {
+                      window.open("https://wa.link/77jjyl", "_blank");
+                    } else if (product.name === "Aguacate Orgánico") {
+                      window.open("https://wa.link/z62ogj", "_blank");
+                    } else {
+                      window.open("https://wa.link/reqscn", "_blank");
+                    }
+                  }}
+                >
                   <ShoppingCart size={16} className="mr-2" />
                   <span>Añadir al carrito</span>
                 </Button>
@@ -522,7 +537,22 @@ const ProductCard = ({
               <div className="text-gray-500 text-sm line-through">{product.originalPrice}</div>
             )}
           </div>
-          <button className="bg-transparent border border-[#2D5C34] text-[#2D5C34] group-hover:bg-[#2D5C34] group-hover:text-white p-2 rounded-full transition-all duration-300">
+          <button
+            className="bg-transparent border border-[#2D5C34] text-[#2D5C34] group-hover:bg-[#2D5C34] group-hover:text-white p-2 rounded-full transition-all duration-300"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Redirigir según el tipo de aguacate
+              if (product.name === "Aguacate fuerte Premium") {
+                window.open("https://wa.link/wdn6az", "_blank");
+              } else if (product.name === "Aguacate Hass Premium") {
+                window.open("https://wa.link/77jjyl", "_blank");
+              } else if (product.name === "Aguacate Orgánico") {
+                window.open("https://wa.link/z62ogj", "_blank");
+              } else {
+                window.open("https://wa.link/reqscn", "_blank");
+              }
+            }}
+          >
             <ShoppingCart size={16} />
           </button>
         </div>
